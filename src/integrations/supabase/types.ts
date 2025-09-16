@@ -14,7 +14,303 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analysis_results: {
+        Row: {
+          analysis_data: Json
+          confidence_score: number | null
+          generated_at: string
+          id: string
+          personality_traits: Json | null
+          test_session_id: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data: Json
+          confidence_score?: number | null
+          generated_at?: string
+          id?: string
+          personality_traits?: Json | null
+          test_session_id: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json
+          confidence_score?: number | null
+          generated_at?: string
+          id?: string
+          personality_traits?: Json | null
+          test_session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analysis_results_test_session_id_fkey"
+            columns: ["test_session_id"]
+            isOneToOne: true
+            referencedRelation: "test_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analysis_results_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offers: {
+        Row: {
+          code: string
+          created_at: string
+          current_uses: number
+          description: string | null
+          discount_amount: number | null
+          discount_percentage: number
+          for_regular_users_only: boolean
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          title: string
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          current_uses?: number
+          description?: string | null
+          discount_amount?: number | null
+          discount_percentage: number
+          for_regular_users_only?: boolean
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          title: string
+          valid_from: string
+          valid_until: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          current_uses?: number
+          description?: string | null
+          discount_amount?: number | null
+          discount_percentage?: number
+          for_regular_users_only?: boolean
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          title?: string
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: []
+      }
+      purchases: {
+        Row: {
+          amount: number
+          currency: string
+          id: string
+          purchased_at: string
+          status: string
+          stripe_payment_intent_id: string | null
+          tattest_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          currency?: string
+          id?: string
+          purchased_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          tattest_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          currency?: string
+          id?: string
+          purchased_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          tattest_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_tattest_id_fkey"
+            columns: ["tattest_id"]
+            isOneToOne: false
+            referencedRelation: "tattest"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tattest: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          is_active: boolean
+          prompt_text: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          prompt_text: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          prompt_text?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      test_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          session_duration_seconds: number | null
+          started_at: string
+          status: Database["public"]["Enums"]["session_status"]
+          story_content: string | null
+          tattest_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          session_duration_seconds?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["session_status"]
+          story_content?: string | null
+          tattest_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          session_duration_seconds?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["session_status"]
+          story_content?: string | null
+          tattest_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_sessions_tattest_id_fkey"
+            columns: ["tattest_id"]
+            isOneToOne: false
+            referencedRelation: "tattest"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_offers: {
+        Row: {
+          created_at: string
+          id: string
+          is_used: boolean
+          offer_id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          offer_id: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          offer_id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_offers_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_offers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          clerk_id: string
+          created_at: string
+          email: string
+          id: string
+          membership_expires_at: string | null
+          membership_type: Database["public"]["Enums"]["membership_type"]
+          updated_at: string
+        }
+        Insert: {
+          clerk_id: string
+          created_at?: string
+          email: string
+          id?: string
+          membership_expires_at?: string | null
+          membership_type?: Database["public"]["Enums"]["membership_type"]
+          updated_at?: string
+        }
+        Update: {
+          clerk_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          membership_expires_at?: string | null
+          membership_type?: Database["public"]["Enums"]["membership_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +319,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      membership_type: "free" | "pro"
+      session_status: "active" | "completed" | "abandoned"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +447,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      membership_type: ["free", "pro"],
+      session_status: ["active", "completed", "abandoned"],
+    },
   },
 } as const
