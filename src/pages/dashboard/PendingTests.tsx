@@ -3,52 +3,52 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Play, Lock, Crown, Image } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 const PendingTests = () => {
   const { isPro } = useUserData();
+  const [tests, setTests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for pending tests
-  const allPendingTests = [
-    {
-      id: 3,
-      title: "Picture 3: Social Interaction",
-      description: "Analyze social dynamics and interpersonal relationships in a group setting.",
-      estimatedTime: "10-15 minutes",
-      difficulty: "Intermediate",
-      isPremium: false,
-      imageUrl: "/api/placeholder/300/200"
-    },
-    {
-      id: 4,
-      title: "Picture 4: Leadership Scenario",
-      description: "Evaluate leadership qualities and decision-making in challenging situations.",
-      estimatedTime: "15-20 minutes",
-      difficulty: "Advanced",
-      isPremium: true,
-      imageUrl: "/api/placeholder/300/200"
-    },
-    {
-      id: 5,
-      title: "Picture 5: Conflict Resolution",
-      description: "Assess conflict management and problem-solving abilities.",
-      estimatedTime: "12-18 minutes",
-      difficulty: "Advanced",
-      isPremium: true,
-      imageUrl: "/api/placeholder/300/200"
-    },
-    {
-      id: 6,
-      title: "Picture 6: Emotional Intelligence",
-      description: "Deep dive into emotional awareness and empathy assessment.",
-      estimatedTime: "15-25 minutes",
-      difficulty: "Expert",
-      isPremium: true,
-      imageUrl: "/api/placeholder/300/200"
-    },
-  ];
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tattest')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
 
-  const availableTests = isPro ? allPendingTests : allPendingTests.filter(test => !test.isPremium);
-  const lockedTests = isPro ? [] : allPendingTests.filter(test => test.isPremium);
+        if (error) {
+          console.error('Error fetching tests:', error);
+          return;
+        }
+
+        // Transform database data to match component expectations
+        const transformedTests = data?.map((test) => ({
+          id: test.id,
+          title: test.title,
+          description: test.description || `Complete this TAT assessment: ${test.prompt_text?.substring(0, 100)}...`,
+          estimatedTime: "10-15 minutes",
+          difficulty: "Intermediate",
+          isPremium: false,
+          imageUrl: test.image_url
+        })) || [];
+
+        setTests(transformedTests);
+      } catch (error) {
+        console.error('Error fetching tests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTests();
+  }, []);
+
+  const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
+  const lockedTests = isPro ? [] : tests.filter(test => test.isPremium);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -82,8 +82,18 @@ const PendingTests = () => {
           <div className="grid gap-6 md:grid-cols-2">
             {availableTests.map((test) => (
               <Card key={test.id} className="shadow-elegant hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
-                  <Image className="h-8 w-8 text-muted-foreground" />
+                <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                  {test.imageUrl ? (
+                    <img 
+                      src={test.imageUrl} 
+                      alt={test.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Image className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -158,16 +168,16 @@ const PendingTests = () => {
         </div>
       )}
 
-      {availableTests.length === 0 && (
+      {!loading && availableTests.length === 0 && (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-medium text-foreground mb-2">All Tests Completed!</h3>
+              <h3 className="font-medium text-foreground mb-2">No Tests Available</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Great job! You've completed all available tests.
+                {tests.length === 0 ? "No tests have been created yet." : "All tests have been completed!"}
               </p>
-              {!isPro && (
+              {!isPro && tests.length > 0 && (
                 <Button variant="hero" className="gap-2">
                   <Crown className="h-4 w-4" />
                   Upgrade for More Tests
@@ -176,6 +186,23 @@ const PendingTests = () => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {loading && (
+        <div className="grid gap-6 md:grid-cols-2">
+          {[1, 2].map((i) => (
+            <Card key={i} className="shadow-elegant">
+              <div className="aspect-video bg-muted rounded-t-lg animate-pulse" />
+              <CardHeader>
+                <div className="h-4 bg-muted rounded animate-pulse mb-2" />
+                <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-muted rounded animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

@@ -5,23 +5,50 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, Clock, Award, BarChart3, Crown, Lock, Star } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const { userData, loading, isPro } = useUserData();
+  const [tests, setTests] = useState<any[]>([]);
+  const [testsLoading, setTestsLoading] = useState(true);
 
-  // Mock data for test progress - different limits based on membership
-  const allTests = [
-    { id: 1, title: "Picture 1: Family Scene", completed: true, score: 85, isPremium: false },
-    { id: 2, title: "Picture 2: Professional Setting", completed: true, score: 92, isPremium: false },
-    { id: 3, title: "Picture 3: Social Interaction", completed: false, score: null, isPremium: false },
-    { id: 4, title: "Picture 4: Leadership Scenario", completed: false, score: null, isPremium: true },
-    { id: 5, title: "Picture 5: Conflict Resolution", completed: false, score: null, isPremium: true },
-    { id: 6, title: "Picture 6: Advanced Analysis", completed: false, score: null, isPremium: true },
-    { id: 7, title: "Picture 7: Deep Insights", completed: false, score: null, isPremium: true },
-  ];
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tattest')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching tests:', error);
+          return;
+        }
+
+        // Transform database data to match component expectations
+        const transformedTests = data?.map((test, index) => ({
+          id: test.id,
+          title: test.title,
+          completed: false, // TODO: Check actual completion status from test_sessions
+          score: null,
+          isPremium: false
+        })) || [];
+
+        setTests(transformedTests);
+      } catch (error) {
+        console.error('Error fetching tests:', error);
+      } finally {
+        setTestsLoading(false);
+      }
+    };
+
+    fetchTests();
+  }, []);
 
   // Filter tests based on membership
-  const availableTests = isPro ? allTests : allTests.filter(test => !test.isPremium);
+  const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const completedTests = availableTests.filter(test => test.completed);
   const progressPercentage = availableTests.length > 0 ? (completedTests.length / availableTests.length) * 100 : 0;
 
@@ -55,7 +82,7 @@ const Dashboard = () => {
                 <div>
                   <h3 className="font-semibold text-foreground">Unlock Full Access</h3>
                   <p className="text-sm text-muted-foreground">
-                    Access all {allTests.length} tests and detailed analysis with Pro membership
+                    Access all {tests.length > 0 ? tests.length : "available"} tests and detailed analysis with Pro membership
                   </p>
                 </div>
               </div>
@@ -114,74 +141,97 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {availableTests.slice(0, 5).map((test) => (
-                  <div
-                    key={test.id}
-                    className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                      test.isPremium && !isPro
-                        ? "border-muted bg-muted/30 opacity-60"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {test.completed ? (
-                        <CheckCircle className="h-5 w-5 text-primary" />
-                      ) : test.isPremium && !isPro ? (
-                        <Lock className="h-5 w-5 text-muted-foreground" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground" />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-foreground">{test.title}</h3>
-                          {test.isPremium && (
-                            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                              <Crown className="h-3 w-3 mr-1" />
-                              Pro
-                            </Badge>
-                          )}
+                {testsLoading ? (
+                  [1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-lg border">
+                      <div className="flex items-center gap-3">
+                        <div className="h-5 w-5 bg-muted rounded animate-pulse" />
+                        <div>
+                          <div className="h-4 w-32 bg-muted rounded animate-pulse mb-1" />
+                          <div className="h-3 w-24 bg-muted rounded animate-pulse" />
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                      </div>
+                      <div className="h-6 w-16 bg-muted rounded animate-pulse" />
+                    </div>
+                  ))
+                ) : availableTests.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Circle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="font-medium text-foreground mb-2">No Tests Available</h3>
+                    <p className="text-sm text-muted-foreground">
+                      No tests have been created yet. Check back later!
+                    </p>
+                  </div>
+                ) : (
+                  availableTests.slice(0, 5).map((test) => (
+                    <div
+                      key={test.id}
+                      className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                        test.isPremium && !isPro
+                          ? "border-muted bg-muted/30 opacity-60"
+                          : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {test.completed ? (
+                          <CheckCircle className="h-5 w-5 text-primary" />
+                        ) : test.isPremium && !isPro ? (
+                          <Lock className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground" />
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-medium text-foreground">{test.title}</h3>
+                            {test.isPremium && (
+                              <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                <Crown className="h-3 w-3 mr-1" />
+                                Pro
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {test.completed 
+                              ? `Score: ${test.score}%` 
+                              : test.isPremium && !isPro 
+                                ? "Requires Pro membership"
+                                : "Not started"
+                            }
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {test.completed ? (
+                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            Completed
+                          </Badge>
+                        ) : test.isPremium && !isPro ? (
+                          <Badge variant="outline" className="border-muted-foreground/20">
+                            <Lock className="h-3 w-3 mr-1" />
+                            Locked
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-muted-foreground/20">
+                            Pending
+                          </Badge>
+                        )}
+                        <Button
+                          size="sm"
+                          variant={test.completed ? "government" : test.isPremium && !isPro ? "outline" : "hero"}
+                          className="ml-2"
+                          disabled={test.isPremium && !isPro && !test.completed}
+                        >
                           {test.completed 
-                            ? `Score: ${test.score}%` 
+                            ? "Review" 
                             : test.isPremium && !isPro 
-                              ? "Requires Pro membership"
-                              : "Not started"
+                              ? "Upgrade" 
+                              : "Start Test"
                           }
-                        </p>
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {test.completed ? (
-                        <Badge variant="secondary" className="bg-primary/10 text-primary">
-                          Completed
-                        </Badge>
-                      ) : test.isPremium && !isPro ? (
-                        <Badge variant="outline" className="border-muted-foreground/20">
-                          <Lock className="h-3 w-3 mr-1" />
-                          Locked
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-muted-foreground/20">
-                          Pending
-                        </Badge>
-                      )}
-                      <Button
-                        size="sm"
-                        variant={test.completed ? "government" : test.isPremium && !isPro ? "outline" : "hero"}
-                        className="ml-2"
-                        disabled={test.isPremium && !isPro && !test.completed}
-                      >
-                        {test.completed 
-                          ? "Review" 
-                          : test.isPremium && !isPro 
-                            ? "Upgrade" 
-                            : "Start Test"
-                        }
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -214,7 +264,7 @@ const Dashboard = () => {
                 <div className="pt-2 border-t">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Pro Tests</span>
-                    <span className="font-bold text-primary">{allTests.filter(test => test.isPremium).length}</span>
+                    <span className="font-bold text-primary">{tests.filter(test => test.isPremium).length}</span>
                   </div>
                 </div>
               )}

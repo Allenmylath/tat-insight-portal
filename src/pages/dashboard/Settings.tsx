@@ -9,6 +9,7 @@ import { User, Mail, Bell, Shield, Trash2, Crown, Calendar, Settings as Settings
 import { useUserData } from "@/hooks/useUserData";
 import { useUser } from "@clerk/clerk-react";
 import { AdminTatTestCreator } from "@/components/AdminTatTestCreator";
+import { supabase } from "@/integrations/supabase/client";
 
 const Settings = () => {
   const { userData, isPro } = useUserData();
@@ -34,7 +35,36 @@ const Settings = () => {
             Administrative functions for managing TAT tests
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="mb-4">
+            <Button 
+              onClick={async () => {
+                try {
+                  const { data, error } = await supabase
+                    .from('tattest')
+                    .insert({
+                      title: "Debug Test",
+                      description: "Testing database connectivity",
+                      prompt_text: "Debug test prompt",
+                      image_url: "/src/assets/tatim.jpeg",
+                      is_active: true
+                    })
+                    .select()
+                    .single();
+
+                  if (error) throw error;
+                  alert('Test created successfully!');
+                } catch (error: any) {
+                  alert('Error: ' + error.message);
+                  console.error('Database error:', error);
+                }
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Test Database Connection
+            </Button>
+          </div>
           <AdminTatTestCreator />
         </CardContent>
       </Card>
