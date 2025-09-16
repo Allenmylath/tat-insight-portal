@@ -18,6 +18,8 @@ createRoot(document.getElementById("root")!).render(
         card: "shadow-lg"
       }
     }}
+    afterSignInUrl="/"
+    afterSignUpUrl="/"
   >
     <App />
   </ClerkProvider>
