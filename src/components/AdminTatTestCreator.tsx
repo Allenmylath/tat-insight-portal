@@ -35,24 +35,34 @@ export const AdminTatTestCreator = () => {
     setUploading(true);
 
     try {
+      console.log('Starting test creation process...');
+      console.log('Image file:', imageFile.name, 'Size:', imageFile.size);
+      
       // Upload image to Supabase storage
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
+      console.log('Uploading file:', fileName);
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('tat-images')
         .upload(fileName, imageFile);
 
       if (uploadError) {
-        throw uploadError;
+        console.error('Storage upload error:', uploadError);
+        throw new Error(`Image upload failed: ${uploadError.message}`);
       }
+
+      console.log('Upload successful:', uploadData);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('tat-images')
         .getPublicUrl(fileName);
 
+      console.log('Public URL:', publicUrl);
+
       // Create tattest entry
+      console.log('Creating tattest entry...');
       const { data, error } = await supabase
         .from('tattest')
         .insert({
@@ -66,8 +76,11 @@ export const AdminTatTestCreator = () => {
         .single();
 
       if (error) {
-        throw error;
+        console.error('Database insert error:', error);
+        throw new Error(`Database error: ${error.message}`);
       }
+
+      console.log('Test created successfully:', data);
 
       toast({
         title: "Success!",
@@ -84,7 +97,7 @@ export const AdminTatTestCreator = () => {
       console.error('Error creating TAT test:', error);
       toast({
         title: "Error",
-        description: "Failed to create TAT test",
+        description: error instanceof Error ? error.message : "Failed to create TAT test",
         variant: "destructive"
       });
     } finally {
