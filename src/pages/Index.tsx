@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp } from "lucide-react";
 import heroImage from "@/assets/hero-banner.jpg";
-import { AuthDebug } from "@/components/AuthDebug";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -192,13 +191,6 @@ const Index = () => {
                 </Button>
               </SignedIn>
             </div>
-          </div>
-        </section>
-
-        {/* Debug Section - Remove this after testing */}
-        <section className="py-8 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <AuthDebug />
           </div>
         </section>
       </main>
