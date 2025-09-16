@@ -10,10 +10,15 @@ interface UseModalTimerParams {
 }
 
 interface TimerMessage {
-  type: 'timer_update' | 'session_complete' | 'error';
+  type: 'timer_update' | 'session_complete' | 'error' | 'session_recovered';
   timeRemaining?: number;
   sessionId?: string;
   message?: string;
+  recoveredSession?: {
+    sessionId: string;
+    timeRemaining: number;
+    status: string;
+  };
 }
 
 interface TimerState {
@@ -21,6 +26,8 @@ interface TimerState {
   isActive: boolean;
   sessionId: string | null;
   connectionStatus: 'disconnected' | 'connecting' | 'connected' | 'error';
+  isRecovering: boolean;
+  lastConnectionType: 'initial' | 'reconnect' | 'recovery' | null;
 }
 
 export const useModalTimer = ({ 
@@ -34,13 +41,16 @@ export const useModalTimer = ({
     timeRemaining: durationMinutes * 60,
     isActive: false,
     sessionId: null,
-    connectionStatus: 'disconnected'
+    connectionStatus: 'disconnected',
+    isRecovering: false,
+    lastConnectionType: null
   });
   
   const [error, setError] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  const currentStateRef = useRef(timerState);
 
   const createSession = useCallback(async () => {
     if (!userData) return null;
@@ -66,6 +76,51 @@ export const useModalTimer = ({
     }
   }, [userData, tatTestId, durationMinutes]);
 
+  // Keep current state ref in sync
+  useEffect(() => {
+    currentStateRef.current = timerState;
+  }, [timerState]);
+
+  const recoverSession = useCallback(async () => {
+    if (!userData) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('test_sessions')
+        .select('*')
+        .eq('user_id', userData.id)
+        .eq('tattest_id', tatTestId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error || !data) return null;
+
+      // Check if session is still valid (not expired)
+      const sessionStartTime = new Date(data.started_at).getTime();
+      const sessionDuration = data.session_duration_seconds * 1000;
+      const now = Date.now();
+      const elapsed = now - sessionStartTime;
+
+      if (elapsed >= sessionDuration) {
+        // Session expired, update status
+        await updateSessionStatus(data.id, 'abandoned');
+        return null;
+      }
+
+      const timeRemaining = Math.max(0, sessionDuration - elapsed) / 1000;
+      return {
+        sessionId: data.id,
+        timeRemaining: Math.floor(timeRemaining),
+        status: data.status
+      };
+    } catch (err) {
+      console.error('Failed to recover session:', err);
+      return null;
+    }
+  }, [userData, tatTestId, durationMinutes]);
+
   const updateSessionStatus = useCallback(async (sessionId: string, status: 'completed' | 'abandoned') => {
     try {
       await supabase
@@ -80,12 +135,12 @@ export const useModalTimer = ({
     }
   }, []);
 
-  const connectWebSocket = useCallback((sessionId: string) => {
+  const connectWebSocket = useCallback((sessionId: string, connectionType: 'initial' | 'reconnect' | 'recovery' = 'initial') => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       return;
     }
 
-    setTimerState(prev => ({ ...prev, connectionStatus: 'connecting' }));
+    setTimerState(prev => ({ ...prev, connectionStatus: 'connecting', lastConnectionType: connectionType }));
 
     // Note: Replace with actual Modal Labs WebSocket URL when available
     const wsUrl = `wss://your-modal-service.com/timer/${sessionId}`;
@@ -94,17 +149,37 @@ export const useModalTimer = ({
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Timer WebSocket connected');
+        console.log(`Timer WebSocket connected (${connectionType})`);
         setTimerState(prev => ({ ...prev, connectionStatus: 'connected' }));
         setError(null);
         reconnectAttemptsRef.current = 0;
 
-        // Send initial session data
-        wsRef.current?.send(JSON.stringify({
-          type: 'start_timer',
-          sessionId,
-          durationSeconds: durationMinutes * 60
-        }));
+        // Send appropriate message based on connection type
+        const currentState = currentStateRef.current;
+        let message;
+
+        if (connectionType === 'initial') {
+          message = {
+            type: 'start_timer',
+            sessionId,
+            durationSeconds: durationMinutes * 60
+          };
+        } else if (connectionType === 'reconnect') {
+          message = {
+            type: 'resume_timer',
+            sessionId,
+            timeRemaining: currentState.timeRemaining,
+            lastKnownTime: currentState.timeRemaining
+          };
+        } else if (connectionType === 'recovery') {
+          message = {
+            type: 'session_recovery',
+            sessionId,
+            timeRemaining: currentState.timeRemaining
+          };
+        }
+
+        wsRef.current?.send(JSON.stringify(message));
       };
 
       wsRef.current.onmessage = (event) => {
@@ -134,6 +209,18 @@ export const useModalTimer = ({
               }));
               onSessionEnd?.();
               break;
+
+            case 'session_recovered':
+              if (message.recoveredSession) {
+                setTimerState(prev => ({
+                  ...prev,
+                  sessionId: message.recoveredSession!.sessionId,
+                  timeRemaining: message.recoveredSession!.timeRemaining,
+                  isActive: message.recoveredSession!.status === 'active',
+                  isRecovering: false
+                }));
+              }
+              break;
               
             case 'error':
               setError(message.message || 'Timer service error');
@@ -149,11 +236,12 @@ export const useModalTimer = ({
         setTimerState(prev => ({ ...prev, connectionStatus: 'disconnected' }));
         
         // Attempt reconnection with exponential backoff
-        if (timerState.isActive && reconnectAttemptsRef.current < 5) {
+        const currentState = currentStateRef.current;
+        if (currentState.isActive && reconnectAttemptsRef.current < 5) {
           const delay = Math.pow(2, reconnectAttemptsRef.current) * 1000;
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttemptsRef.current += 1;
-            connectWebSocket(sessionId);
+            connectWebSocket(sessionId, 'reconnect');
           }, delay);
         }
       };
@@ -168,23 +256,45 @@ export const useModalTimer = ({
       console.error('Failed to create WebSocket connection:', err);
       setError('Failed to connect to timer service');
     }
-  }, [durationMinutes, onTimeUp, onSessionEnd, timerState.isActive]);
+  }, [durationMinutes, onTimeUp, onSessionEnd]);
 
   const startTimer = useCallback(async () => {
     if (!userData || timerState.isActive) return;
 
+    // First try to recover existing session
+    setTimerState(prev => ({ ...prev, isRecovering: true }));
+    const recoveredSession = await recoverSession();
+    
+    if (recoveredSession) {
+      // Resume existing session
+      setTimerState(prev => ({
+        ...prev,
+        sessionId: recoveredSession.sessionId,
+        isActive: true,
+        timeRemaining: recoveredSession.timeRemaining,
+        isRecovering: false
+      }));
+      connectWebSocket(recoveredSession.sessionId, 'recovery');
+      return;
+    }
+
+    // Create new session
     const sessionId = await createSession();
-    if (!sessionId) return;
+    if (!sessionId) {
+      setTimerState(prev => ({ ...prev, isRecovering: false }));
+      return;
+    }
 
     setTimerState(prev => ({
       ...prev,
       sessionId,
       isActive: true,
-      timeRemaining: durationMinutes * 60
+      timeRemaining: durationMinutes * 60,
+      isRecovering: false
     }));
 
-    connectWebSocket(sessionId);
-  }, [userData, timerState.isActive, createSession, connectWebSocket, durationMinutes]);
+    connectWebSocket(sessionId, 'initial');
+  }, [userData, timerState.isActive, createSession, recoverSession, connectWebSocket, durationMinutes]);
 
   const completeSession = useCallback(async () => {
     if (!timerState.sessionId) return;
@@ -265,6 +375,8 @@ export const useModalTimer = ({
     // Status checks
     isConnected: timerState.connectionStatus === 'connected',
     isExpired: timerState.timeRemaining === 0,
-    canStart: !timerState.isActive && !!userData
+    canStart: !timerState.isActive && !timerState.isRecovering && !!userData,
+    isRecovering: timerState.isRecovering,
+    connectionType: timerState.lastConnectionType
   };
 };
