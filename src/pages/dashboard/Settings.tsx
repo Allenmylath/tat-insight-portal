@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Bell, Shield, Trash2, Crown, Calendar } from "lucide-react";
+import { User, Mail, Bell, Shield, Trash2, Crown, Calendar, Settings as SettingsIcon } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useUser } from "@clerk/clerk-react";
+import { AdminTatTestCreator } from "@/components/AdminTatTestCreator";
 
 const Settings = () => {
   const { userData, isPro } = useUserData();
@@ -21,6 +22,22 @@ const Settings = () => {
           Manage your profile, preferences, and account settings
         </p>
       </div>
+
+      {/* Admin Tools */}
+      <Card className="shadow-elegant border-primary/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <SettingsIcon className="h-5 w-5 text-primary" />
+            Admin Tools
+          </CardTitle>
+          <CardDescription>
+            Administrative functions for managing TAT tests
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AdminTatTestCreator />
+        </CardContent>
+      </Card>
 
       {/* Profile Information */}
       <Card className="shadow-elegant">
