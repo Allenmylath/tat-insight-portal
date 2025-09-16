@@ -82,38 +82,40 @@ const PendingTests = () => {
           <div className="grid gap-6 md:grid-cols-2">
             {availableTests.map((test) => (
               <Card key={test.id} className="shadow-elegant hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                  {test.imageUrl ? (
-                    <img 
-                      src={test.imageUrl} 
-                      alt={test.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Image className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
-                    {test.title}
-                  </CardTitle>
-                  <CardDescription>{test.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
-                    <Badge className={getDifficultyColor(test.difficulty)}>
-                      {test.difficulty}
-                    </Badge>
+                <div className="flex gap-4 p-6">
+                  <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                    {test.imageUrl ? (
+                      <img 
+                        src={test.imageUrl} 
+                        alt={test.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Image className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
-                  <Button variant="hero" className="w-full gap-2">
-                    <Play className="h-4 w-4" />
-                    Start Test
-                  </Button>
-                </CardContent>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-muted-foreground" />
+                        {test.title}
+                      </CardTitle>
+                      <CardDescription className="mt-2">{test.description}</CardDescription>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
+                      <Badge className={getDifficultyColor(test.difficulty)}>
+                        {test.difficulty}
+                      </Badge>
+                    </div>
+                    <Button variant="hero" className="w-full gap-2">
+                      <Play className="h-4 w-4" />
+                      Start Test
+                    </Button>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
@@ -133,35 +135,47 @@ const PendingTests = () => {
           <div className="grid gap-6 md:grid-cols-2">
             {lockedTests.map((test) => (
               <Card key={test.id} className="shadow-elegant opacity-75 border-dashed">
-                <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center relative">
-                  <Image className="h-8 w-8 text-muted-foreground" />
-                  <div className="absolute inset-0 bg-black/20 rounded-t-lg flex items-center justify-center">
-                    <Lock className="h-6 w-6 text-white" />
+                <div className="flex gap-4 p-6">
+                  <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0 relative">
+                    {test.imageUrl ? (
+                      <img 
+                        src={test.imageUrl} 
+                        alt={test.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Image className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
+                      <Lock className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <CardTitle className="flex items-center gap-2 text-muted-foreground">
+                        <Lock className="h-5 w-5" />
+                        {test.title}
+                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                          <Crown className="h-3 w-3 mr-1" />
+                          Pro
+                        </Badge>
+                      </CardTitle>
+                      <CardDescription className="mt-2">{test.description}</CardDescription>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
+                      <Badge className={getDifficultyColor(test.difficulty)}>
+                        {test.difficulty}
+                      </Badge>
+                    </div>
+                    <Button variant="outline" className="w-full gap-2" disabled>
+                      <Lock className="h-4 w-4" />
+                      Requires Pro
+                    </Button>
                   </div>
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-muted-foreground">
-                    <Lock className="h-5 w-5" />
-                    {test.title}
-                    <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                      <Crown className="h-3 w-3 mr-1" />
-                      Pro
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>{test.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
-                    <Badge className={getDifficultyColor(test.difficulty)}>
-                      {test.difficulty}
-                    </Badge>
-                  </div>
-                  <Button variant="outline" className="w-full gap-2" disabled>
-                    <Lock className="h-4 w-4" />
-                    Requires Pro
-                  </Button>
-                </CardContent>
               </Card>
             ))}
           </div>
@@ -192,14 +206,16 @@ const PendingTests = () => {
         <div className="grid gap-6 md:grid-cols-2">
           {[1, 2].map((i) => (
             <Card key={i} className="shadow-elegant">
-              <div className="aspect-video bg-muted rounded-t-lg animate-pulse" />
-              <CardHeader>
-                <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-                <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-8 bg-muted rounded animate-pulse" />
-              </CardContent>
+              <div className="flex gap-4 p-6">
+                <div className="w-16 h-16 bg-muted rounded-lg animate-pulse flex-shrink-0" />
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <div className="h-4 bg-muted rounded animate-pulse mb-2" />
+                    <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+                  </div>
+                  <div className="h-8 bg-muted rounded animate-pulse" />
+                </div>
+              </div>
             </Card>
           ))}
         </div>
