@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     console.log('Webhook event type:', event.type);
     console.log('User data:', event.data);
 
-    // Only handle user.created events
+    // Handle user.created events
     if (event.type === 'user.created') {
       const { id: clerkId, email_addresses } = event.data;
       const primaryEmail = email_addresses.find(email => email.id === email_addresses[0]?.id);
@@ -80,6 +80,42 @@ Deno.serve(async (req) => {
       
       return new Response(
         JSON.stringify({ success: true, user: data }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Handle user.deleted events
+    if (event.type === 'user.deleted') {
+      const { id: clerkId } = event.data;
+      
+      console.log('Deleting user record for:', clerkId);
+
+      // Delete user record from Supabase
+      const { data, error } = await supabase
+        .from('users')
+        .delete()
+        .eq('clerk_id', clerkId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error deleting user:', error);
+        return new Response(
+          JSON.stringify({ error: 'Failed to delete user record' }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+
+      console.log('User deleted successfully:', data);
+      
+      return new Response(
+        JSON.stringify({ success: true, deletedUser: data }),
         { 
           status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
