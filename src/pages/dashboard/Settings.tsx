@@ -27,7 +27,12 @@ const Settings = () => {
     
     setIsDeleting(true);
     try {
+      // Reload user to ensure we have fresh session data
+      await user.reload();
+      
+      // Attempt to delete the account
       await user.delete();
+      
       toast({
         title: "Account deleted",
         description: "Your account has been permanently deleted.",
@@ -35,11 +40,23 @@ const Settings = () => {
       navigate("/");
     } catch (error: any) {
       console.error("Error deleting account:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete account. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Handle specific Clerk verification errors
+      if (error.code === 'verification_required' || 
+          error.message?.toLowerCase().includes('verification') ||
+          error.message?.toLowerCase().includes('additional verification')) {
+        toast({
+          title: "Additional Verification Required",
+          description: "For security, please sign out and sign back in, then try deleting your account again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to delete account. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsDeleting(false);
     }
