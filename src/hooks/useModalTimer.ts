@@ -62,7 +62,8 @@ export const useModalTimer = ({
           user_id: userData.id,
           tattest_id: tatTestId,
           status: 'active',
-          session_duration_seconds: durationMinutes * 60
+          session_duration_seconds: durationMinutes * 60,
+          time_remaining: durationMinutes * 60,
         })
         .select()
         .single();
@@ -109,7 +110,8 @@ export const useModalTimer = ({
         return null;
       }
 
-      const timeRemaining = Math.max(0, sessionDuration - elapsed) / 1000;
+      // Use time_remaining from database instead of calculating
+      const timeRemaining = data.time_remaining || 0;
       return {
         sessionId: data.id,
         timeRemaining: Math.floor(timeRemaining),

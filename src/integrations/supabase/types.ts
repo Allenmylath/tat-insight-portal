@@ -198,6 +198,7 @@ export type Database = {
           status: Database["public"]["Enums"]["session_status"]
           story_content: string | null
           tattest_id: string
+          time_remaining: number | null
           user_id: string
         }
         Insert: {
@@ -209,6 +210,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["session_status"]
           story_content?: string | null
           tattest_id: string
+          time_remaining?: number | null
           user_id: string
         }
         Update: {
@@ -220,6 +222,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["session_status"]
           story_content?: string | null
           tattest_id?: string
+          time_remaining?: number | null
           user_id?: string
         }
         Relationships: [
