@@ -262,14 +262,18 @@ export const useModalTimer = ({
         console.log('Timer WebSocket disconnected');
         setTimerState(prev => ({ ...prev, connectionStatus: 'disconnected' }));
         
-        // Attempt reconnection with exponential backoff
+        // Attempt reconnection with 5 second delay to reduce Modal log spam
         const currentState = currentStateRef.current;
         if (currentState.isActive && reconnectAttemptsRef.current < 5) {
-          const delay = Math.pow(2, reconnectAttemptsRef.current) * 1000;
+          console.log(`Scheduling reconnection attempt ${reconnectAttemptsRef.current + 1} in 5 seconds...`);
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttemptsRef.current += 1;
+            console.log(`Attempting reconnection #${reconnectAttemptsRef.current}`);
             connectWebSocket(sessionId, 'reconnect');
-          }, delay);
+          }, 5000); // Fixed 5-second delay
+        } else if (reconnectAttemptsRef.current >= 5) {
+          console.log('Max reconnection attempts reached, stopping reconnections');
+          setError('Connection failed after multiple attempts');
         }
       };
 
