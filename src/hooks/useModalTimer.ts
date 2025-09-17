@@ -145,7 +145,7 @@ export const useModalTimer = ({
     setTimerState(prev => ({ ...prev, connectionStatus: 'connecting', lastConnectionType: connectionType }));
 
     // Note: Replace with actual Modal Labs WebSocket URL when available
-    const wsUrl = `wss://your-modal-service.com/timer/${sessionId}`;
+    const wsUrl = `wss://manjujayamurali--timer-service-endpoint.modal.run/timer/${sessionId}`;
     
     try {
       wsRef.current = new WebSocket(wsUrl);
