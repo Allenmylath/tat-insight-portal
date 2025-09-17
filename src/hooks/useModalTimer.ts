@@ -129,7 +129,7 @@ export const useModalTimer = ({
       sessionId 
     }));
 
-    const wsUrl = `wss://manjujayamurali--simple-timer-service-create-timer-app.modal.run/timer/${sessionId}`;
+    const wsUrl = `wss://manjujayamurali--simple-timer-service-create-timer.modal.run/timer/${sessionId}`;
     
     console.log(`Connecting to container for session ${sessionId}`);
     
