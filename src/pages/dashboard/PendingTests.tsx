@@ -7,45 +7,81 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
 const PendingTests = () => {
-  const { isPro } = useUserData();
+  const { isPro, userData } = useUserData();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTests = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('tattest')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
+    if (userData?.id) {
+      fetchTests();
+    }
+  }, [userData?.id]);
 
-        if (error) {
-          console.error('Error fetching tests:', error);
-          return;
-        }
+  const fetchTests = async () => {
+    if (!userData?.id) return;
+    
+    try {
+      // LEFT JOIN to get test session data for the current user
+      const { data, error } = await supabase
+        .from('tattest')
+        .select(`
+          *,
+          test_sessions!left(
+            status,
+            completed_at,
+            time_remaining,
+            started_at
+          )
+        `)
+        .eq('is_active', true)
+        .eq('test_sessions.user_id', userData.id)
+        .order('created_at', { ascending: false });
 
-        // Transform database data to match component expectations
-        const transformedTests = data?.map((test) => ({
-          id: test.id,
-          title: test.title,
-          description: test.description || `Complete this TAT assessment: ${test.prompt_text?.substring(0, 100)}...`,
-          estimatedTime: "10-15 minutes",
-          difficulty: "Intermediate",
-          isPremium: false,
-          imageUrl: test.image_url
-        })) || [];
-
-        setTests(transformedTests);
-      } catch (error) {
+      if (error) {
         console.error('Error fetching tests:', error);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchTests();
-  }, []);
+      // Filter to only show pending tests (never attended or abandoned)
+      const pendingTests = data
+        ?.filter(test => {
+          const sessions = test.test_sessions || [];
+          
+          // If no sessions exist, it's never been attended (pending)
+          if (sessions.length === 0) return true;
+          
+          // If any session is completed, don't show it
+          const hasCompletedSession = sessions.some((session: any) => session.status === 'completed');
+          if (hasCompletedSession) return false;
+          
+          // If there are incomplete sessions, it's abandoned (pending)
+          return true;
+        })
+        .map((test) => {
+          const sessions = test.test_sessions || [];
+          const latestSession = sessions[0]; // Most recent session
+          
+          return {
+            id: test.id,
+            title: test.title,
+            description: test.description || `Complete this TAT assessment: ${test.prompt_text?.substring(0, 100)}...`,
+            estimatedTime: "10-15 minutes",
+            difficulty: "Intermediate",
+            isPremium: false,
+            imageUrl: test.image_url,
+            sessionStatus: latestSession?.status || null,
+            timeRemaining: latestSession?.time_remaining || null,
+            hasSession: sessions.length > 0
+          };
+        }) || [];
+
+      setTests(pendingTests);
+    } catch (error) {
+      console.error('Error fetching tests:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const lockedTests = isPro ? [] : tests.filter(test => test.isPremium);
@@ -112,7 +148,7 @@ const PendingTests = () => {
                     </div>
                     <Button variant="hero" className="w-full gap-2">
                       <Play className="h-4 w-4" />
-                      Start Test
+                      {test.hasSession ? 'Resume Test' : 'Start Test'}
                     </Button>
                   </div>
                 </div>
@@ -182,7 +218,7 @@ const PendingTests = () => {
         </div>
       )}
 
-      {!loading && availableTests.length === 0 && (
+      {!loading && availableTests.length === 0 && userData?.id && (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
