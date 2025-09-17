@@ -273,6 +273,66 @@ export const useModalTimer = ({
     }
   }, [timerState.sessionId]);
 
+  const completeSession = useCallback(async () => {
+    if (timerState.sessionId) {
+      // Stop timer via WebSocket if connected
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({
+          type: 'stop_timer',
+          sessionId: timerState.sessionId
+        }));
+      }
+      
+      // Update session status in database
+      await updateSessionStatus(timerState.sessionId, 'completed');
+      
+      // Clean up WebSocket connection
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      
+      // Update timer state
+      setTimerState(prev => ({
+        ...prev,
+        isActive: false,
+        connectionStatus: 'disconnected'
+      }));
+      
+      // Call session end callback
+      onSessionEnd?.();
+    }
+  }, [timerState.sessionId, updateSessionStatus, onSessionEnd]);
+
+  const abandonSession = useCallback(async () => {
+    if (timerState.sessionId) {
+      // Stop timer via WebSocket if connected
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({
+          type: 'stop_timer',
+          sessionId: timerState.sessionId
+        }));
+      }
+      
+      // Update session status in database
+      await updateSessionStatus(timerState.sessionId, 'abandoned');
+      
+      // Clean up WebSocket connection
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      
+      // Update timer state
+      setTimerState(prev => ({
+        ...prev,
+        isActive: false,
+        connectionStatus: 'disconnected'
+      }));
+      
+      // Call session end callback
+      onSessionEnd?.();
+    }
+  }, [timerState.sessionId, updateSessionStatus, onSessionEnd]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -305,6 +365,8 @@ export const useModalTimer = ({
 
     startTimer,
     stopTimer,
+    completeSession,
+    abandonSession,
 
     isConnected: timerState.connectionStatus === 'connected',
     isExpired: timerState.timeRemaining === 0,
