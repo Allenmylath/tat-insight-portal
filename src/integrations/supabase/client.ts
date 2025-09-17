@@ -13,5 +13,28 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  },
+  global: {
+    fetch: async (url, options: RequestInit = {}) => {
+      // Get the Clerk token if available
+      if (typeof window !== 'undefined' && (window as any).Clerk?.session) {
+        try {
+          const token = await (window as any).Clerk.session.getToken({
+            template: 'supabase'
+          });
+          
+          if (token) {
+            options.headers = {
+              ...options.headers,
+              Authorization: `Bearer ${token}`,
+            };
+          }
+        } catch (error) {
+          console.warn('Failed to get Clerk token:', error);
+        }
+      }
+      
+      return fetch(url, options);
+    },
   }
 });
