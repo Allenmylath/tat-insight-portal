@@ -18,34 +18,19 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
     },
-    fetch: async (url, options: RequestInit = {}) => {
-      // Ensure headers object exists
-      options.headers = options.headers || {};
-      
-      // Always include the anon key as fallback
-      if (!options.headers['Authorization'] && !options.headers['authorization']) {
-        options.headers['apikey'] = SUPABASE_PUBLISHABLE_KEY;
+  },
+  // Use Clerk session token for authentication
+  accessToken: async () => {
+    if (typeof window !== 'undefined' && (window as any).Clerk?.session) {
+      try {
+        const token = await (window as any).Clerk.session.getToken({
+          template: 'supabase'
+        });
+        return token;
+      } catch (error) {
+        console.warn('Failed to get Clerk token:', error);
       }
-      
-      // Get the Clerk token if available
-      if (typeof window !== 'undefined' && (window as any).Clerk?.session) {
-        try {
-          const token = await (window as any).Clerk.session.getToken({
-            template: 'supabase'
-          });
-          
-          if (token) {
-            options.headers = {
-              ...options.headers,
-              Authorization: `Bearer ${token}`,
-            };
-          }
-        } catch (error) {
-          console.warn('Failed to get Clerk token:', error);
-        }
-      }
-      
-      return fetch(url, options);
-    },
-  }
+    }
+    return null;
+  },
 });
