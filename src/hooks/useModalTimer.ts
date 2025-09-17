@@ -162,6 +162,7 @@ export const useModalTimer = ({
     }
     
     isConnectingRef.current = false;
+    startTimerCalledRef.current = false; // Reset the call flag on cleanup
   }, []);
 
   const connectToContainer = useCallback((sessionId: string, action: 'start' | 'resume', actionData: any) => {
@@ -195,6 +196,7 @@ export const useModalTimer = ({
         console.log(`WebSocket opened for session ${sessionId}`);
         retryCountRef.current = 0; // Reset retry count on successful connection
         isConnectingRef.current = false;
+        startTimerCalledRef.current = false; // Reset the call flag on successful connection
       };
 
       wsRef.current.onmessage = (event) => {
@@ -210,7 +212,8 @@ export const useModalTimer = ({
               setTimerState(prev => ({ 
                 ...prev, 
                 connectionStatus: 'connected',
-                containerId: message.containerId 
+                containerId: message.containerId,
+                isRecovering: false // Clear recovering state on successful connection
               }));
               setError(null);
               
@@ -261,6 +264,7 @@ export const useModalTimer = ({
               
               updateSessionStatus(sessionId, 'completed');
               cleanupConnection();
+              startTimerCalledRef.current = false; // Reset on completion
               onSessionEnd?.();
               break;
 
@@ -272,6 +276,7 @@ export const useModalTimer = ({
                 connectionStatus: 'disconnected'
               }));
               cleanupConnection();
+              startTimerCalledRef.current = false; // Reset on stop
               break;
           }
         } catch (err) {
@@ -310,6 +315,7 @@ export const useModalTimer = ({
             connectionStatus: 'error',
             isRecovering: false 
           }));
+          startTimerCalledRef.current = false; // Reset on max retries
         }
       };
 
@@ -330,6 +336,7 @@ export const useModalTimer = ({
     } catch (err) {
       console.error('Failed to create WebSocket connection:', err);
       isConnectingRef.current = false;
+      startTimerCalledRef.current = false; // Reset on connection creation failure
       setError('Failed to connect to timer service');
       setTimerState(prev => ({ 
         ...prev, 
@@ -339,16 +346,29 @@ export const useModalTimer = ({
     }
   }, [onTimeUp, onSessionEnd, updateSessionStatus, cleanupConnection]);
 
+  // Add a ref to track if startTimer has been called
+  const startTimerCalledRef = useRef<boolean>(false);
+
   const startTimer = useCallback(async () => {
-    if (!userData || timerState.isActive || isConnectingRef.current) {
+    // Enhanced blocking logic
+    if (!userData || 
+        timerState.isActive || 
+        isConnectingRef.current || 
+        startTimerCalledRef.current || 
+        timerState.isRecovering) {
       console.log('Start timer blocked:', { 
         hasUserData: !!userData, 
         isActive: timerState.isActive,
-        isConnecting: isConnectingRef.current 
+        isConnecting: isConnectingRef.current,
+        alreadyCalled: startTimerCalledRef.current,
+        isRecovering: timerState.isRecovering
       });
       return;
     }
 
+    // Mark as called to prevent duplicate calls
+    startTimerCalledRef.current = true;
+    
     console.log('Starting timer...');
     setTimerState(prev => ({ ...prev, isRecovering: true }));
     setError(null);
@@ -372,6 +392,7 @@ export const useModalTimer = ({
         const sessionId = await createSession();
         if (!sessionId || !mountedRef.current) {
           setTimerState(prev => ({ ...prev, isRecovering: false }));
+          startTimerCalledRef.current = false; // Reset on failure
           return;
         }
 
@@ -384,8 +405,9 @@ export const useModalTimer = ({
       console.error('Error in startTimer:', err);
       setError('Failed to start timer');
       setTimerState(prev => ({ ...prev, isRecovering: false }));
+      startTimerCalledRef.current = false; // Reset on error
     }
-  }, [userData, timerState.isActive, createSession, recoverSession, connectToContainer, durationMinutes]);
+  }, [userData, timerState.isActive, timerState.isRecovering, createSession, recoverSession, connectToContainer, durationMinutes]);
 
   const stopTimer = useCallback(() => {
     console.log('Stopping timer...');
