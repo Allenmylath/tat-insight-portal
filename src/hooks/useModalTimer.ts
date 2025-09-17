@@ -156,7 +156,7 @@ export const useModalTimer = ({
         setError(null);
         reconnectAttemptsRef.current = 0;
 
-        // Send appropriate message based on connection type
+        // Send appropriate message based on connection type with proper state checking
         const currentState = currentStateRef.current;
         let message;
 
@@ -181,7 +181,32 @@ export const useModalTimer = ({
           };
         }
 
-        wsRef.current?.send(JSON.stringify(message));
+        // Use proper connection state checking and delay for Modal's cold start
+        const sendMessageSafely = () => {
+          if (wsRef.current?.readyState === WebSocket.OPEN) {
+            try {
+              wsRef.current.send(JSON.stringify(message));
+              console.log(`Timer message sent successfully (${connectionType}):`, message.type);
+            } catch (error) {
+              console.error('Failed to send timer message:', error);
+              setError('Failed to send timer command');
+            }
+          } else {
+            console.warn(`WebSocket not in OPEN state: ${wsRef.current?.readyState}`);
+            // Retry after a short delay if still connecting
+            if (wsRef.current?.readyState === WebSocket.CONNECTING) {
+              setTimeout(() => sendMessageSafely(), 100);
+            } else {
+              setError('Connection lost before message could be sent');
+            }
+          }
+        };
+
+        // Add delay for Modal's cold start delays, longer for recovery connections
+        const delay = connectionType === 'recovery' ? 500 : 
+                     connectionType === 'reconnect' ? 300 : 200;
+        
+        setTimeout(sendMessageSafely, delay);
       };
 
       wsRef.current.onmessage = (event) => {
