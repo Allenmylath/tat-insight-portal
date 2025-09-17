@@ -15,7 +15,18 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
   },
   global: {
+    headers: {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+    },
     fetch: async (url, options: RequestInit = {}) => {
+      // Ensure headers object exists
+      options.headers = options.headers || {};
+      
+      // Always include the anon key as fallback
+      if (!options.headers['Authorization'] && !options.headers['authorization']) {
+        options.headers['apikey'] = SUPABASE_PUBLISHABLE_KEY;
+      }
+      
       // Get the Clerk token if available
       if (typeof window !== 'undefined' && (window as any).Clerk?.session) {
         try {
