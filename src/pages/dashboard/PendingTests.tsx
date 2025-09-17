@@ -5,9 +5,14 @@ import { Clock, Play, Lock, Crown, Image } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { TatTestInterface } from "@/components/TatTestInterface";
+import { useTestContext } from "@/contexts/TestContext";
+import { useToast } from "@/hooks/use-toast";
 
 const PendingTests = () => {
   const { isPro, userData } = useUserData();
+  const { activeTest, setActiveTest, isTestActive } = useTestContext();
+  const { toast } = useToast();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -86,6 +91,51 @@ const PendingTests = () => {
   const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const lockedTests = isPro ? [] : tests.filter(test => test.isPremium);
 
+  const startTest = async (test: any) => {
+    try {
+      // Fetch full test data
+      const { data: fullTest, error } = await supabase
+        .from('tattest')
+        .select('*')
+        .eq('id', test.id)
+        .single();
+
+      if (error || !fullTest) {
+        throw new Error('Failed to load test data');
+      }
+
+      setActiveTest({
+        id: fullTest.id,
+        title: fullTest.title,
+        description: fullTest.description,
+        image_url: fullTest.image_url,
+        prompt_text: fullTest.prompt_text
+      });
+    } catch (error) {
+      console.error('Error starting test:', error);
+      toast({
+        title: "Error starting test",
+        description: "There was an error loading the test. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleTestComplete = () => {
+    setActiveTest(null);
+    fetchTests(); // Refresh the test list
+    toast({
+      title: "Test completed!",
+      description: "Your story has been submitted successfully.",
+      variant: "default"
+    });
+  };
+
+  const handleTestAbandon = () => {
+    setActiveTest(null);
+    fetchTests(); // Refresh the test list
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Beginner": return "bg-green-100 text-green-800";
@@ -95,6 +145,17 @@ const PendingTests = () => {
       default: return "bg-gray-100 text-gray-800";
     }
   };
+
+  // If there's an active test, show the test interface
+  if (isTestActive && activeTest) {
+    return (
+      <TatTestInterface
+        test={activeTest}
+        onComplete={handleTestComplete}
+        onAbandon={handleTestAbandon}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -146,7 +207,11 @@ const PendingTests = () => {
                         {test.difficulty}
                       </Badge>
                     </div>
-                    <Button variant="hero" className="w-full gap-2">
+                    <Button 
+                      variant="hero" 
+                      className="w-full gap-2"
+                      onClick={() => startTest(test)}
+                    >
                       <Play className="h-4 w-4" />
                       {test.hasSession ? 'Resume Test' : 'Start Test'}
                     </Button>

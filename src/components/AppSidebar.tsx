@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { useUserData } from "@/hooks/useUserData";
+import { useTestContext } from "@/contexts/TestContext";
 
 const navigationItems = [
   { 
@@ -56,6 +57,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const { isPro, loading } = useUserData();
+  const { activeTest, isTestActive } = useTestContext();
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
 
@@ -89,6 +91,26 @@ export function AppSidebar() {
                 {isPro ? "Pro Member" : "Free Plan"}
               </Badge>
             )}
+          </div>
+        )}
+
+        {/* Active Test Image */}
+        {isTestActive && activeTest && !isCollapsed && (
+          <div className="p-4 border-b">
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-foreground">Active Test</h3>
+              <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                <img 
+                  src={activeTest.image_url} 
+                  alt={activeTest.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                <p className="font-medium">{activeTest.title}</p>
+                <p className="line-clamp-2">{activeTest.description}</p>
+              </div>
+            </div>
           </div>
         )}
 
