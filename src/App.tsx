@@ -15,6 +15,8 @@ import Pricing from "./pages/dashboard/Pricing";
 import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
+import { TestProvider } from "@/contexts/TestContext";
+
 const queryClient = new QueryClient();
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
@@ -35,59 +37,61 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={
-            <SignedIn>
-              <DashboardLayout>
-                <Dashboard />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          <Route path="/dashboard/attempted" element={
-            <SignedIn>
-              <DashboardLayout>
-                <AttemptedTests />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          <Route path="/dashboard/pending" element={
-            <SignedIn>
-              <DashboardLayout>
-                <PendingTests />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          <Route path="/dashboard/results" element={
-            <SignedIn>
-              <DashboardLayout>
-                <Results />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          <Route path="/dashboard/pricing" element={
-            <SignedIn>
-              <DashboardLayout>
-                <Pricing />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          <Route path="/dashboard/settings" element={
-            <SignedIn>
-              <DashboardLayout>
-                <Settings />
-              </DashboardLayout>
-            </SignedIn>
-          } />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <TestProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <Dashboard />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/attempted" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <AttemptedTests />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/pending" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <PendingTests />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/results" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <Results />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/pricing" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <Pricing />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/settings" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <Settings />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </TestProvider>
   </QueryClientProvider>
 );
 

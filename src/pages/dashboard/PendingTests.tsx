@@ -17,13 +17,22 @@ const PendingTests = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('PendingTests - useEffect triggered', { 
+      hasUserId: !!userData?.id, 
+      userId: userData?.id 
+    });
     if (userData?.id) {
       fetchTests();
     }
   }, [userData?.id]);
 
   const fetchTests = async () => {
-    if (!userData?.id) return;
+    if (!userData?.id) {
+      console.log('PendingTests - fetchTests blocked: no user ID');
+      return;
+    }
+    
+    console.log('PendingTests - Starting fetchTests for user:', userData.id);
     
     try {
       // First, get all active tests
@@ -34,11 +43,14 @@ const PendingTests = () => {
         .order('created_at', { ascending: false });
 
       if (testsError) {
-        console.error('Error fetching tests:', testsError);
+        console.error('PendingTests - Error fetching tests:', testsError);
         return;
       }
 
+      console.log('PendingTests - Fetched all tests:', allTests?.length || 0, allTests);
+
       if (!allTests || allTests.length === 0) {
+        console.log('PendingTests - No tests found, setting empty array');
         setTests([]);
         return;
       }
@@ -52,9 +64,11 @@ const PendingTests = () => {
         .in('tattest_id', testIds);
 
       if (sessionsError) {
-        console.error('Error fetching user sessions:', sessionsError);
+        console.error('PendingTests - Error fetching user sessions:', sessionsError);
         return;
       }
+
+      console.log('PendingTests - Fetched user sessions:', userSessions?.length || 0, userSessions);
 
       // Filter to only show pending tests (never completed)
       const pendingTests = allTests
@@ -85,6 +99,7 @@ const PendingTests = () => {
           };
         });
 
+      console.log('PendingTests - Final pending tests:', pendingTests.length, pendingTests);
       setTests(pendingTests);
     } catch (error) {
       console.error('Error fetching tests:', error);
