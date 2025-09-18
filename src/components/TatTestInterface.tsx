@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Send, AlertCircle, CheckCircle } from "lucide-react";
+import { Clock, Send, AlertCircle, CheckCircle, WifiOff, Loader2 } from "lucide-react";
 import { useModalTimer } from "@/hooks/useModalTimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserData } from "@/hooks/useUserData";
@@ -31,10 +31,13 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     timeRemaining,
     timeFormatted,
     isActive,
+    connectionStatus,
     error,
-    startTimer,
+    isRecoveredSession,
     completeSession,
-    abandonSession
+    abandonSession,
+    isConnecting,
+    isExpired
   } = useModalTimer({
     tatTestId: test.id,
     durationMinutes: 15, // 15 minutes
@@ -42,13 +45,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     onSessionEnd: handleTimerAbandon,
   });
 
-  // Auto-start timer when component mounts
-  useEffect(() => {
-    if (!isActive && !error) {
-      startTimer();
-    }
-  }, [startTimer, isActive, error]);
-
+  // Timer event handlers
   async function handleTimerComplete() {
     if (story.trim()) {
       await submitStory(true);
@@ -66,6 +63,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     onAbandon();
   }
 
+  // Story submission
   const submitStory = async (isTimerComplete = false) => {
     if (!story.trim()) {
       toast({
@@ -148,21 +146,59 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     onAbandon();
   };
 
+  // UI helpers
   const getTimerColor = () => {
     if (timeRemaining > 300) return "text-primary"; // > 5 minutes: green
     if (timeRemaining > 60) return "text-amber-600"; // > 1 minute: amber
     return "text-destructive"; // < 1 minute: red
   };
 
+  const getConnectionStatusBadge = () => {
+    switch (connectionStatus) {
+      case 'idle':
+        return <Badge variant="secondary">Ready</Badge>;
+      case 'checking':
+        return <Badge variant="secondary" className="gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Checking Session
+        </Badge>;
+      case 'connecting':
+        return <Badge variant="secondary" className="gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Connecting
+        </Badge>;
+      case 'connected':
+        return <Badge variant="secondary" className="gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Starting Timer
+        </Badge>;
+      case 'timer_running':
+        return <Badge variant="default" className="gap-1">
+          <CheckCircle className="h-3 w-3" />
+          Active
+        </Badge>;
+      case 'completed':
+        return <Badge variant="secondary">Completed</Badge>;
+      case 'error':
+        return <Badge variant="destructive" className="gap-1">
+          <WifiOff className="h-3 w-3" />
+          Connection Error
+        </Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
+    }
+  };
+
+  // Error state
   if (error) {
     return (
       <Card className="shadow-elegant border-destructive/20">
         <CardContent className="pt-6">
           <div className="text-center py-8">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h3 className="font-medium text-foreground mb-2">Session Error</h3>
+            <h3 className="font-medium text-foreground mb-2">Connection Error</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              There was an error with your test session. Please try again.
+              {error}
             </p>
             <Button variant="outline" onClick={onAbandon}>
               Return to Tests
@@ -182,11 +218,17 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
               {test.title}
+              {isRecoveredSession && (
+                <Badge variant="outline" className="text-xs">Resumed</Badge>
+              )}
             </CardTitle>
-            <Badge variant="secondary" className={`gap-2 ${getTimerColor()}`}>
-              <Clock className="h-4 w-4" />
-              {timeFormatted}
-            </Badge>
+            <div className="flex items-center gap-3">
+              {getConnectionStatusBadge()}
+              <Badge variant="secondary" className={`gap-2 ${getTimerColor()}`}>
+                <Clock className="h-4 w-4" />
+                {timeFormatted}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -203,6 +245,23 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </CardContent>
       </Card>
 
+      {/* Test Image */}
+      <Card className="shadow-elegant">
+        <CardContent className="pt-6">
+          <div className="aspect-video w-full max-w-2xl mx-auto rounded-lg overflow-hidden bg-muted">
+            <img 
+              src={test.image_url} 
+              alt={test.title}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center text-muted-foreground">Image failed to load</div>';
+              }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Story Writing Area */}
       <Card className="shadow-elegant">
         <CardHeader>
@@ -214,7 +273,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
             value={story}
             onChange={(e) => setStory(e.target.value)}
             className="min-h-[300px] text-base leading-relaxed"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isActive}
           />
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>{story.length} characters</span>
@@ -228,19 +287,19 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         <Button
           variant="outline"
           onClick={handleAbandonTest}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isConnecting}
           className="flex-1"
         >
           Save & Exit
         </Button>
         <Button
           onClick={() => submitStory()}
-          disabled={isSubmitting || !story.trim()}
+          disabled={isSubmitting || !story.trim() || !isActive}
           className="flex-1 gap-2"
         >
           {isSubmitting ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <Loader2 className="h-4 w-4 animate-spin" />
               Submitting...
             </>
           ) : (
@@ -251,6 +310,20 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           )}
         </Button>
       </div>
+
+      {/* Connection status indicator */}
+      {isConnecting && (
+        <Card className="bg-muted/30">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {connectionStatus === 'checking' && 'Checking for existing session...'}
+              {connectionStatus === 'connecting' && 'Connecting to timer service...'}
+              {connectionStatus === 'connected' && 'Starting your timer...'}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
