@@ -199,6 +199,7 @@ export type Database = {
           story_content: string | null
           tattest_id: string
           time_remaining: number | null
+          user_email: string | null
           user_id: string
         }
         Insert: {
@@ -211,6 +212,7 @@ export type Database = {
           story_content?: string | null
           tattest_id: string
           time_remaining?: number | null
+          user_email?: string | null
           user_id: string
         }
         Update: {
@@ -223,6 +225,7 @@ export type Database = {
           story_content?: string | null
           tattest_id?: string
           time_remaining?: number | null
+          user_email?: string | null
           user_id?: string
         }
         Relationships: [

@@ -126,6 +126,7 @@ export const useModalTimer = ({
         .from('test_sessions')
         .insert({
           user_id: userData.id,
+          user_email: userData.email,
           tattest_id: tatTestId,
           status: 'active',
           session_duration_seconds: durationMinutes * 60,
