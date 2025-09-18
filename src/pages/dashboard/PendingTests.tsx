@@ -85,6 +85,10 @@ const PendingTests = () => {
             new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
           )[0];
           
+          const isPaused = latestSession?.status === 'paused';
+          const isActive = latestSession?.status === 'active';
+          const hasActiveSession = isPaused || isActive;
+          
           return {
             id: test.id,
             title: test.title,
@@ -95,7 +99,10 @@ const PendingTests = () => {
             imageUrl: test.image_url,
             sessionStatus: latestSession?.status || null,
             timeRemaining: latestSession?.time_remaining || null,
-            hasSession: testSessions.length > 0
+            hasSession: testSessions.length > 0,
+            isPaused: isPaused,
+            isActive: isActive,
+            hasActiveSession: hasActiveSession
           };
         });
 
@@ -220,7 +227,15 @@ const PendingTests = () => {
                       <CardDescription className="mt-2">{test.description}</CardDescription>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
+                        {test.isPaused && (
+                          <Badge variant="outline" className="text-xs">Paused</Badge>
+                        )}
+                        {test.isActive && (
+                          <Badge variant="outline" className="text-xs">In Progress</Badge>
+                        )}
+                      </div>
                       <Badge className={getDifficultyColor(test.difficulty)}>
                         {test.difficulty}
                       </Badge>
@@ -231,7 +246,7 @@ const PendingTests = () => {
                       onClick={() => startTest(test)}
                     >
                       <Play className="h-4 w-4" />
-                      {test.hasSession ? 'Resume Test' : 'Start Test'}
+                      {test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'}
                     </Button>
                   </div>
                 </div>

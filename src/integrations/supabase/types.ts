@@ -432,7 +432,7 @@ export type Database = {
     }
     Enums: {
       membership_type: "free" | "pro"
-      session_status: "active" | "completed" | "abandoned"
+      session_status: "active" | "completed" | "abandoned" | "paused"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -561,7 +561,7 @@ export const Constants = {
   public: {
     Enums: {
       membership_type: ["free", "pro"],
-      session_status: ["active", "completed", "abandoned"],
+      session_status: ["active", "completed", "abandoned", "paused"],
     },
   },
 } as const

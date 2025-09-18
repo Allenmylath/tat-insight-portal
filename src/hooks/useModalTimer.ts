@@ -93,7 +93,7 @@ export const useModalTimer = ({
         .select('*')
         .eq('user_id', userData.id)
         .eq('tattest_id', tatTestId)
-        .eq('status', 'active')
+        .in('status', ['active', 'paused'])
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -110,7 +110,7 @@ export const useModalTimer = ({
         return null;
       }
 
-      console.log('Found existing session:', data.id, 'Time remaining:', timeRemaining);
+      console.log('Found existing session:', data.id, 'Status:', data.status, 'Time remaining:', timeRemaining);
       return { sessionId: data.id, timeRemaining: Math.floor(timeRemaining) };
     } catch (err) {
       console.error('Error checking existing session:', err);
@@ -357,6 +357,25 @@ export const useModalTimer = ({
     safeSetState(prev => ({ ...prev, connectionState: 'completed' }));
   }, [timerState.sessionId, safeSetState]);
 
+  const pauseSession = useCallback(async (sessionId: string, timeRemaining: number, storyContent?: string) => {
+    console.log('Pausing session...');
+    try {
+      await supabase
+        .from('test_sessions')
+        .update({
+          status: 'paused',
+          time_remaining: timeRemaining,
+          story_content: storyContent || null,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
+      console.log('Session paused successfully');
+    } catch (error) {
+      console.error('Error pausing session:', error);
+    }
+    stopTimer();
+  }, []);
+
   const completeSession = useCallback(async () => {
     console.log('Completing session...');
     // Only stop the timer, don't update the session status
@@ -371,12 +390,13 @@ export const useModalTimer = ({
         .from('test_sessions')
         .update({
           status: 'abandoned',
+          time_remaining: timerState.timeRemaining,
           completed_at: new Date().toISOString()
         })
         .eq('id', timerState.sessionId);
     }
     stopTimer();
-  }, [timerState.sessionId, stopTimer]);
+  }, [timerState.sessionId, timerState.timeRemaining, stopTimer]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -419,6 +439,7 @@ export const useModalTimer = ({
     stopTimer,
     completeSession,
     abandonSession,
+    pauseSession,
 
     // Computed flags
     isConnected,

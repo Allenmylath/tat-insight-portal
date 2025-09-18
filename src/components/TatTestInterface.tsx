@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +26,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [story, setStory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [isTimerCompleted, setIsTimerCompleted] = useState(false);
   
   // User data and credit management
   const { hasEnoughCredits, deductCredits, userData } = useUserData();
@@ -41,6 +42,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     startTimer,
     completeSession,
     abandonSession,
+    pauseSession,
+    stopTimer,
     isConnecting,
     isExpired,
     canStart,
@@ -90,6 +93,25 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Timer event handlers
   async function handleTimerComplete() {
+    setIsTimerCompleted(true);
+    
+    // Automatically mark session as completed when timer reaches 0
+    if (sessionId && userData?.id) {
+      try {
+        await supabase
+          .from('test_sessions')
+          .update({ 
+            status: story.trim() ? 'completed' : 'abandoned',
+            story_content: story,
+            time_remaining: 0,
+            completed_at: new Date().toISOString()
+          })
+          .eq('id', sessionId);
+      } catch (error) {
+        console.error('Error completing session:', error);
+      }
+    }
+
     if (story.trim()) {
       await submitStory(true);
     } else {
@@ -105,6 +127,23 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   function handleTimerAbandon() {
     onAbandon();
   }
+
+  // Handle window close detection for true abandonment
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isActive && sessionId && story.trim()) {
+        handleAbandon();
+        event.preventDefault();
+        event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isActive, sessionId, story]);
 
   // Story submission
   const submitStory = async (isTimerComplete = false) => {
@@ -172,26 +211,55 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
   };
 
-  const handleAbandonTest = async () => {
-    if (story.trim()) {
-      // Save the story before abandoning
-      try {
-        await supabase
-          .from('test_sessions')
-          .update({
-            story_content: story,
-            status: 'abandoned'
-          })
-          .eq('tattest_id', test.id)
-          .eq('user_id', userData?.id)
-          .eq('status', 'active');
-      } catch (error) {
-        console.error('Error saving story before abandon:', error);
-      }
-    }
+  const handleSaveAndExit = async () => {
+    if (!userData?.id || !sessionId) return;
     
-    await abandonSession();
-    onAbandon();
+    try {
+      await supabase
+        .from('test_sessions')
+        .update({ 
+          status: 'paused',
+          story_content: story,
+          time_remaining: timeRemaining,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
+
+      toast({
+        title: "Progress Saved",
+        description: "Your test has been paused and progress saved.",
+      });
+      
+      stopTimer();
+      onAbandon();
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAbandon = async () => {
+    if (!userData?.id || !sessionId) return;
+    
+    try {
+      await supabase
+        .from('test_sessions')
+        .update({ 
+          status: 'abandoned',
+          story_content: story,
+          time_remaining: timeRemaining,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
+      
+      abandonSession();
+    } catch (error) {
+      console.error('Error abandoning session:', error);
+    }
   };
 
   // UI helpers
@@ -419,11 +487,11 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       <div className="flex gap-4">
         <Button
           variant="outline"
-          onClick={handleAbandonTest}
+          onClick={handleSaveAndExit}
           disabled={isSubmitting || isConnecting}
           className="flex-1"
         >
-          Save & Exit
+          Save & Pause
         </Button>
         <Button
           onClick={() => submitStory()}
