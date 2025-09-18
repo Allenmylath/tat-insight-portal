@@ -239,12 +239,17 @@ export const useModalTimer = ({
 
                 // Update database every 10 seconds
                 if (message.timeRemaining % 10 === 0) {
-                  supabase
-                    .from('test_sessions')
-                    .update({ time_remaining: message.timeRemaining })
-                    .eq('id', sessionId)
-                    .then(() => console.log(`Updated DB time remaining: ${message.timeRemaining}`))
-                    .catch(err => console.error('DB update error:', err));
+                  (async () => {
+                    try {
+                      await supabase
+                        .from('test_sessions')
+                        .update({ time_remaining: message.timeRemaining })
+                        .eq('id', sessionId);
+                      console.log(`Updated DB time remaining: ${message.timeRemaining}`);
+                    } catch (err) {
+                      console.error('DB update error:', err);
+                    }
+                  })();
                 }
 
                 if (message.timeRemaining === 0) {

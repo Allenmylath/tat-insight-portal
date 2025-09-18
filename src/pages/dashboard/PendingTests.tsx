@@ -26,45 +26,50 @@ const PendingTests = () => {
     if (!userData?.id) return;
     
     try {
-      // LEFT JOIN to get test session data for the current user
-      const { data, error } = await supabase
+      // First, get all active tests
+      const { data: allTests, error: testsError } = await supabase
         .from('tattest')
-        .select(`
-          *,
-          test_sessions!left(
-            status,
-            completed_at,
-            time_remaining,
-            started_at
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
-        .eq('test_sessions.user_id', userData.id)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching tests:', error);
+      if (testsError) {
+        console.error('Error fetching tests:', testsError);
         return;
       }
 
-      // Filter to only show pending tests (never attended or abandoned)
-      const pendingTests = data
-        ?.filter(test => {
-          const sessions = test.test_sessions || [];
+      if (!allTests || allTests.length === 0) {
+        setTests([]);
+        return;
+      }
+
+      // Then, get user's test sessions for these tests
+      const testIds = allTests.map(test => test.id);
+      const { data: userSessions, error: sessionsError } = await supabase
+        .from('test_sessions')
+        .select('tattest_id, status, completed_at, time_remaining, started_at')
+        .eq('user_id', userData.id)
+        .in('tattest_id', testIds);
+
+      if (sessionsError) {
+        console.error('Error fetching user sessions:', sessionsError);
+        return;
+      }
+
+      // Filter to only show pending tests (never completed)
+      const pendingTests = allTests
+        .filter(test => {
+          const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
           
-          // If no sessions exist, it's never been attended (pending)
-          if (sessions.length === 0) return true;
-          
-          // If any session is completed, don't show it
-          const hasCompletedSession = sessions.some((session: any) => session.status === 'completed');
-          if (hasCompletedSession) return false;
-          
-          // If there are incomplete sessions, it's abandoned (pending)
-          return true;
+          // If any session is completed, don't show it as pending
+          const hasCompletedSession = testSessions.some(session => session.status === 'completed');
+          return !hasCompletedSession;
         })
         .map((test) => {
-          const sessions = test.test_sessions || [];
-          const latestSession = sessions[0]; // Most recent session
+          const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
+          const latestSession = testSessions.sort((a, b) => 
+            new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
+          )[0];
           
           return {
             id: test.id,
@@ -76,9 +81,9 @@ const PendingTests = () => {
             imageUrl: test.image_url,
             sessionStatus: latestSession?.status || null,
             timeRemaining: latestSession?.time_remaining || null,
-            hasSession: sessions.length > 0
+            hasSession: testSessions.length > 0
           };
-        }) || [];
+        });
 
       setTests(pendingTests);
     } catch (error) {
