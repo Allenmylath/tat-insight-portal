@@ -213,8 +213,7 @@ export const useModalTimer = ({
                     .from('test_sessions')
                     .update({ time_remaining: message.timeRemaining })
                     .eq('id', sessionId)
-                    .then(() => console.log(`Updated DB time remaining: ${message.timeRemaining}`))
-                    .catch(err => console.error('DB update error:', err));
+                    .then(() => console.log(`Updated DB time remaining: ${message.timeRemaining}`));
                 }
 
                 if (message.timeRemaining === 0) {
