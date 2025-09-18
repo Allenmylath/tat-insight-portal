@@ -28,6 +28,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
   const [isTimerCompleted, setIsTimerCompleted] = useState(false);
+  const [isCompletingSession, setIsCompletingSession] = useState(false);
   
   // User data and credit management
   const { hasEnoughCredits, deductCredits, userData } = useUserData();
@@ -132,8 +133,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   // Handle window close detection for true abandonment
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      // Don't show warning or abandon if test was submitted successfully
-      if (isSubmittedSuccessfully) {
+      // Don't show warning or abandon if test was submitted successfully or is being completed
+      if (isSubmittedSuccessfully || isCompletingSession) {
         return;
       }
       
@@ -149,7 +150,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [isActive, sessionId, story, isSubmittedSuccessfully]);
+  }, [isActive, sessionId, story, isSubmittedSuccessfully, isCompletingSession]);
 
   // Story submission
   const submitStory = async (isTimerComplete = false) => {
@@ -172,6 +173,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
 
     setIsSubmitting(true);
+    setIsCompletingSession(true);
     
     try {
       // Update the test session with the story content using session ID
@@ -199,6 +201,9 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       // Mark as successfully submitted to prevent beforeunload handler
       setIsSubmittedSuccessfully(true);
       
+      // Remove beforeunload listener immediately to prevent race conditions
+      window.removeEventListener('beforeunload', window.onbeforeunload as any);
+      
       // Complete the timer session (this will stop the timer)
       await completeSession();
 
@@ -216,6 +221,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         description: "There was an error submitting your story. Please try again.",
         variant: "destructive"
       });
+      setIsCompletingSession(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -253,9 +259,10 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   };
 
   const handleAbandon = async () => {
-    if (!userData?.id || !sessionId) return;
+    if (!userData?.id || !sessionId || isCompletingSession) return;
     
     try {
+      // Only abandon if the session is not already completed
       await supabase
         .from('test_sessions')
         .update({ 
@@ -264,7 +271,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           time_remaining: timeRemaining,
           completed_at: new Date().toISOString()
         })
-        .eq('id', sessionId);
+        .eq('id', sessionId)
+        .neq('status', 'completed');
       
       abandonSession();
     } catch (error) {
