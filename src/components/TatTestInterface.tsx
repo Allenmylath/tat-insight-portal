@@ -26,6 +26,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [story, setStory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
   const [isTimerCompleted, setIsTimerCompleted] = useState(false);
   
   // User data and credit management
@@ -131,6 +132,11 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   // Handle window close detection for true abandonment
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Don't show warning or abandon if test was submitted successfully
+      if (isSubmittedSuccessfully) {
+        return;
+      }
+      
       if (isActive && sessionId && story.trim()) {
         handleAbandon();
         event.preventDefault();
@@ -143,7 +149,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [isActive, sessionId, story]);
+  }, [isActive, sessionId, story, isSubmittedSuccessfully]);
 
   // Story submission
   const submitStory = async (isTimerComplete = false) => {
@@ -189,6 +195,10 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       }
 
       console.log('Story submitted successfully');
+      
+      // Mark as successfully submitted to prevent beforeunload handler
+      setIsSubmittedSuccessfully(true);
+      
       // Complete the timer session (this will stop the timer)
       await completeSession();
 
