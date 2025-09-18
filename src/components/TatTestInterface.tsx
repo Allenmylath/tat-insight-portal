@@ -54,17 +54,20 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Start test with credit deduction 
   const handleStartTest = async () => {
+    if (!userData) return;
+    
     if (!hasEnoughCredits()) {
       setShowCreditModal(true);
       return;
     }
 
     try {
-      await startTimer();
+      const startedSessionId = await startTimer();
       
-      // After successful timer start, deduct credits
-      if (sessionId) {
-        const success = await deductCredits(sessionId);
+      // After successful timer start, deduct credits using the returned session ID
+      if (startedSessionId) {
+        console.log('Deducting credits for session:', startedSessionId);
+        const success = await deductCredits(startedSessionId);
         if (!success) {
           toast({
             title: "Credit Error",
@@ -73,6 +76,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           });
           return;
         }
+        console.log('Credits deducted successfully');
       }
     } catch (error) {
       console.error('Error starting test:', error);
@@ -125,7 +129,12 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     setIsSubmitting(true);
     
     try {
-      // Update the test session with the story content
+      // Update the test session with the story content using session ID
+      if (!sessionId) {
+        throw new Error('No active session found');
+      }
+
+      console.log('Submitting story for session:', sessionId);
       const { error: updateError } = await supabase
         .from('test_sessions')
         .update({
@@ -133,15 +142,15 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           status: 'completed',
           completed_at: new Date().toISOString()
         })
-        .eq('tattest_id', test.id)
-        .eq('user_id', userData.id)
-        .eq('status', 'active');
+        .eq('id', sessionId);
 
       if (updateError) {
+        console.error('Failed to update session:', updateError);
         throw updateError;
       }
 
-      // Complete the timer session
+      console.log('Story submitted successfully');
+      // Complete the timer session (this will stop the timer)
       await completeSession();
 
       toast({

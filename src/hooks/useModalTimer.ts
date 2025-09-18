@@ -274,9 +274,9 @@ export const useModalTimer = ({
   }, [durationMinutes, onTimeUp, onSessionEnd, safeSetState, safeSetError]);
 
   // Main initialization function - called only once
-  const initializeTimer = useCallback(async () => {
+  const initializeTimer = useCallback(async (): Promise<string | null> => {
     if (!userData?.id || initializationStartedRef.current) {
-      return;
+      return null;
     }
 
     initializationStartedRef.current = true;
@@ -299,6 +299,7 @@ export const useModalTimer = ({
           isRecoveredSession: true
         }));
         connectToModal(existingSession.sessionId, true, existingSession.timeRemaining);
+        return existingSession.sessionId;
       } else {
         // Create new session
         console.log('Creating new session');
@@ -312,12 +313,15 @@ export const useModalTimer = ({
             isRecoveredSession: false
           }));
           connectToModal(sessionId, false, durationMinutes * 60);
+          return sessionId;
         }
+        return null;
       }
     } catch (err) {
-      console.error('Error initializing timer:', err);
-      safeSetError('Failed to initialize timer');
+      console.error('Timer initialization failed:', err);
+      safeSetError(err instanceof Error ? err.message : 'Timer initialization failed');
       safeSetState(prev => ({ ...prev, connectionState: 'error' }));
+      return null;
     }
   }, [userData?.id, tatTestId, checkExistingSession, createNewSession, connectToModal, durationMinutes, safeSetState, safeSetError]);
 
@@ -329,11 +333,12 @@ export const useModalTimer = ({
   }, [userData?.id]); // Only depend on userData.id - prevents re-triggering
 
   // Manual control functions
-  const startTimer = useCallback(() => {
+  const startTimer = useCallback(async (): Promise<string | null> => {
     if (timerState.connectionState === 'idle' && !initializationStartedRef.current) {
-      initializeTimer();
+      return await initializeTimer();
     }
-  }, [timerState.connectionState, initializeTimer]);
+    return timerState.sessionId;
+  }, [timerState.connectionState, timerState.sessionId, initializeTimer]);
 
   const stopTimer = useCallback(() => {
     console.log('Stopping timer...');
@@ -354,17 +359,10 @@ export const useModalTimer = ({
 
   const completeSession = useCallback(async () => {
     console.log('Completing session...');
-    if (timerState.sessionId) {
-      await supabase
-        .from('test_sessions')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', timerState.sessionId);
-    }
+    // Only stop the timer, don't update the session status
+    // The session status should already be updated by submitStory
     stopTimer();
-  }, [timerState.sessionId, stopTimer]);
+  }, [stopTimer]);
 
   const abandonSession = useCallback(async () => {
     console.log('Abandoning session...');

@@ -56,7 +56,7 @@ const PendingTests = () => {
       const testIds = allTests.map(test => test.id);
       const { data: userSessions, error: sessionsError } = await supabase
         .from('test_sessions')
-        .select('tattest_id, status, completed_at, time_remaining, started_at')
+        .select('tattest_id, status, completed_at, time_remaining, started_at, story_content')
         .eq('user_id', userData.id)
         .in('tattest_id', testIds);
 
@@ -73,7 +73,10 @@ const PendingTests = () => {
           const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
           
           // If any session is completed, don't show it as pending
-          const hasCompletedSession = testSessions.some(session => session.status === 'completed');
+          const hasCompletedSession = testSessions.some(session => 
+            session.status === 'completed' || 
+            (session.status === 'abandoned' && session.story_content && session.story_content.trim().length > 0)
+          );
           return !hasCompletedSession;
         })
         .map((test) => {
