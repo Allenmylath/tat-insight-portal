@@ -1,160 +1,179 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Zap, Star, Users, BarChart3 } from "lucide-react";
+import { Check, Crown, Zap, Star, Users, BarChart3, Coins } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
+import { useState } from "react";
+import { CreditPurchaseModal } from "@/components/CreditPurchaseModal";
 
 const Pricing = () => {
-  const { isPro, userData } = useUserData();
+  const { userData } = useUserData();
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
-  const plans = [
+  const creditPackages = [
     {
-      name: "Free Plan",
-      price: "₹0",
-      period: "forever",
-      description: "Perfect for getting started with basic psychological assessments",
+      name: "Basic Pack",
+      credits: 100,
+      price: "₹100",
+      testsIncluded: 1,
+      description: "Perfect for trying out TAT analysis",
       features: [
-        "3 Basic TAT Tests",
-        "Basic personality analysis",
-        "General feedback report",
+        "100 Credits",
+        "1 Complete TAT Test",
+        "Detailed personality analysis",
+        "Professional report",
         "Email support",
-        "Progress tracking"
+        "Credits never expire"
       ],
-      limitations: [
-        "Limited test selection",
-        "Basic analysis only",
-        "No detailed insights"
-      ],
-      buttonText: "Current Plan",
+      buttonText: "Buy Credits",
       popular: false,
-      current: !isPro
+      pricePerTest: "₹100/test"
     },
     {
-      name: "Pro Plan",
-      price: "₹299",
-      period: "/month",
-      description: "Comprehensive psychological assessment with detailed insights",
+      name: "Value Pack",
+      credits: 500,
+      price: "₹500",
+      testsIncluded: 5,
+      description: "Great value for multiple assessments",
       features: [
-        "All 7+ TAT Tests",
-        "Advanced AI psychological analysis",
-        "Detailed personality reports",
-        "Career compatibility insights",
-        "Emotional intelligence scoring",
-        "Social dynamics assessment",
-        "Personalized development plans",
+        "500 Credits",
+        "5 Complete TAT Tests",
+        "Advanced AI analysis",
+        "Detailed personality insights",
+        "Career compatibility reports",
         "Priority support",
-        "Export reports (PDF)",
-        "Progress analytics",
-        "Retake tests unlimited"
+        "Credits never expire"
       ],
-      buttonText: isPro ? "Current Plan" : "Upgrade to Pro",
+      buttonText: "Buy Credits",
       popular: true,
-      current: isPro
+      pricePerTest: "₹100/test"
+    },
+    {
+      name: "Bulk Pack",
+      credits: 1000,
+      price: "₹1000",
+      testsIncluded: 10,
+      description: "Best value for extensive psychological assessment",
+      features: [
+        "1000 Credits",
+        "10 Complete TAT Tests",
+        "Premium AI analysis",
+        "Comprehensive reports",
+        "Career & personality insights",
+        "24/7 Priority support",
+        "Credits never expire",
+        "Best value per test"
+      ],
+      buttonText: "Buy Credits",
+      popular: false,
+      pricePerTest: "₹100/test",
+      bestValue: true
     }
   ];
 
   const benefits = [
     {
+      icon: Zap,
+      title: "Pay Per Use",
+      description: "Only pay for the tests you take - no monthly commitments"
+    },
+    {
+      icon: Coins,
+      title: "Credits Never Expire",
+      description: "Your credits remain valid forever - use them whenever you need"
+    },
+    {
       icon: BarChart3,
-      title: "Advanced Analytics",
+      title: "Advanced Analytics", 
       description: "Deep psychological insights with AI-powered analysis"
     },
     {
       icon: Crown,
-      title: "Premium Tests",
-      description: "Access to advanced TAT scenarios and assessments"
-    },
-    {
-      icon: Users,
-      title: "Career Guidance",
-      description: "Personalized career recommendations based on your profile"
-    },
-    {
-      icon: Zap,
-      title: "Instant Results",
-      description: "Get comprehensive reports immediately after completion"
+      title: "Professional Reports",
+      description: "Comprehensive TAT analysis and personality assessment reports"
     }
   ];
+
+  const currentBalance = userData?.credit_balance || 0;
+  const testsAvailable = Math.floor(currentBalance / 100);
 
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-foreground">Choose Your Plan</h1>
+        <h1 className="text-3xl font-bold text-foreground">Credit Packages</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Unlock the full potential of psychological assessment with our comprehensive Pro plan. 
-          Get detailed insights and personalized recommendations.
+          Purchase credits to access our comprehensive TAT psychological assessments. 
+          Each test costs 100 credits (₹100). Pay only for what you use!
         </p>
       </div>
 
-      {/* Current Plan Status */}
+      {/* Current Credit Balance */}
       {userData && (
         <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {isPro ? (
-                  <Crown className="h-8 w-8 text-primary" />
-                ) : (
-                  <Star className="h-8 w-8 text-muted-foreground" />
-                )}
+                <Coins className="h-8 w-8 text-primary" />
                 <div>
                   <h3 className="font-semibold text-foreground">
-                    Current Plan: {isPro ? "Pro Member" : "Free Plan"}
+                    Current Balance: {currentBalance} Credits
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {isPro 
-                      ? userData.membership_expires_at 
-                        ? `Expires on ${new Date(userData.membership_expires_at).toLocaleDateString()}`
-                        : "Active membership"
-                      : "Upgrade to unlock all features"
+                    {testsAvailable > 0 
+                      ? `You can take ${testsAvailable} test${testsAvailable > 1 ? 's' : ''}`
+                      : "You need credits to take tests"
                     }
                   </p>
                 </div>
               </div>
-              {isPro && (
-                <Badge variant="default" className="bg-primary text-primary-foreground">
-                  Active
-                </Badge>
-              )}
+              <Button onClick={() => setShowCreditModal(true)} className="bg-primary text-primary-foreground">
+                Top Up Credits
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Pricing Plans */}
-      <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        {plans.map((plan, index) => (
+      {/* Credit Packages */}
+      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {creditPackages.map((pack, index) => (
           <Card 
             key={index} 
-            className={`shadow-elegant ${plan.popular ? 'border-primary ring-1 ring-primary/20' : ''} ${plan.current ? 'bg-muted/30' : ''}`}
+            className={`shadow-elegant ${pack.popular ? 'border-primary ring-2 ring-primary/20' : ''} ${pack.bestValue ? 'border-accent ring-2 ring-accent/20' : ''}`}
           >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  {plan.name === "Pro Plan" ? (
-                    <Crown className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Star className="h-5 w-5 text-muted-foreground" />
-                  )}
-                  {plan.name}
+                  <Coins className="h-5 w-5 text-primary" />
+                  {pack.name}
                 </CardTitle>
-                {plan.popular && (
+                {pack.popular && (
                   <Badge className="bg-primary text-primary-foreground">
                     Most Popular
+                  </Badge>
+                )}
+                {pack.bestValue && (
+                  <Badge className="bg-accent text-accent-foreground">
+                    Best Value
                   </Badge>
                 )}
               </div>
               <div className="space-y-2">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
+                  <span className="text-3xl font-bold text-foreground">{pack.price}</span>
+                  <span className="text-sm text-muted-foreground">({pack.pricePerTest})</span>
                 </div>
-                <CardDescription>{plan.description}</CardDescription>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{pack.credits} credits</span>
+                  <span>•</span>
+                  <span>{pack.testsIncluded} test{pack.testsIncluded > 1 ? 's' : ''}</span>
+                </div>
+                <CardDescription>{pack.description}</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <ul className="space-y-3">
-                {plan.features.map((feature, idx) => (
+                {pack.features.map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-primary flex-shrink-0" />
                     <span className="text-sm text-foreground">{feature}</span>
@@ -162,25 +181,12 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              {plan.limitations && (
-                <div className="border-t pt-4">
-                  <p className="text-xs text-muted-foreground mb-2">Limitations:</p>
-                  <ul className="space-y-1">
-                    {plan.limitations.map((limitation, idx) => (
-                      <li key={idx} className="text-xs text-muted-foreground">
-                        • {limitation}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
               <Button 
                 className="w-full" 
-                variant={plan.popular ? "hero" : plan.current ? "outline" : "government"}
-                disabled={plan.current}
+                variant={pack.popular ? "hero" : pack.bestValue ? "government" : "outline"}
+                onClick={() => setShowCreditModal(true)}
               >
-                {plan.buttonText}
+                {pack.buttonText}
               </Button>
             </CardContent>
           </Card>
@@ -190,9 +196,9 @@ const Pricing = () => {
       {/* Benefits Section */}
       <div className="space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-foreground mb-2">Why Upgrade to Pro?</h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-2">Why Choose Our Credit System?</h2>
           <p className="text-muted-foreground">
-            Unlock advanced features and get the most comprehensive psychological assessment
+            Flexible, transparent pricing with no monthly commitments
           </p>
         </div>
         
@@ -214,11 +220,16 @@ const Pricing = () => {
         <CardContent className="pt-6 space-y-4">
           <h3 className="font-semibold text-foreground">Have Questions?</h3>
           <p className="text-sm text-muted-foreground">
-            Our team is here to help you choose the right plan for your needs.
+            Our team is here to help you understand our credit system and choose the right package.
           </p>
           <Button variant="outline">Contact Support</Button>
         </CardContent>
       </Card>
+
+      <CreditPurchaseModal 
+        open={showCreditModal} 
+        onOpenChange={setShowCreditModal} 
+      />
     </div>
   );
 };
