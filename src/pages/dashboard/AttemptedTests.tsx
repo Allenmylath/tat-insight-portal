@@ -26,7 +26,7 @@ const AttemptedTests = () => {
             title,
             description
           ),
-          analysis_results (
+          analysis_results!test_session_id (
             confidence_score,
             personality_traits,
             analysis_data
