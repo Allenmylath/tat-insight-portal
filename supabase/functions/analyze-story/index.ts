@@ -13,6 +13,21 @@ interface AnalysisRequest {
   storyContent: string;
 }
 
+interface WebhookPayload {
+  type: 'UPDATE';
+  table: string;
+  schema: string;
+  record: {
+    id: string;
+    user_id: string;
+    story_content: string;
+    status: string;
+  };
+  old_record: {
+    status: string;
+  };
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -22,13 +37,49 @@ serve(async (req) => {
   try {
     console.log('Story analysis function called');
     
-    const { testSessionId, userId, storyContent }: AnalysisRequest = await req.json();
+    const requestBody = await req.json();
+    console.log('Request body type:', requestBody.type || 'direct');
+    
+    let testSessionId: string;
+    let userId: string;
+    let storyContent: string;
+    
+    // Check if this is a webhook payload or direct call
+    if (requestBody.type === 'UPDATE' && requestBody.table === 'test_sessions') {
+      // This is a webhook payload
+      const payload = requestBody as WebhookPayload;
+      
+      // Only process if status changed to 'completed' and story is long enough
+      if (payload.record.status === 'completed' && 
+          payload.old_record.status !== 'completed' &&
+          payload.record.story_content &&
+          payload.record.story_content.length >= 250) {
+        
+        testSessionId = payload.record.id;
+        userId = payload.record.user_id;
+        storyContent = payload.record.story_content;
+        
+        console.log(`Webhook: Processing completed session ${testSessionId}, story length: ${storyContent.length}`);
+      } else {
+        console.log('Webhook: Skipping - not a completed status change or story too short');
+        return new Response(
+          JSON.stringify({ message: 'Webhook received but no processing needed' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      // This is a direct call
+      const directRequest = requestBody as AnalysisRequest;
+      testSessionId = directRequest.testSessionId;
+      userId = directRequest.userId;
+      storyContent = directRequest.storyContent;
+      
+      console.log(`Direct call: Analyzing story for session ${testSessionId}, length: ${storyContent.length}`);
+    }
     
     if (!testSessionId || !userId || !storyContent) {
       throw new Error('Missing required parameters: testSessionId, userId, or storyContent');
     }
-
-    console.log(`Analyzing story for session ${testSessionId}, length: ${storyContent.length}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
