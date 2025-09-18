@@ -5,9 +5,16 @@ import { CheckCircle2, Trophy, Eye, Calendar, Loader2 } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
+import { useState } from "react";
 
 const AttemptedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
+  const [selectedAnalysis, setSelectedAnalysis] = useState<{
+    analysis: any;
+    title: string;
+    score: number;
+  } | null>(null);
 
   const { data: attemptedTests, isLoading } = useQuery({
     queryKey: ['attempted-tests', userData?.id],
@@ -41,10 +48,11 @@ const AttemptedTests = () => {
         return [];
       }
 
-      console.log('Raw test sessions data:', data);
-
       return data.map(session => {
-        console.log('Processing session:', session.id, 'Analysis results:', session.analysis_results);
+        const analysisResult = Array.isArray(session.analysis_results) 
+          ? session.analysis_results[0] 
+          : session.analysis_results;
+        
         return {
           id: session.id,
           title: session.tattest?.title || 'Untitled Test',
@@ -52,12 +60,13 @@ const AttemptedTests = () => {
           duration: session.session_duration_seconds 
             ? `${Math.round(session.session_duration_seconds / 60)} minutes`
             : 'Unknown duration',
-          score: session.analysis_results?.[0]?.confidence_score 
-            ? Math.round(session.analysis_results[0].confidence_score * 100)
+          score: analysisResult?.confidence_score 
+            ? Math.round(analysisResult.confidence_score * 100)
             : null,
-          analysis: session.analysis_results?.[0]?.analysis_data?.summary || 
+          analysis: analysisResult?.analysis_data?.summary || 
                    'Analysis will be available soon. We are working on implementing the analysis feature.',
-          isPremium: false, // TODO: Add premium field to tattest table if needed
+          fullAnalysis: analysisResult?.analysis_data || null,
+          isPremium: false,
           sessionId: session.id
         };
       });
@@ -149,7 +158,17 @@ const AttemptedTests = () => {
                   <p className="text-sm text-muted-foreground">{test.analysis}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="government" size="sm" className="gap-2">
+                  <Button 
+                    variant="government" 
+                    size="sm" 
+                    className="gap-2"
+                    onClick={() => test.fullAnalysis && setSelectedAnalysis({
+                      analysis: test.fullAnalysis,
+                      title: test.title,
+                      score: test.score || 0
+                    })}
+                    disabled={!test.fullAnalysis}
+                  >
                     <Eye className="h-4 w-4" />
                     View Full Report
                   </Button>
@@ -162,6 +181,14 @@ const AttemptedTests = () => {
           ))}
         </div>
       )}
+
+      <AnalysisReportDialog
+        open={!!selectedAnalysis}
+        onOpenChange={(open) => !open && setSelectedAnalysis(null)}
+        analysis={selectedAnalysis?.analysis}
+        testTitle={selectedAnalysis?.title || ""}
+        score={selectedAnalysis?.score || 0}
+      />
     </div>
   );
 };
