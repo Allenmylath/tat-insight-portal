@@ -26,6 +26,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [story, setStory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  
+  // User data and credit management
   const { hasEnoughCredits, deductCredits, userData } = useUserData();
   const { toast } = useToast();
 
