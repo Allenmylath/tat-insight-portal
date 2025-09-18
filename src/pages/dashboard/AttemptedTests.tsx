@@ -52,7 +52,7 @@ const AttemptedTests = () => {
           ? Math.round(session.analysis_results[0].confidence_score * 100)
           : null,
         analysis: session.analysis_results?.[0]?.analysis_data?.summary || 
-                 'Analysis in progress...',
+                 'Analysis will be available soon. We are working on implementing the analysis feature.',
         isPremium: false, // TODO: Add premium field to tattest table if needed
         sessionId: session.id
       }));
@@ -131,8 +131,8 @@ const AttemptedTests = () => {
                         {test.score}%
                       </Badge>
                     ) : (
-                      <Badge variant="secondary">
-                        Processing...
+                      <Badge variant="outline" className="text-muted-foreground">
+                        Analysis Pending
                       </Badge>
                     )}
                   </div>
