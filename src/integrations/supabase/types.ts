@@ -421,6 +421,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      analyze_existing_completed_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       deduct_credits_for_test: {
         Args: {
           p_credits_needed?: number
