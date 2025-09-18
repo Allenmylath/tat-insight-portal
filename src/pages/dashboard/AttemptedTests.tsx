@@ -41,21 +41,26 @@ const AttemptedTests = () => {
         return [];
       }
 
-      return data.map(session => ({
-        id: session.id,
-        title: session.tattest?.title || 'Untitled Test',
-        completedAt: session.completed_at,
-        duration: session.session_duration_seconds 
-          ? `${Math.round(session.session_duration_seconds / 60)} minutes`
-          : 'Unknown duration',
-        score: session.analysis_results?.[0]?.confidence_score 
-          ? Math.round(session.analysis_results[0].confidence_score * 100)
-          : null,
-        analysis: session.analysis_results?.[0]?.analysis_data?.summary || 
-                 'Analysis will be available soon. We are working on implementing the analysis feature.',
-        isPremium: false, // TODO: Add premium field to tattest table if needed
-        sessionId: session.id
-      }));
+      console.log('Raw test sessions data:', data);
+
+      return data.map(session => {
+        console.log('Processing session:', session.id, 'Analysis results:', session.analysis_results);
+        return {
+          id: session.id,
+          title: session.tattest?.title || 'Untitled Test',
+          completedAt: session.completed_at,
+          duration: session.session_duration_seconds 
+            ? `${Math.round(session.session_duration_seconds / 60)} minutes`
+            : 'Unknown duration',
+          score: session.analysis_results?.[0]?.confidence_score 
+            ? Math.round(session.analysis_results[0].confidence_score * 100)
+            : null,
+          analysis: session.analysis_results?.[0]?.analysis_data?.summary || 
+                   'Analysis will be available soon. We are working on implementing the analysis feature.',
+          isPremium: false, // TODO: Add premium field to tattest table if needed
+          sessionId: session.id
+        };
+      });
     },
     enabled: !!userData?.id && !userLoading,
   });
