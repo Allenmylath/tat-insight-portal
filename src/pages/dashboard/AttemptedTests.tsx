@@ -1,44 +1,66 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Trophy, Eye, Calendar } from "lucide-react";
+import { CheckCircle2, Trophy, Eye, Calendar, Loader2 } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const AttemptedTests = () => {
-  const { isPro } = useUserData();
+  const { isPro, userData, loading: userLoading } = useUserData();
 
-  // Mock data for attempted tests
-  const attemptedTests = [
-    {
-      id: 1,
-      title: "Picture 1: Family Scene",
-      completedAt: "2024-01-15",
-      score: 85,
-      duration: "12 minutes",
-      analysis: "Strong emotional intelligence and family dynamics understanding.",
-      isPremium: false
-    },
-    {
-      id: 2,
-      title: "Picture 2: Professional Setting",
-      completedAt: "2024-01-16",
-      score: 92,
-      duration: "15 minutes",
-      analysis: "Excellent leadership qualities and professional insight.",
-      isPremium: false
-    },
-    {
-      id: 3,
-      title: "Picture 3: Social Interaction",
-      completedAt: "2024-01-17",
-      score: 88,
-      duration: "11 minutes",
-      analysis: "Good interpersonal skills and social awareness.",
-      isPremium: true
-    },
-  ];
+  const { data: attemptedTests, isLoading } = useQuery({
+    queryKey: ['attempted-tests', userData?.id],
+    queryFn: async () => {
+      if (!userData?.id) return [];
 
-  const visibleTests = isPro ? attemptedTests : attemptedTests.filter(test => !test.isPremium);
+      const { data, error } = await supabase
+        .from('test_sessions')
+        .select(`
+          id,
+          completed_at,
+          session_duration_seconds,
+          story_content,
+          tattest:tattest_id (
+            id,
+            title,
+            description
+          ),
+          analysis_results (
+            confidence_score,
+            personality_traits,
+            analysis_data
+          )
+        `)
+        .eq('user_id', userData.id)
+        .eq('status', 'completed')
+        .order('completed_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching attempted tests:', error);
+        return [];
+      }
+
+      return data.map(session => ({
+        id: session.id,
+        title: session.tattest?.title || 'Untitled Test',
+        completedAt: session.completed_at,
+        duration: session.session_duration_seconds 
+          ? `${Math.round(session.session_duration_seconds / 60)} minutes`
+          : 'Unknown duration',
+        score: session.analysis_results?.[0]?.confidence_score 
+          ? Math.round(session.analysis_results[0].confidence_score * 100)
+          : null,
+        analysis: session.analysis_results?.[0]?.analysis_data?.summary || 
+                 'Analysis in progress...',
+        isPremium: false, // TODO: Add premium field to tattest table if needed
+        sessionId: session.id
+      }));
+    },
+    enabled: !!userData?.id && !userLoading,
+  });
+
+  const visibleTests = isPro ? (attemptedTests || []) : (attemptedTests || []).filter(test => !test.isPremium);
 
   return (
     <div className="space-y-6">
@@ -55,7 +77,19 @@ const AttemptedTests = () => {
         </Badge>
       </div>
 
-      {visibleTests.length === 0 ? (
+      {isLoading ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <Loader2 className="h-12 w-12 text-muted-foreground mx-auto mb-4 animate-spin" />
+              <h3 className="font-medium text-foreground mb-2">Loading Your Tests</h3>
+              <p className="text-sm text-muted-foreground">
+                Fetching your completed assessments...
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : visibleTests.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
@@ -82,19 +116,25 @@ const AttemptedTests = () => {
                         <Badge variant="secondary" className="text-xs">Pro</Badge>
                       )}
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-4 text-sm">
+                     <CardDescription className="flex items-center gap-4 text-sm">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(test.completedAt).toLocaleDateString()}
+                        {test.completedAt ? new Date(test.completedAt).toLocaleDateString() : 'Unknown date'}
                       </span>
                       <span>Duration: {test.duration}</span>
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="default" className="bg-primary/10 text-primary">
-                      <Trophy className="h-3 w-3 mr-1" />
-                      {test.score}%
-                    </Badge>
+                    {test.score !== null ? (
+                      <Badge variant="default" className="bg-primary/10 text-primary">
+                        <Trophy className="h-3 w-3 mr-1" />
+                        {test.score}%
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">
+                        Processing...
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </CardHeader>
