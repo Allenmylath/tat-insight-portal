@@ -33,6 +33,7 @@ interface TimerState {
   sessionId: string | null;
   containerId: string | null;
   isRecoveredSession: boolean;
+  isCompleting: boolean;
 }
 
 const INITIAL_STATE: TimerState = {
@@ -41,6 +42,7 @@ const INITIAL_STATE: TimerState = {
   sessionId: null,
   containerId: null,
   isRecoveredSession: false,
+  isCompleting: false,
 };
 
 export const useModalTimer = ({ 
@@ -251,7 +253,10 @@ export const useModalTimer = ({
         
         console.log(`WebSocket closed for session ${sessionId}`, event.code, event.reason);
         
-        if (event.code !== 1000) {
+        // Only show error if it's an unexpected close and we're not completing
+        const isIntentionalClose = event.code === 1000 || timerState.isCompleting;
+        
+        if (!isIntentionalClose) {
           // Unexpected close
           safeSetError('Connection lost unexpectedly');
           safeSetState(prev => ({ ...prev, connectionState: 'error' }));
@@ -342,6 +347,10 @@ export const useModalTimer = ({
 
   const stopTimer = useCallback(() => {
     console.log('Stopping timer...');
+    
+    // Mark as completing to prevent error messages
+    safeSetState(prev => ({ ...prev, isCompleting: true }));
+    
     if (wsRef.current?.readyState === WebSocket.OPEN && timerState.sessionId) {
       wsRef.current.send(JSON.stringify({
         type: 'stop_timer',
@@ -350,11 +359,12 @@ export const useModalTimer = ({
     }
     
     if (wsRef.current) {
-      wsRef.current.close();
+      // Close with normal close code to prevent error handling
+      wsRef.current.close(1000, 'Timer stopped');
       wsRef.current = null;
     }
     
-    safeSetState(prev => ({ ...prev, connectionState: 'completed' }));
+    safeSetState(prev => ({ ...prev, connectionState: 'completed', isCompleting: false }));
   }, [timerState.sessionId, safeSetState]);
 
   const pauseSession = useCallback(async (sessionId: string, timeRemaining: number, storyContent?: string) => {
