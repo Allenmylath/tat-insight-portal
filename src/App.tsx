@@ -18,7 +18,6 @@ import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
 import { TestProvider } from "@/contexts/TestContext";
-import "@/utils/manualAnalysis";
 
 const queryClient = new QueryClient();
 
