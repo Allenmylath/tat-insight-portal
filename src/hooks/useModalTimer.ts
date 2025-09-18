@@ -17,17 +17,31 @@ interface TimerMessage {
   message?: string;
 }
 
+// Connection states for clear state machine
+type ConnectionState = 
+  | 'idle'           // Not connected, not trying
+  | 'checking'       // Checking for existing session
+  | 'connecting'     // Establishing WebSocket connection
+  | 'connected'      // WebSocket connected, waiting for command
+  | 'timer_running'  // Timer actively counting down
+  | 'completed'      // Timer finished
+  | 'error';         // Connection or timer error
+
 interface TimerState {
+  connectionState: ConnectionState;
   timeRemaining: number;
-  isActive: boolean;
   sessionId: string | null;
   containerId: string | null;
-  connectionStatus: 'disconnected' | 'connecting' | 'connected' | 'error';
-  isRecovering: boolean;
+  isRecoveredSession: boolean;
 }
 
-const MAX_RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_BASE = 1000; // 1 second base delay
+const INITIAL_STATE: TimerState = {
+  connectionState: 'idle',
+  timeRemaining: 0,
+  sessionId: null,
+  containerId: null,
+  isRecoveredSession: false,
+};
 
 export const useModalTimer = ({ 
   tatTestId, 
@@ -37,20 +51,15 @@ export const useModalTimer = ({
 }: UseModalTimerParams) => {
   const { userData } = useUserData();
   const [timerState, setTimerState] = useState<TimerState>({
-    timeRemaining: durationMinutes * 60,
-    isActive: false,
-    sessionId: null,
-    containerId: null,
-    connectionStatus: 'disconnected',
-    isRecovering: false
+    ...INITIAL_STATE,
+    timeRemaining: durationMinutes * 60
   });
-  
   const [error, setError] = useState<string | null>(null);
+  
+  // Refs for WebSocket and cleanup
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const retryCountRef = useRef<number>(0);
-  const isConnectingRef = useRef<boolean>(false);
   const mountedRef = useRef<boolean>(true);
+  const initializationStartedRef = useRef<boolean>(false);
 
   // Track component mount status
   useEffect(() => {
@@ -60,11 +69,59 @@ export const useModalTimer = ({
     };
   }, []);
 
-  const createSession = useCallback(async () => {
-    if (!userData || !mountedRef.current) return null;
+  // Helper function to safely update state
+  const safeSetState = useCallback((updater: (prev: TimerState) => TimerState) => {
+    if (mountedRef.current) {
+      setTimerState(updater);
+    }
+  }, []);
+
+  // Helper function to safely set error
+  const safeSetError = useCallback((errorMessage: string | null) => {
+    if (mountedRef.current) {
+      setError(errorMessage);
+    }
+  }, []);
+
+  // Session management functions
+  const checkExistingSession = useCallback(async (): Promise<{sessionId: string, timeRemaining: number} | null> => {
+    if (!userData?.id) return null;
 
     try {
-      console.log('Creating new session...');
+      const { data, error } = await supabase
+        .from('test_sessions')
+        .select('*')
+        .eq('user_id', userData.id)
+        .eq('tattest_id', tatTestId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error || !data) return null;
+
+      const timeRemaining = data.time_remaining || 0;
+      if (timeRemaining <= 0) {
+        // Session expired, mark as abandoned
+        await supabase
+          .from('test_sessions')
+          .update({ status: 'abandoned' })
+          .eq('id', data.id);
+        return null;
+      }
+
+      console.log('Found existing session:', data.id, 'Time remaining:', timeRemaining);
+      return { sessionId: data.id, timeRemaining: Math.floor(timeRemaining) };
+    } catch (err) {
+      console.error('Error checking existing session:', err);
+      return null;
+    }
+  }, [userData?.id, tatTestId]);
+
+  const createNewSession = useCallback(async (): Promise<string | null> => {
+    if (!userData?.id) return null;
+
+    try {
       const { data, error } = await supabase
         .from('test_sessions')
         .insert({
@@ -78,125 +135,40 @@ export const useModalTimer = ({
         .single();
 
       if (error) throw error;
-      console.log('Session created:', data.id);
+      console.log('Created new session:', data.id);
       return data.id;
     } catch (err) {
       console.error('Failed to create session:', err);
-      setError('Failed to create test session');
+      safeSetError('Failed to create test session');
       return null;
     }
-  }, [userData, tatTestId, durationMinutes]);
+  }, [userData?.id, tatTestId, durationMinutes, safeSetError]);
 
-  const recoverSession = useCallback(async () => {
-    if (!userData || !mountedRef.current) return null;
-
-    try {
-      console.log('Attempting to recover session...');
-      const { data, error } = await supabase
-        .from('test_sessions')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('tattest_id', tatTestId)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error || !data) {
-        console.log('No recoverable session found');
-        return null;
-      }
-
-      const timeRemaining = data.time_remaining || 0;
-      if (timeRemaining <= 0) {
-        console.log('Session expired, abandoning...');
-        await updateSessionStatus(data.id, 'abandoned');
-        return null;
-      }
-
-      console.log('Session recovered:', data.id, 'Time remaining:', timeRemaining);
-      return {
-        sessionId: data.id,
-        timeRemaining: Math.floor(timeRemaining),
-        status: data.status
-      };
-    } catch (err) {
-      console.error('Failed to recover session:', err);
-      return null;
-    }
-  }, [userData, tatTestId]);
-
-  const updateSessionStatus = useCallback(async (sessionId: string, status: 'completed' | 'abandoned') => {
+  // WebSocket connection function
+  const connectToModal = useCallback((sessionId: string, isResume: boolean, timeRemaining: number) => {
     if (!mountedRef.current) return;
-    
-    try {
-      console.log(`Updating session ${sessionId} status to:`, status);
-      await supabase
-        .from('test_sessions')
-        .update({
-          status,
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', sessionId);
-    } catch (err) {
-      console.error('Failed to update session status:', err);
-    }
-  }, []);
-
-  const cleanupConnection = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-    
-    if (wsRef.current) {
-      wsRef.current.onopen = null;
-      wsRef.current.onmessage = null;
-      wsRef.current.onerror = null;
-      wsRef.current.onclose = null;
-      
-      if (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING) {
-        wsRef.current.close();
-      }
-      wsRef.current = null;
-    }
-    
-    isConnectingRef.current = false;
-    startTimerCalledRef.current = false; // Reset the call flag on cleanup
-  }, []);
-
-  const connectToContainer = useCallback((sessionId: string, action: 'start' | 'resume', actionData: any) => {
-    if (!mountedRef.current || isConnectingRef.current) {
-      console.log('Connection blocked: component unmounted or already connecting');
-      return;
-    }
 
     // Clean up any existing connection
-    cleanupConnection();
-    isConnectingRef.current = true;
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
 
-    setTimerState(prev => ({ 
+    safeSetState(prev => ({ 
       ...prev, 
-      connectionStatus: 'connecting',
+      connectionState: 'connecting',
       sessionId 
     }));
 
-    // FIXED: Removed "-app" from URL
     const wsUrl = `wss://manjujayamurali--simple-timer-service-create-timer.modal.run/timer/${sessionId}`;
-    
-    console.log(`Connecting to container for session ${sessionId}`);
-    console.log(`WebSocket URL: ${wsUrl}`);
+    console.log(`Connecting to Modal for session ${sessionId} (${isResume ? 'resume' : 'start'})`);
     
     try {
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
         if (!mountedRef.current) return;
-        
         console.log(`WebSocket opened for session ${sessionId}`);
-        retryCountRef.current = 0; // Reset retry count on successful connection
-        isConnectingRef.current = false;
-        startTimerCalledRef.current = false; // Reset the call flag on successful connection
       };
 
       wsRef.current.onmessage = (event) => {
@@ -204,52 +176,45 @@ export const useModalTimer = ({
         
         try {
           const message: TimerMessage = JSON.parse(event.data);
-          console.log(`Received message:`, message);
+          console.log(`Received:`, message);
           
           switch (message.type) {
             case 'connection_success':
               console.log(`Connection success: ${message.message}`);
-              setTimerState(prev => ({ 
+              safeSetState(prev => ({ 
                 ...prev, 
-                connectionStatus: 'connected',
+                connectionState: 'connected',
                 containerId: message.containerId,
-                isRecovering: false // Clear recovering state on successful connection
               }));
-              setError(null);
+              safeSetError(null);
               
-              // Send the action command
+              // Send the appropriate command
               if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const command = action === 'start' 
-                  ? { type: 'start_timer', sessionId, durationSeconds: actionData.duration }
-                  : { type: 'resume_timer', sessionId, timeRemaining: actionData.timeRemaining };
+                const command = isResume 
+                  ? { type: 'resume_timer', sessionId, timeRemaining }
+                  : { type: 'start_timer', sessionId, durationSeconds: durationMinutes * 60 };
                 
                 wsRef.current.send(JSON.stringify(command));
-                console.log(`Sent ${action} command:`, command);
+                console.log(`Sent ${isResume ? 'resume' : 'start'} command:`, command);
               }
               break;
               
             case 'timer_update':
               if (message.timeRemaining !== undefined) {
-                setTimerState(prev => ({
+                safeSetState(prev => ({
                   ...prev,
                   timeRemaining: message.timeRemaining!,
-                  isActive: message.timeRemaining! > 0,
-                  isRecovering: false
+                  connectionState: 'timer_running'
                 }));
 
                 // Update database every 10 seconds
                 if (message.timeRemaining % 10 === 0) {
-                  (async () => {
-                    try {
-                      await supabase
-                        .from('test_sessions')
-                        .update({ time_remaining: message.timeRemaining })
-                        .eq('id', sessionId);
-                      console.log(`Updated DB time remaining: ${message.timeRemaining}`);
-                    } catch (err) {
-                      console.error('DB update error:', err);
-                    }
-                  })();
+                  supabase
+                    .from('test_sessions')
+                    .update({ time_remaining: message.timeRemaining })
+                    .eq('id', sessionId)
+                    .then(() => console.log(`Updated DB time remaining: ${message.timeRemaining}`))
+                    .catch(err => console.error('DB update error:', err));
                 }
 
                 if (message.timeRemaining === 0) {
@@ -260,28 +225,20 @@ export const useModalTimer = ({
               
             case 'timer_complete':
               console.log(`Timer completed for session ${sessionId}`);
-              setTimerState(prev => ({
+              safeSetState(prev => ({
                 ...prev,
-                isActive: false,
-                timeRemaining: 0,
-                connectionStatus: 'disconnected'
+                connectionState: 'completed',
+                timeRemaining: 0
               }));
-              
-              updateSessionStatus(sessionId, 'completed');
-              cleanupConnection();
-              startTimerCalledRef.current = false; // Reset on completion
               onSessionEnd?.();
               break;
 
             case 'timer_stopped':
               console.log(`Timer stopped for session ${sessionId}`);
-              setTimerState(prev => ({
+              safeSetState(prev => ({
                 ...prev,
-                isActive: false,
-                connectionStatus: 'disconnected'
+                connectionState: 'completed'
               }));
-              cleanupConnection();
-              startTimerCalledRef.current = false; // Reset on stop
               break;
           }
         } catch (err) {
@@ -293,34 +250,11 @@ export const useModalTimer = ({
         if (!mountedRef.current) return;
         
         console.log(`WebSocket closed for session ${sessionId}`, event.code, event.reason);
-        isConnectingRef.current = false;
         
-        setTimerState(prev => ({ 
-          ...prev, 
-          connectionStatus: 'disconnected' 
-        }));
-
-        // Only attempt retry if it wasn't a clean close and we haven't exceeded max retries
-        if (event.code !== 1000 && retryCountRef.current < MAX_RETRY_ATTEMPTS) {
-          const retryDelay = RETRY_DELAY_BASE * Math.pow(2, retryCountRef.current);
-          console.log(`Scheduling retry ${retryCountRef.current + 1}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`);
-          
-          reconnectTimeoutRef.current = setTimeout(() => {
-            if (!mountedRef.current) return;
-            
-            retryCountRef.current++;
-            console.log(`Retry attempt ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS}`);
-            connectToContainer(sessionId, action, actionData);
-          }, retryDelay);
-        } else if (retryCountRef.current >= MAX_RETRY_ATTEMPTS) {
-          console.log(`Max retry attempts reached for session ${sessionId}`);
-          setError('Connection failed after multiple attempts');
-          setTimerState(prev => ({ 
-            ...prev, 
-            connectionStatus: 'error',
-            isRecovering: false 
-          }));
-          startTimerCalledRef.current = false; // Reset on max retries
+        if (event.code !== 1000) {
+          // Unexpected close
+          safeSetError('Connection lost unexpectedly');
+          safeSetState(prev => ({ ...prev, connectionState: 'error' }));
         }
       };
 
@@ -328,91 +262,78 @@ export const useModalTimer = ({
         if (!mountedRef.current) return;
         
         console.error('WebSocket error:', error);
-        isConnectingRef.current = false;
-        
-        setTimerState(prev => ({ 
-          ...prev, 
-          connectionStatus: 'error' 
-        }));
-        
-        // Don't set permanent error here, let onclose handle retries
+        safeSetError('Connection failed');
+        safeSetState(prev => ({ ...prev, connectionState: 'error' }));
       };
 
     } catch (err) {
       console.error('Failed to create WebSocket connection:', err);
-      isConnectingRef.current = false;
-      startTimerCalledRef.current = false; // Reset on connection creation failure
-      setError('Failed to connect to timer service');
-      setTimerState(prev => ({ 
-        ...prev, 
-        connectionStatus: 'error',
-        isRecovering: false 
-      }));
+      safeSetError('Failed to connect to timer service');
+      safeSetState(prev => ({ ...prev, connectionState: 'error' }));
     }
-  }, [onTimeUp, onSessionEnd, updateSessionStatus, cleanupConnection]);
+  }, [durationMinutes, onTimeUp, onSessionEnd, safeSetState, safeSetError]);
 
-  // Add a ref to track if startTimer has been called
-  const startTimerCalledRef = useRef<boolean>(false);
-
-  const startTimer = useCallback(async () => {
-    // Enhanced blocking logic
-    if (!userData || 
-        timerState.isActive || 
-        isConnectingRef.current || 
-        startTimerCalledRef.current || 
-        timerState.isRecovering) {
-      console.log('Start timer blocked:', { 
-        hasUserData: !!userData, 
-        isActive: timerState.isActive,
-        isConnecting: isConnectingRef.current,
-        alreadyCalled: startTimerCalledRef.current,
-        isRecovering: timerState.isRecovering
-      });
+  // Main initialization function - called only once
+  const initializeTimer = useCallback(async () => {
+    if (!userData?.id || initializationStartedRef.current) {
       return;
     }
 
-    // Mark as called to prevent duplicate calls
-    startTimerCalledRef.current = true;
+    initializationStartedRef.current = true;
+    console.log('Initializing timer for test:', tatTestId);
     
-    console.log('Starting timer...');
-    setTimerState(prev => ({ ...prev, isRecovering: true }));
-    setError(null);
-    retryCountRef.current = 0;
-    
+    safeSetState(prev => ({ ...prev, connectionState: 'checking' }));
+    safeSetError(null);
+
     try {
-      // Try to recover existing session first
-      const recoveredSession = await recoverSession();
+      // Step 1: Check for existing active session
+      const existingSession = await checkExistingSession();
       
-      if (recoveredSession && mountedRef.current) {
-        console.log(`Recovering session ${recoveredSession.sessionId}`);
-        setTimerState(prev => ({
+      if (existingSession) {
+        // Resume existing session
+        console.log('Resuming existing session:', existingSession.sessionId);
+        safeSetState(prev => ({
           ...prev,
-          timeRemaining: recoveredSession.timeRemaining
+          sessionId: existingSession.sessionId,
+          timeRemaining: existingSession.timeRemaining,
+          isRecoveredSession: true
         }));
-        connectToContainer(recoveredSession.sessionId, 'resume', { 
-          timeRemaining: recoveredSession.timeRemaining 
-        });
+        connectToModal(existingSession.sessionId, true, existingSession.timeRemaining);
       } else {
         // Create new session
-        const sessionId = await createSession();
-        if (!sessionId || !mountedRef.current) {
-          setTimerState(prev => ({ ...prev, isRecovering: false }));
-          startTimerCalledRef.current = false; // Reset on failure
-          return;
+        console.log('Creating new session');
+        const sessionId = await createNewSession();
+        
+        if (sessionId && mountedRef.current) {
+          safeSetState(prev => ({
+            ...prev,
+            sessionId,
+            timeRemaining: durationMinutes * 60,
+            isRecoveredSession: false
+          }));
+          connectToModal(sessionId, false, durationMinutes * 60);
         }
-
-        console.log(`Starting new session ${sessionId}`);
-        connectToContainer(sessionId, 'start', { 
-          duration: durationMinutes * 60 
-        });
       }
     } catch (err) {
-      console.error('Error in startTimer:', err);
-      setError('Failed to start timer');
-      setTimerState(prev => ({ ...prev, isRecovering: false }));
-      startTimerCalledRef.current = false; // Reset on error
+      console.error('Error initializing timer:', err);
+      safeSetError('Failed to initialize timer');
+      safeSetState(prev => ({ ...prev, connectionState: 'error' }));
     }
-  }, [userData, timerState.isActive, timerState.isRecovering, createSession, recoverSession, connectToContainer, durationMinutes]);
+  }, [userData?.id, tatTestId, checkExistingSession, createNewSession, connectToModal, durationMinutes, safeSetState, safeSetError]);
+
+  // Auto-start timer when component mounts and user is available
+  useEffect(() => {
+    if (userData?.id && timerState.connectionState === 'idle') {
+      initializeTimer();
+    }
+  }, [userData?.id]); // Only depend on userData.id - prevents re-triggering
+
+  // Manual control functions
+  const startTimer = useCallback(() => {
+    if (timerState.connectionState === 'idle' && !initializationStartedRef.current) {
+      initializeTimer();
+    }
+  }, [timerState.connectionState, initializeTimer]);
 
   const stopTimer = useCallback(() => {
     console.log('Stopping timer...');
@@ -422,34 +343,42 @@ export const useModalTimer = ({
         sessionId: timerState.sessionId
       }));
     }
-    cleanupConnection();
-  }, [timerState.sessionId, cleanupConnection]);
+    
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    
+    safeSetState(prev => ({ ...prev, connectionState: 'completed' }));
+  }, [timerState.sessionId, safeSetState]);
 
   const completeSession = useCallback(async () => {
     console.log('Completing session...');
     if (timerState.sessionId) {
-      await updateSessionStatus(timerState.sessionId, 'completed');
+      await supabase
+        .from('test_sessions')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', timerState.sessionId);
     }
-    cleanupConnection();
-    setTimerState(prev => ({
-      ...prev,
-      isActive: false,
-      connectionStatus: 'disconnected'
-    }));
-  }, [timerState.sessionId, updateSessionStatus, cleanupConnection]);
+    stopTimer();
+  }, [timerState.sessionId, stopTimer]);
 
   const abandonSession = useCallback(async () => {
     console.log('Abandoning session...');
     if (timerState.sessionId) {
-      await updateSessionStatus(timerState.sessionId, 'abandoned');
+      await supabase
+        .from('test_sessions')
+        .update({
+          status: 'abandoned',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', timerState.sessionId);
     }
-    cleanupConnection();
-    setTimerState(prev => ({
-      ...prev,
-      isActive: false,
-      connectionStatus: 'disconnected'
-    }));
-  }, [timerState.sessionId, updateSessionStatus, cleanupConnection]);
+    stopTimer();
+  }, [timerState.sessionId, stopTimer]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -457,42 +386,47 @@ export const useModalTimer = ({
       console.log('useModalTimer cleanup');
       mountedRef.current = false;
       
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      
       if (wsRef.current) {
         wsRef.current.close();
       }
-      
-      // Note: We don't update session status here to avoid race conditions
-      // The session will be marked as abandoned when the user navigates away
     };
-  }, []); // Empty dependency array to run only on mount/unmount
+  }, []);
 
+  // Helper function to format time
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }, []);
 
+  // Computed properties
+  const isActive = timerState.connectionState === 'timer_running';
+  const isConnected = ['connected', 'timer_running'].includes(timerState.connectionState);
+  const isConnecting = timerState.connectionState === 'connecting';
+  const canStart = timerState.connectionState === 'idle' && !!userData?.id;
+
   return {
+    // State
     timeRemaining: timerState.timeRemaining,
     timeFormatted: formatTime(timerState.timeRemaining),
-    isActive: timerState.isActive,
-    connectionStatus: timerState.connectionStatus,
+    isActive,
+    connectionStatus: timerState.connectionState,
     sessionId: timerState.sessionId,
     containerId: timerState.containerId,
     error,
+    isRecoveredSession: timerState.isRecoveredSession,
 
+    // Actions
     startTimer,
     stopTimer,
     completeSession,
     abandonSession,
 
-    isConnected: timerState.connectionStatus === 'connected',
+    // Computed flags
+    isConnected,
+    isConnecting,
     isExpired: timerState.timeRemaining === 0,
-    canStart: !timerState.isActive && !timerState.isRecovering && !!userData && !isConnectingRef.current,
-    isRecovering: timerState.isRecovering
+    canStart,
+    isRecovering: timerState.connectionState === 'checking'
   };
 };
