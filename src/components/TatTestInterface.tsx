@@ -31,7 +31,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [isCompletingSession, setIsCompletingSession] = useState(false);
   
   // User data and credit management
-  const { hasEnoughCredits, deductCredits, userData } = useUserData();
+  const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
   const { toast } = useToast();
 
   const {
@@ -67,22 +67,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
 
     try {
-      const startedSessionId = await startTimer();
-      
-      // After successful timer start, deduct credits using the returned session ID
-      if (startedSessionId) {
-        console.log('Deducting credits for session:', startedSessionId);
-        const success = await deductCredits(startedSessionId);
-        if (!success) {
-          toast({
-            title: "Credit Error",
-            description: "Failed to deduct credits. Test stopped.",
-            variant: "destructive"
-          });
-          return;
-        }
-        console.log('Credits deducted successfully');
-      }
+      await startTimer();
     } catch (error) {
       console.error('Error starting test:', error);
       toast({
@@ -109,6 +94,25 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
             completed_at: new Date().toISOString()
           })
           .eq('id', sessionId);
+
+        // Deduct credits after successful completion
+        if (story.trim()) {
+          const result = await deductCreditsAfterCompletion(sessionId);
+          if (result.success) {
+            toast({
+              title: "Time's up! Test completed.",
+              description: `100 credits deducted. Remaining balance: ${result.newBalance} credits`,
+              variant: "default"
+            });
+          } else {
+            console.error('Credit deduction failed:', result.error);
+            toast({
+              title: "Time's up! Test completed.",
+              description: "Test completed successfully, but there was an issue processing credit deduction. Please contact support.",
+              variant: "default"
+            });
+          }
+        }
       } catch (error) {
         console.error('Error completing session:', error);
       }
@@ -207,11 +211,30 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       // Complete the timer session (this will stop the timer)
       await completeSession();
 
-      toast({
-        title: "Story submitted successfully!",
-        description: "Your TAT story has been saved and will be analyzed.",
-        variant: "default"
-      });
+      // Deduct credits after successful submission (only if not called from timer complete)
+      if (!isTimerComplete) {
+        const result = await deductCreditsAfterCompletion(sessionId);
+        if (result.success) {
+          toast({
+            title: "Story submitted successfully!",
+            description: `100 credits deducted. Remaining balance: ${result.newBalance} credits. Your TAT story will be analyzed.`,
+            variant: "default"
+          });
+        } else {
+          console.error('Credit deduction failed:', result.error);
+          toast({
+            title: "Story submitted successfully!",
+            description: "Test completed successfully, but there was an issue processing credit deduction. Please contact support.",
+            variant: "default"
+          });
+        }
+      } else {
+        toast({
+          title: "Story submitted successfully!",
+          description: "Your TAT story has been saved and will be analyzed.",
+          variant: "default"
+        });
+      }
 
       onComplete();
     } catch (error) {

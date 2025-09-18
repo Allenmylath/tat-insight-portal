@@ -129,6 +129,47 @@ export const useUserData = () => {
     }
   };
 
+  const deductCreditsAfterCompletion = async (testSessionId: string, creditsNeeded: number = 100) => {
+    if (!userData) return { success: false, error: 'No user data available' };
+
+    try {
+      const { data, error } = await supabase.rpc('deduct_credits_for_test', {
+        p_user_id: userData.id,
+        p_test_session_id: testSessionId,
+        p_credits_needed: creditsNeeded
+      });
+
+      if (error) {
+        console.error('Error deducting credits after completion:', error);
+        return { success: false, error: error.message };
+      }
+
+      // Refresh user data to get updated balance
+      if (data) {
+        const { data: updatedUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userData.id)
+          .single();
+        
+        if (updatedUser) {
+          setUserData(updatedUser);
+          return { 
+            success: true, 
+            creditsDeducted: creditsNeeded, 
+            newBalance: updatedUser.credit_balance 
+          };
+        }
+      }
+
+      return { success: true, creditsDeducted: creditsNeeded };
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('Error deducting credits after completion:', err);
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const hasEnoughCredits = (creditsNeeded: number = 100) => {
     return userData ? userData.credit_balance >= creditsNeeded : false;
   };
@@ -139,6 +180,7 @@ export const useUserData = () => {
     error,
     updateMembership,
     deductCredits,
+    deductCreditsAfterCompletion,
     hasEnoughCredits,
     isPro: userData?.membership_type === 'pro'
   };
