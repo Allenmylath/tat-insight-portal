@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import Index from "./pages/Index";
 import TatTestInfo from "./pages/TatTestInfo";
+import StandaloneTestPage from "./pages/StandaloneTestPage";
 import Dashboard from "./pages/Dashboard";
 import AttemptedTests from "./pages/dashboard/AttemptedTests";
 import PendingTests from "./pages/dashboard/PendingTests";
@@ -46,6 +47,14 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about-tat" element={<TatTestInfo />} />
+            
+            {/* Standalone test route - no dashboard layout */}
+            <Route path="/test/:testId" element={
+              <SignedIn>
+                <StandaloneTestPage />
+              </SignedIn>
+            } />
+            
             <Route path="/dashboard" element={
               <SignedIn>
                 <DashboardLayout>

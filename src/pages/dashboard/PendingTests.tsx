@@ -5,13 +5,10 @@ import { Clock, Play, Lock, Crown, Image } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { TatTestInterface } from "@/components/TatTestInterface";
-import { useTestContext } from "@/contexts/TestContext";
 import { useToast } from "@/hooks/use-toast";
 
 const PendingTests = () => {
   const { isPro, userData } = useUserData();
-  const { activeTest, setActiveTest, isTestActive } = useTestContext();
   const { toast } = useToast();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,36 +110,38 @@ const PendingTests = () => {
 
   const startTest = async (test: any) => {
     try {
-      // Fetch full test data
-      const { data: fullTest, error } = await supabase
-        .from('tattest')
-        .select('*')
-        .eq('id', test.id)
-        .single();
-
-      if (error || !fullTest) {
-        throw new Error('Failed to load test data');
+      // Open test in new window
+      const testUrl = `/test/${test.id}`;
+      const testWindow = window.open(testUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+      
+      if (!testWindow) {
+        toast({
+          title: "Popup blocked",
+          description: "Please allow popups for this site to open the test in a new window.",
+          variant: "destructive"
+        });
+        return;
       }
 
-      setActiveTest({
-        id: fullTest.id,
-        title: fullTest.title,
-        description: fullTest.description,
-        image_url: fullTest.image_url,
-        prompt_text: fullTest.prompt_text
-      });
+      // Refresh tests when the window closes
+      const checkClosed = setInterval(() => {
+        if (testWindow.closed) {
+          clearInterval(checkClosed);
+          fetchTests(); // Refresh the test list
+        }
+      }, 1000);
+
     } catch (error) {
       console.error('Error starting test:', error);
       toast({
         title: "Error starting test",
-        description: "There was an error loading the test. Please try again.",
+        description: "There was an error opening the test. Please try again.",
         variant: "destructive"
       });
     }
   };
 
   const handleTestComplete = () => {
-    setActiveTest(null);
     fetchTests(); // Refresh the test list
     toast({
       title: "Test completed!",
@@ -152,7 +151,6 @@ const PendingTests = () => {
   };
 
   const handleTestAbandon = () => {
-    setActiveTest(null);
     fetchTests(); // Refresh the test list
   };
 
@@ -167,15 +165,7 @@ const PendingTests = () => {
   };
 
   // If there's an active test, show the test interface
-  if (isTestActive && activeTest) {
-    return (
-      <TatTestInterface
-        test={activeTest}
-        onComplete={handleTestComplete}
-        onAbandon={handleTestAbandon}
-      />
-    );
-  }
+  // This is now removed since tests open in new windows
 
   return (
     <div className="space-y-6">

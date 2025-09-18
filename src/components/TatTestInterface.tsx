@@ -40,7 +40,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     isExpired
   } = useModalTimer({
     tatTestId: test.id,
-    durationMinutes: 15, // 15 minutes
+    durationMinutes: 6, // 6 minutes
     onTimeUp: handleTimerComplete,
     onSessionEnd: handleTimerAbandon,
   });
