@@ -8,6 +8,9 @@ export interface UserData {
   email: string;
   membership_type: 'free' | 'pro';
   membership_expires_at: string | null;
+  credit_balance: number;
+  total_credits_purchased: number;
+  total_credits_spent: number;
   created_at: string;
   updated_at: string;
 }
@@ -94,11 +97,49 @@ export const useUserData = () => {
     }
   };
 
+  const deductCredits = async (testSessionId: string, creditsNeeded: number = 100) => {
+    if (!userData) return false;
+
+    try {
+      const { data, error } = await supabase.rpc('deduct_credits_for_test', {
+        p_user_id: userData.id,
+        p_test_session_id: testSessionId,
+        p_credits_needed: creditsNeeded
+      });
+
+      if (error) throw error;
+
+      // Refresh user data to get updated balance
+      if (data) {
+        const { data: updatedUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userData.id)
+          .single();
+        
+        if (updatedUser) {
+          setUserData(updatedUser);
+        }
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error deducting credits:', err);
+      throw err;
+    }
+  };
+
+  const hasEnoughCredits = (creditsNeeded: number = 100) => {
+    return userData ? userData.credit_balance >= creditsNeeded : false;
+  };
+
   return {
     userData,
     loading,
     error,
     updateMembership,
+    deductCredits,
+    hasEnoughCredits,
     isPro: userData?.membership_type === 'pro'
   };
 };

@@ -59,6 +59,89 @@ export type Database = {
           },
         ]
       }
+      credit_packages: {
+        Row: {
+          created_at: string
+          credits: number
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          name: string
+          price: number
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string
+          credits: number
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name: string
+          price: number
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          balance_after: number
+          created_at: string
+          credits_change: number
+          description: string | null
+          id: string
+          reference_id: string | null
+          reference_type: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          credits_change: number
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          credits_change?: number
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offers: {
         Row: {
           code: string
@@ -110,42 +193,41 @@ export type Database = {
       purchases: {
         Row: {
           amount: number
+          credits_purchased: number
           currency: string
           id: string
+          package_name: string | null
+          payment_method: string | null
+          payment_reference: string | null
           purchased_at: string
           status: string
-          stripe_payment_intent_id: string | null
-          tattest_id: string
           user_id: string
         }
         Insert: {
           amount: number
+          credits_purchased?: number
           currency?: string
           id?: string
+          package_name?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           purchased_at?: string
           status?: string
-          stripe_payment_intent_id?: string | null
-          tattest_id: string
           user_id: string
         }
         Update: {
           amount?: number
+          credits_purchased?: number
           currency?: string
           id?: string
+          package_name?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           purchased_at?: string
           status?: string
-          stripe_payment_intent_id?: string | null
-          tattest_id?: string
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "purchases_tattest_id_fkey"
-            columns: ["tattest_id"]
-            isOneToOne: false
-            referencedRelation: "tattest"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "purchases_user_id_fkey"
             columns: ["user_id"]
@@ -291,28 +373,37 @@ export type Database = {
         Row: {
           clerk_id: string
           created_at: string
+          credit_balance: number
           email: string
           id: string
           membership_expires_at: string | null
           membership_type: Database["public"]["Enums"]["membership_type"]
+          total_credits_purchased: number
+          total_credits_spent: number
           updated_at: string
         }
         Insert: {
           clerk_id: string
           created_at?: string
+          credit_balance?: number
           email: string
           id?: string
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          total_credits_purchased?: number
+          total_credits_spent?: number
           updated_at?: string
         }
         Update: {
           clerk_id?: string
           created_at?: string
+          credit_balance?: number
           email?: string
           id?: string
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          total_credits_purchased?: number
+          total_credits_spent?: number
           updated_at?: string
         }
         Relationships: []
@@ -322,7 +413,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_credits_after_purchase: {
+        Args: {
+          p_credits_purchased: number
+          p_purchase_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      deduct_credits_for_test: {
+        Args: {
+          p_credits_needed?: number
+          p_test_session_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       membership_type: "free" | "pro"

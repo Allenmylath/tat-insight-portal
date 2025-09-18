@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, Circle, Clock, Award, BarChart3, Crown, Lock, Star } from "lucide-react";
+import { CheckCircle, Circle, Clock, Award, BarChart3, Crown, Lock, Star, Coins, Zap } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { CreditHeader } from "@/components/CreditHeader";
 
 const Dashboard = () => {
   const { userData, loading, isPro } = useUserData();
@@ -152,8 +153,52 @@ const Dashboard = () => {
       )}
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Progress Overview */}
+        {/* Credit Overview & Test Progress */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Credit Overview */}
+          <Card className="shadow-elegant border-primary/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-foreground">
+                <Coins className="h-5 w-5 text-primary" />
+                Credit Overview
+              </CardTitle>
+              <CardDescription>
+                Manage your test credits and view usage statistics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-6 w-12" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{userData?.credit_balance || 0}</div>
+                    <div className="text-sm text-muted-foreground">Available Credits</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{userData?.total_credits_purchased || 0}</div>
+                    <div className="text-sm text-muted-foreground">Total Purchased</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{userData?.total_credits_spent || 0}</div>
+                    <div className="text-sm text-muted-foreground">Total Spent</div>
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-center mt-4">
+                <CreditHeader />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Test Progress Overview */}
           <Card className="shadow-elegant border-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">

@@ -8,6 +8,7 @@ import { useModalTimer } from "@/hooks/useModalTimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserData } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
+import { CreditPurchaseModal } from "@/components/CreditPurchaseModal";
 
 interface TatTestInterfaceProps {
   test: {
@@ -24,7 +25,8 @@ interface TatTestInterfaceProps {
 export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfaceProps) => {
   const [story, setStory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { userData } = useUserData();
+  const [showCreditModal, setShowCreditModal] = useState(false);
+  const { hasEnoughCredits, deductCredits, userData } = useUserData();
   const { toast } = useToast();
 
   const {
@@ -34,16 +36,51 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     connectionStatus,
     error,
     isRecoveredSession,
+    startTimer,
     completeSession,
     abandonSession,
     isConnecting,
-    isExpired
+    isExpired,
+    canStart,
+    sessionId
   } = useModalTimer({
     tatTestId: test.id,
     durationMinutes: 6, // 6 minutes
     onTimeUp: handleTimerComplete,
     onSessionEnd: handleTimerAbandon,
   });
+
+  // Start test with credit deduction 
+  const handleStartTest = async () => {
+    if (!hasEnoughCredits()) {
+      setShowCreditModal(true);
+      return;
+    }
+
+    try {
+      await startTimer();
+      
+      // After successful timer start, deduct credits
+      if (sessionId) {
+        const success = await deductCredits(sessionId);
+        if (!success) {
+          toast({
+            title: "Credit Error",
+            description: "Failed to deduct credits. Test stopped.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error starting test:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start test. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Timer event handlers
   async function handleTimerComplete() {
@@ -189,6 +226,91 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
   };
 
+  // Check for insufficient credits before rendering
+  if (!hasEnoughCredits() && connectionStatus === 'idle') {
+    return (
+      <>
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-destructive">Insufficient Credits</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                You need 100 credits to start this TAT test. 
+                Your current balance: {userData?.credit_balance || 0} credits
+              </p>
+              <Button onClick={() => setShowCreditModal(true)} className="w-full">
+                Purchase Credits
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        <CreditPurchaseModal 
+          open={showCreditModal} 
+          onOpenChange={setShowCreditModal} 
+        />
+      </>
+    );
+  }
+
+  // Show start test screen when timer is idle
+  if (connectionStatus === 'idle' && canStart) {
+    return (
+      <>
+        <div className="space-y-6">
+          {/* Test Preview */}
+          <Card className="shadow-elegant border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                {test.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">{test.prompt_text}</p>
+              <div className="aspect-video w-full max-w-md mx-auto rounded-lg overflow-hidden bg-muted">
+                <img 
+                  src={test.image_url} 
+                  alt={test.title}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="text-center space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  <p>Duration: 6 minutes</p>
+                  <p>Cost: 100 credits</p>
+                  <p>Your balance: {userData?.credit_balance || 0} credits</p>
+                </div>
+                <Button 
+                  onClick={handleStartTest}
+                  disabled={!hasEnoughCredits()}
+                  size="lg"
+                  className="w-full max-w-sm"
+                >
+                  Start Test (100 credits)
+                </Button>
+                {!hasEnoughCredits() && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowCreditModal(true)}
+                    className="w-full max-w-sm"
+                  >
+                    Purchase Credits
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <CreditPurchaseModal 
+          open={showCreditModal} 
+          onOpenChange={setShowCreditModal} 
+        />
+      </>
+    );
+  }
+
   // Error state
   if (error) {
     return (
@@ -324,6 +446,11 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           </CardContent>
         </Card>
       )}
+      
+      <CreditPurchaseModal 
+        open={showCreditModal} 
+        onOpenChange={setShowCreditModal} 
+      />
     </div>
   );
 };

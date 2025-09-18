@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useUserData } from "@/hooks/useUserData";
 import { useTestContext } from "@/contexts/TestContext";
+import { CreditHeader } from "@/components/CreditHeader";
 
 const navigationItems = [
   { 
@@ -85,12 +86,15 @@ export function AppSidebar() {
               </div>
               <h2 className="font-semibold text-foreground">TAT Portal</h2>
             </div>
-            {!loading && (
-              <Badge variant={isPro ? "default" : "secondary"} className="gap-1">
-                {isPro ? <Crown className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                {isPro ? "Pro Member" : "Free Plan"}
-              </Badge>
-            )}
+            <div className="space-y-2">
+              {!loading && (
+                <Badge variant={isPro ? "default" : "secondary"} className="gap-1">
+                  {isPro ? <Crown className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+                  {isPro ? "Pro Member" : "Free Plan"}
+                </Badge>
+              )}
+              <CreditHeader />
+            </div>
           </div>
         )}
 
