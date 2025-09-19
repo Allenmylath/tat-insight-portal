@@ -159,6 +159,18 @@ const Index = () => {
                     personality assessment by revealing unconscious drives, emotions, and thought patterns 
                     through narrative storytelling.
                   </p>
+                  <div className="bg-accent/30 p-6 rounded-lg mb-6 border-l-4 border-primary">
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <Award className="h-5 w-5 text-primary" />
+                      Military Applications Since WWII
+                    </h4>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Since World War II, TAT has been extensively used by military organizations worldwide 
+                      for personnel selection and psychological evaluation. Its proven effectiveness in 
+                      assessing leadership potential, emotional stability, and decision-making capabilities 
+                      under pressure has made it a cornerstone of military recruitment processes.
+                    </p>
+                  </div>
                   <blockquote className="border-l-4 border-primary pl-6 mb-6 italic text-muted-foreground">
                     "The TAT is based on the well-recognized fact that when a person interprets an ambiguous 
                     social situation he is apt to expose his own personality as much as the phenomenon to which he is attending."
