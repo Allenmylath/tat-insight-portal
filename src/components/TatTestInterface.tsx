@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserData } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 import { CreditPurchaseModal } from "@/components/CreditPurchaseModal";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TatTestInterfaceProps {
   test: {
@@ -29,6 +30,9 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
   const [isTimerCompleted, setIsTimerCompleted] = useState(false);
   const [isCompletingSession, setIsCompletingSession] = useState(false);
+  
+  // Responsive layout
+  const isMobile = useIsMobile();
   
   // User data and credit management
   const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
@@ -475,53 +479,49 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </CardHeader>
       </Card>
 
-      {/* Test Instructions */}
+      {/* Main Test Interface - Responsive Layout */}
       <Card className="shadow-elegant">
-        <CardHeader>
-          <CardTitle className="text-lg">Instructions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            {test.prompt_text}
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Test Image */}
-      <Card className="shadow-elegant">
-        <CardContent className="pt-6">
-          <div className="aspect-video w-full max-w-2xl mx-auto rounded-lg overflow-hidden bg-muted">
-            <img 
-              src={test.image_url} 
-              alt={test.title}
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center text-muted-foreground">Image failed to load</div>';
-              }}
-            />
+        <div className={`${isMobile ? 'space-y-6' : 'grid grid-cols-5 gap-6'} p-6`}>
+          {/* Left Column: Instructions + Image */}
+          <div className={`${isMobile ? '' : 'col-span-2'} space-y-4`}>
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Instructions</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {test.prompt_text}
+              </p>
+            </div>
+            
+            <div className="aspect-video w-full rounded-lg overflow-hidden bg-muted">
+              <img 
+                src={test.image_url} 
+                alt={test.title}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center text-muted-foreground">Image failed to load</div>';
+                }}
+              />
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Story Writing Area */}
-      <Card className="shadow-elegant">
-        <CardHeader>
-          <CardTitle className="text-lg">Your Story</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Textarea
-            placeholder="Begin writing your story here..."
-            value={story}
-            onChange={(e) => setStory(e.target.value)}
-            className="min-h-[300px] text-base leading-relaxed"
-            disabled={isSubmitting || !isActive}
-          />
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{story.length} characters</span>
-            <span>{story.trim().split(/\s+/).filter(word => word.length > 0).length} words</span>
+          {/* Right Column: Story Writing Area */}
+          <div className={`${isMobile ? '' : 'col-span-3'}`}>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Your Story</h3>
+              <Textarea
+                placeholder="Begin writing your story here..."
+                value={story}
+                onChange={(e) => setStory(e.target.value)}
+                className={`${isMobile ? 'min-h-[300px]' : 'min-h-[400px]'} text-base leading-relaxed resize-none`}
+                disabled={isSubmitting || !isActive}
+              />
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{story.length} characters</span>
+                <span>{story.trim().split(/\s+/).filter(word => word.length > 0).length} words</span>
+              </div>
+            </div>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       {/* Action Buttons */}
