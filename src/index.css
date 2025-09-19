@@ -8,103 +8,105 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Saffron Theme for SSC TAT Platform */
-    --background: 0 0% 98%;
-    --foreground: 20 14.3% 4.1%;
+    /* 1950s Murray Era Theme - Academic Red & Black */
+    --background: 45 20% 97%; /* Cream paper */
+    --foreground: 0 0% 5%; /* Deep black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 0 0% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+    --popover-foreground: 0 0% 5%;
 
-    /* Saffron Primary Colors */
-    --primary: 24 100% 58%; /* Saffron Orange */
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 24 100% 68%;
+    /* Academic Crimson Primary Colors */
+    --primary: 0 70% 45%; /* Deep academic red */
+    --primary-foreground: 45 20% 97%;
+    --primary-glow: 0 65% 55%; /* Lighter red for highlights */
 
-    /* Government Theme Secondary */
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 20 14.3% 4.1%;
+    /* Professional Secondary */
+    --secondary: 0 0% 15%; /* Charcoal black */
+    --secondary-foreground: 45 20% 97%;
 
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 20 5.9% 46.1%;
+    --muted: 45 15% 92%; /* Warm light gray */
+    --muted-foreground: 0 0% 35%; /* Medium gray */
 
-    --accent: 24 80% 92%;
-    --accent-foreground: 24 100% 35%;
+    --accent: 0 50% 92%; /* Light red tint */
+    --accent-foreground: 0 70% 25%; /* Dark red */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 45 20% 97%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 24 100% 58%;
+    --border: 0 0% 85%; /* Light gray borders */
+    --input: 0 0% 90%; /* Input backgrounds */
+    --ring: 0 70% 45%; /* Focus ring matches primary */
 
-    --radius: 0.75rem;
+    --radius: 0.5rem; /* More conservative radius for 1950s feel */
 
-    /* Custom Design Tokens */
-    --gradient-saffron: linear-gradient(135deg, hsl(24 100% 58%), hsl(24 100% 68%));
-    --gradient-hero: linear-gradient(180deg, hsl(24 100% 97%), hsl(0 0% 98%));
-    --shadow-saffron: 0 10px 30px -10px hsl(24 100% 58% / 0.3);
-    --shadow-elegant: 0 4px 20px -2px hsl(20 14.3% 4.1% / 0.1);
+    /* Custom Design Tokens - 1950s Academic Style */
+    --gradient-saffron: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 65% 55%)); /* Red gradient */
+    --gradient-hero: linear-gradient(180deg, hsl(45 25% 95%), hsl(45 20% 97%)); /* Warm cream gradient */
+    --shadow-saffron: 0 10px 30px -10px hsl(0 70% 45% / 0.3); /* Red shadow */
+    --shadow-elegant: 0 4px 20px -2px hsl(0 0% 5% / 0.15); /* Black shadow */
     
     /* Professional spacing */
     --section-padding: 4rem 1rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 45 20% 97%; /* Cream background */
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 0 0% 25%; /* Dark gray text */
 
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 0 70% 45%; /* Academic red */
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 45 20% 97%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 45 15% 92%; /* Light warm gray */
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 0 0% 15%; /* Charcoal */
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 0 0% 85%; /* Light gray borders */
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 0 70% 45%; /* Red focus ring */
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
+    /* Dark mode - 1950s academic style with deep blacks and warm reds */
+    --background: 0 0% 8%; /* Deep black */
+    --foreground: 45 15% 90%; /* Warm white */
 
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 12%; /* Dark charcoal */
+    --card-foreground: 45 15% 90%;
 
-    --popover: 24 9.8% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 45 15% 90%;
 
-    --primary: 24 100% 58%;
-    --primary-foreground: 0 0% 9%;
-    --primary-glow: 24 100% 68%;
+    --primary: 0 75% 55%; /* Brighter red for dark mode */
+    --primary-foreground: 0 0% 8%;
+    --primary-glow: 0 70% 65%;
 
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 0 0% 18%; /* Dark gray */
+    --secondary-foreground: 45 15% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 45 10% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 45 15% 90%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 45 15% 90%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 0 75% 55%;
+    
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 45 15% 85%;
+    --sidebar-primary: 0 75% 55%;
+    --sidebar-primary-foreground: 0 0% 8%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 45 15% 85%;
+    --sidebar-border: 0 0% 25%;
+    --sidebar-ring: 0 75% 55%;
   }
 }
 
