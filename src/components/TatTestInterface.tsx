@@ -89,19 +89,24 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Timer event handlers
   async function handleTimerComplete() {
-    console.log('Timer completed - setting protective flags immediately');
+    console.log('Timer completed - IMMEDIATELY disabling abandonment');
     
-    // FIXED: Set all protective flags SYNCHRONOUSLY before any async operations
+    // CRITICAL FIX: Set timer expired flag FIRST and SYNCHRONOUSLY
+    // This must happen before ANY other code to prevent beforeunload from triggering
     setIsTimerExpired(true);
-    setIsTimerCompleted(true);
-    setIsAutoSubmitting(true);
-    setIsCompletingSession(true);
     
-    // FIXED: Remove beforeunload listener immediately to prevent race conditions
+    // Remove beforeunload listener IMMEDIATELY - this is critical
     if (beforeUnloadListenerRef.current) {
+      console.log('Removing beforeunload listener due to timer expiration');
       window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
       beforeUnloadListenerRef.current = null;
     }
+    
+    // Now set other protective flags
+    setIsTimerCompleted(true);
+    setIsAutoSubmitting(true);
+    setIsCompletingSession(true);
+    setIsSubmittedSuccessfully(true); // Mark as submitted to prevent any further abandonment attempts
     
     // Update session status in database immediately
     if (sessionId && userData?.id) {
@@ -167,14 +172,19 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
   }
 
-  // FIXED: Improved beforeunload handler with better protection logic
+  // FIXED: Simplified beforeunload handler that checks timer expiration FIRST
   const createBeforeUnloadHandler = () => {
     const handler = (event: BeforeUnloadEvent) => {
-      // FIXED: Multiple layers of protection against false abandonment
+      // CRITICAL: Check timer expiration FIRST - if timer expired, NEVER abandon
+      if (isTimerExpired) {
+        console.log('Beforeunload: Timer has expired, ignoring beforeunload completely');
+        return; // Exit immediately, don't even check other conditions
+      }
+      
+      // Secondary checks for other completion states
       if (
         isSubmittedSuccessfully || 
         isCompletingSession || 
-        isTimerExpired || 
         isAutoSubmitting ||
         !isActive ||
         !sessionId
@@ -183,7 +193,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         return;
       }
       
-      // Only abandon if we have an active session with content
+      // Only abandon if we have an active session with content and timer hasn't expired
       if (story.trim()) {
         console.log('Beforeunload: Abandoning session due to page close');
         handleAbandon();
@@ -197,13 +207,24 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Handle window close detection for true abandonment
   useEffect(() => {
+    // CRITICAL FIX: Don't add beforeunload listener AT ALL if timer has expired
+    if (isTimerExpired) {
+      console.log('Timer expired - not adding beforeunload listener');
+      // Remove any existing listener
+      if (beforeUnloadListenerRef.current) {
+        window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
+        beforeUnloadListenerRef.current = null;
+      }
+      return;
+    }
+    
     // Remove existing listener if any
     if (beforeUnloadListenerRef.current) {
       window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
     }
     
     // Create and add new listener only if session is active and not in completion states
-    if (isActive && !isSubmittedSuccessfully && !isTimerExpired && !isAutoSubmitting) {
+    if (isActive && !isSubmittedSuccessfully && !isAutoSubmitting) {
       const handler = createBeforeUnloadHandler();
       beforeUnloadListenerRef.current = handler;
       window.addEventListener('beforeunload', handler);
