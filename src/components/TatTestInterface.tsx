@@ -38,16 +38,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const isMobile = useIsMobile();
   
   // User data and credit management
-  // Add useEffect to monitor state changes for debugging
-  useEffect(() => {
-    console.log('🔍 State changes detected:');
-    console.log('- showCompletionScreen:', showCompletionScreen);
-    console.log('- completionData:', completionData);
-    console.log('- connectionStatus:', connectionStatus);
-    console.log('- timeRemaining:', timeRemaining);
-    console.log('- isActive:', isActive);
-  }, [showCompletionScreen, completionData, connectionStatus, timeRemaining, isActive]);
-
   const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
   const { toast } = useToast();
 
@@ -73,6 +63,16 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     onTimeUp: handleTimerComplete,
     onSessionEnd: handleTimerAbandon,
   });
+
+  // Add useEffect to monitor state changes for debugging
+  useEffect(() => {
+    console.log('🔍 State changes detected:');
+    console.log('- showCompletionScreen:', showCompletionScreen);
+    console.log('- completionData:', completionData);
+    console.log('- connectionStatus:', connectionStatus);
+    console.log('- timeRemaining:', timeRemaining);
+    console.log('- isActive:', isActive);
+  }, [showCompletionScreen, completionData, connectionStatus, timeRemaining, isActive]);
 
   // Start test with credit deduction 
   const handleStartTest = async () => {
@@ -107,7 +107,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   }
 
   // Manual story submission
-  const submitStory = async () => {
+  const submitStory = async (wasAutoCompleted = false) => {
     if (!story.trim()) {
       toast({
         title: "Story required",
@@ -161,7 +161,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       setCompletionData({
         creditsDeducted: 100,
         remainingCredits: result.success ? result.newBalance : userData.credit_balance - 100,
-        wasAutoCompleted: false
+        wasAutoCompleted
       });
       setShowCompletionScreen(true);
 
@@ -351,99 +351,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     );
   }
 
-  // Show completion screen - put this FIRST before other conditional renders
-  if (showCompletionScreen && completionData) {
-    console.log('🖥️ Rendering completion screen with data:', completionData);
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg shadow-elegant border-primary/20">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Trophy className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl text-primary">
-              {completionData.wasAutoCompleted ? "Time's Up!" : "Test Completed!"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center space-y-2">
-              <p className="text-muted-foreground">
-                {completionData.wasAutoCompleted 
-                  ? "Your TAT test session has ended automatically." 
-                  : "Thank you for completing the TAT test!"
-                }
-              </p>
-              {story.trim() && (
-                <p className="text-sm text-muted-foreground">
-                  Your story has been saved and will be analyzed.
-                </p>
-              )}
-            </div>
-
-            {/* Credit Details */}
-            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-              <h3 className="font-semibold text-center">Credit Summary</h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="text-center">
-                  <p className="text-muted-foreground">Credits Used</p>
-                  <p className="text-lg font-semibold text-primary">
-                    {completionData.creditsDeducted}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-muted-foreground">Remaining Balance</p>
-                  <p className="text-lg font-semibold">
-                    {completionData.remainingCredits}
-                  </p>
-                </div>
-              </div>
-              {completionData.creditsDeducted === 0 && (
-                <p className="text-xs text-muted-foreground text-center">
-                  No credits deducted - test was abandoned without content
-                </p>
-              )}
-            </div>
-
-            {/* Story Stats (if story exists) */}
-            {story.trim() && (
-              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
-                <h3 className="font-semibold text-center">Your Story</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm text-center">
-                  <div>
-                    <p className="text-muted-foreground">Characters</p>
-                    <p className="font-semibold">{story.length}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Words</p>
-                    <p className="font-semibold">
-                      {story.trim().split(/\s+/).filter(word => word.length > 0).length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Close Button */}
-            <Button 
-              onClick={handleCloseCompletion}
-              className="w-full gap-2"
-              size="lg"
-            >
-              <X className="h-4 w-4" />
-              Close & Return to Tests
-            </Button>
-
-            {/* Debug Info */}
-            <div className="text-xs text-muted-foreground text-center border-t pt-2 space-y-1">
-              <div>Debug: Screen shown at {new Date().toLocaleTimeString()}</div>
-              <div>Connection Status: {connectionStatus}</div>
-              <div>Session ID: {sessionId}</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Check for insufficient credits before rendering
   if (!hasEnoughCredits() && connectionStatus === 'idle') {
@@ -630,7 +537,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           Save & Pause
         </Button>
         <Button
-          onClick={submitStory}
+          onClick={() => submitStory()}
           disabled={isSubmitting || !story.trim() || !isActive}
           className="flex-1 gap-2"
         >
