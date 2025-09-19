@@ -108,7 +108,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Manual story submission
   const submitStory = async (wasAutoCompleted = false) => {
-    if (!story.trim()) {
+    if (!wasAutoCompleted && !story.trim()) {
       toast({
         title: "Story required",
         description: "Please write your story before submitting.",
