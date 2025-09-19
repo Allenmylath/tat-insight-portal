@@ -1,16 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Trophy, Eye, Calendar, Loader2 } from "lucide-react";
+import { CheckCircle2, Trophy, Eye, Calendar, Loader2, Brain } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
+import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
 import { useState } from "react";
+import { Button as LinkButton } from "@/components/ui/button";
 
 const AttemptedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
   const [selectedAnalysis, setSelectedAnalysis] = useState<{
+    analysis: any;
+    title: string;
+    score: number;
+  } | null>(null);
+  const [showValuationLogic, setShowValuationLogic] = useState(false);
+  const [pendingAnalysis, setPendingAnalysis] = useState<{
     analysis: any;
     title: string;
     score: number;
@@ -85,10 +93,21 @@ const AttemptedTests = () => {
             Review your completed psychological assessments and results
           </p>
         </div>
-        <Badge variant="secondary" className="gap-2">
-          <CheckCircle2 className="h-4 w-4" />
-          {visibleTests.length} Completed
-        </Badge>
+        <div className="flex items-center gap-3">
+          <LinkButton 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowValuationLogic(true)}
+            className="gap-2"
+          >
+            <Brain className="h-4 w-4" />
+            Valuation Logic
+          </LinkButton>
+          <Badge variant="secondary" className="gap-2">
+            <CheckCircle2 className="h-4 w-4" />
+            {visibleTests.length} Completed
+          </Badge>
+        </div>
       </div>
 
       {isLoading ? (
@@ -162,11 +181,16 @@ const AttemptedTests = () => {
                     variant="government" 
                     size="sm" 
                     className="gap-2"
-                    onClick={() => test.fullAnalysis && setSelectedAnalysis({
-                      analysis: test.fullAnalysis,
-                      title: test.title,
-                      score: test.score || 0
-                    })}
+                    onClick={() => {
+                      if (test.fullAnalysis) {
+                        setPendingAnalysis({
+                          analysis: test.fullAnalysis,
+                          title: test.title,
+                          score: test.score || 0
+                        });
+                        setShowValuationLogic(true);
+                      }
+                    }}
                     disabled={!test.fullAnalysis}
                   >
                     <Eye className="h-4 w-4" />
@@ -181,6 +205,18 @@ const AttemptedTests = () => {
           ))}
         </div>
       )}
+
+      <ValuationLogicDialog
+        open={showValuationLogic}
+        onOpenChange={setShowValuationLogic}
+        onAccept={() => {
+          setShowValuationLogic(false);
+          if (pendingAnalysis) {
+            setSelectedAnalysis(pendingAnalysis);
+            setPendingAnalysis(null);
+          }
+        }}
+      />
 
       <AnalysisReportDialog
         open={!!selectedAnalysis}
