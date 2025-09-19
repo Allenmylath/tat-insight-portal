@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText } from "lucide-react";
-import heroImage from "@/assets/hero-banner.jpg";
+import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
 
 const Index = () => {
