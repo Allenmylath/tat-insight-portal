@@ -6,9 +6,10 @@ import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { CreditHeader } from "@/components/CreditHeader";
 
 const PendingTests = () => {
-  const { isPro, userData } = useUserData();
+  const { isPro, userData, hasEnoughCredits } = useUserData();
   const { toast } = useToast();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,6 +121,16 @@ const PendingTests = () => {
 
   const startTest = async (test: any) => {
     try {
+      // Check if user has enough credits before starting test
+      if (!hasEnoughCredits(100)) {
+        toast({
+          title: "Insufficient Credits",
+          description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Open test in new window
       const testUrl = `/test/${test.id}`;
       const testWindow = window.open(testUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
@@ -186,10 +197,13 @@ const PendingTests = () => {
             Continue your psychological assessment journey
           </p>
         </div>
-        <Badge variant="secondary" className="gap-2">
-          <Clock className="h-4 w-4" />
-          {availableTests.length} Available
-        </Badge>
+        <div className="flex items-center gap-4">
+          <CreditHeader />
+          <Badge variant="secondary" className="gap-2">
+            <Clock className="h-4 w-4" />
+            {availableTests.length} Available
+          </Badge>
+        </div>
       </div>
 
       {/* Available Tests */}
@@ -241,12 +255,16 @@ const PendingTests = () => {
                       </Badge>
                     </div>
                     <Button 
-                      variant="hero" 
+                      variant={!hasEnoughCredits(100) ? "outline" : "hero"}
                       className="w-full gap-2"
                       onClick={() => startTest(test)}
+                      disabled={!hasEnoughCredits(100)}
                     >
                       <Play className="h-4 w-4" />
-                      {test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'}
+                      {!hasEnoughCredits(100) 
+                        ? 'Insufficient Credits' 
+                        : test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'
+                      }
                     </Button>
                   </div>
                 </div>
