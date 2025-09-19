@@ -93,21 +93,10 @@ const AttemptedTests = () => {
             Review your completed psychological assessments and results
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <LinkButton 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setShowValuationLogic(true)}
-            className="gap-2"
-          >
-            <Brain className="h-4 w-4" />
-            Valuation Logic
-          </LinkButton>
-          <Badge variant="secondary" className="gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            {visibleTests.length} Completed
-          </Badge>
-        </div>
+        <Badge variant="secondary" className="gap-2">
+          <CheckCircle2 className="h-4 w-4" />
+          {visibleTests.length} Completed
+        </Badge>
       </div>
 
       {isLoading ? (
