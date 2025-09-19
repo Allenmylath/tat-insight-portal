@@ -1,18 +1,31 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Play, Lock, Crown, Image } from "lucide-react";
+import { Clock, Play, Lock, Crown, Image, AlertTriangle } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { CreditHeader } from "@/components/CreditHeader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const PendingTests = () => {
   const { isPro, userData, hasEnoughCredits } = useUserData();
   const { toast } = useToast();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedTest, setSelectedTest] = useState<any>(null);
 
   useEffect(() => {
     console.log('PendingTests - useEffect triggered', { 
@@ -119,20 +132,28 @@ const PendingTests = () => {
   const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const lockedTests = isPro ? [] : tests.filter(test => test.isPremium);
 
-  const startTest = async (test: any) => {
-    try {
-      // Check if user has enough credits before starting test
-      if (!hasEnoughCredits(100)) {
-        toast({
-          title: "Insufficient Credits",
-          description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
-          variant: "destructive"
-        });
-        return;
-      }
+  const startTest = (test: any) => {
+    // Check if user has enough credits before starting test
+    if (!hasEnoughCredits(100)) {
+      toast({
+        title: "Insufficient Credits",
+        description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
+        variant: "destructive"
+      });
+      return;
+    }
 
+    // Show confirmation dialog
+    setSelectedTest(test);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmStartTest = async () => {
+    if (!selectedTest) return;
+
+    try {
       // Open test in new window
-      const testUrl = `/test/${test.id}`;
+      const testUrl = `/test/${selectedTest.id}`;
       const testWindow = window.open(testUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
       
       if (!testWindow) {
@@ -151,6 +172,10 @@ const PendingTests = () => {
           fetchTests(); // Refresh the test list
         }
       }, 1000);
+
+      // Close dialog
+      setShowConfirmDialog(false);
+      setSelectedTest(null);
 
     } catch (error) {
       console.error('Error starting test:', error);
@@ -377,6 +402,46 @@ const PendingTests = () => {
           ))}
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Important Test Instructions
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-left">
+              <p>
+                Please ensure you complete this psychological assessment in one session without interruptions.
+              </p>
+              <p>
+                <strong>Important Notes:</strong>
+              </p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Set aside 10-15 minutes of uninterrupted time</li>
+                <li>Results may be delayed during peak traffic hours</li>
+                <li>We conduct assessments globally, processing high volumes daily</li>
+                <li>Your session will be saved if you need to pause briefly</li>
+              </ul>
+              <p className="text-sm text-muted-foreground">
+                Are you ready to begin your assessment now?
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowConfirmDialog(false);
+              setSelectedTest(null);
+            }}>
+              Not Now
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStartTest}>
+              Yes, Start Test
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
