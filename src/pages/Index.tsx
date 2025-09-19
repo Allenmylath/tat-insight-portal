@@ -3,35 +3,43 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp } from "lucide-react";
+import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText } from "lucide-react";
 import heroImage from "@/assets/hero-banner.jpg";
+import henryMurrayImage from "@/assets/henry-murray.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
 
   const features = [
     {
+      icon: Microscope,
+      title: "Murray's TAT Methodology",
+      description: "Based on Henry Murray's original Thematic Apperception Test framework developed at Harvard Psychological Clinic"
+    },
+    {
       icon: Brain,
-      title: "Scientific Assessment",
-      description: "Evidence-based thematic apperception tests designed for SSC evaluation standards"
+      title: "Psychodynamic Analysis", 
+      description: "Deep psychological assessment through projective storytelling and personality dynamics evaluation"
     },
     {
-      icon: Target,
-      title: "Targeted Preparation", 
-      description: "Structured practice tests that mirror actual SSC psychological assessment patterns"
-    },
-    {
-      icon: TrendingUp,
-      title: "Progress Tracking",
-      description: "Detailed analytics and performance insights to track your improvement over time"
+      icon: GraduationCap,
+      title: "Research-Based Framework",
+      description: "Grounded in decades of psychological research and validated assessment methodologies"
     }
   ];
 
   const stats = [
-    { label: "Success Rate", value: "94%", icon: Award },
-    { label: "Active Users", value: "10K+", icon: Users },
-    { label: "Tests Completed", value: "50K+", icon: CheckCircle }
+    { label: "Research Foundation", value: "Since 1935", icon: Award },
+    { label: "Scientific Validity", value: "Harvard Clinic", icon: Users },
+    { label: "Psychological Depth", value: "Projective Analysis", icon: CheckCircle }
   ];
+
+  const downloadPDF = () => {
+    const link = document.createElement('a');
+    link.href = '/murray.pdf';
+    link.download = 'murray-tat-research.pdf';
+    link.click();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,17 +84,17 @@ const Index = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20" variant="outline">
-                Official SSC TAT Preparation Platform
+                Scientific TAT Assessment • Founded on Murray's Research
               </Badge>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Master Your 
-                <span className="text-primary block">Thematic Apperception Test</span>
+                Scientific 
+                <span className="text-primary block">Thematic Apperception Analysis</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                Comprehensive TAT preparation designed specifically for SSC candidates. 
-                Practice with authentic scenarios and get detailed performance insights.
+                Advanced psychological assessment platform based on Henry Murray's original TAT methodology. 
+                Experience evidence-based personality evaluation through projective storytelling techniques.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -133,15 +141,56 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Features Section */}
+        {/* Murray Foundation Section */}
         <section className="py-20 bg-card/30">
           <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+                <div>
+                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" variant="outline">
+                    Founded by Dr. Henry Murray • Harvard Psychological Clinic
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+                    Rooted in Scientific Excellence
+                  </h2>
+                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                    The Thematic Apperception Test was developed by Dr. Henry Murray at Harvard University's 
+                    Psychological Clinic in 1935. This groundbreaking projective technique revolutionized 
+                    personality assessment by revealing unconscious drives, emotions, and thought patterns 
+                    through narrative storytelling.
+                  </p>
+                  <blockquote className="border-l-4 border-primary pl-6 mb-6 italic text-muted-foreground">
+                    "The TAT is based on the well-recognized fact that when a person interprets an ambiguous 
+                    social situation he is apt to expose his own personality as much as the phenomenon to which he is attending."
+                    <cite className="block mt-2 text-sm font-semibold text-primary">— Dr. Henry Murray</cite>
+                  </blockquote>
+                  <Button onClick={downloadPDF} variant="government" className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download Murray's Research (PDF)
+                  </Button>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-saffron/20 rounded-full blur-3xl"></div>
+                  <img 
+                    src={henryMurrayImage} 
+                    alt="Dr. Henry Murray, founder of the Thematic Apperception Test"
+                    className="w-full max-w-sm mx-auto rounded-full shadow-elegant border-4 border-primary/20"
+                  />
+                  <div className="mt-6 text-center">
+                    <p className="font-semibold text-foreground">Dr. Henry Murray</p>
+                    <p className="text-sm text-muted-foreground">Harvard Psychological Clinic</p>
+                    <p className="text-sm text-muted-foreground">TAT Creator • 1893-1988</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                Why Choose Our Platform?
+                Scientific Assessment Framework
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Built specifically for SSC candidates with features that matter most for your success
+                Experience Murray's revolutionary approach to personality assessment through validated psychological methodologies
               </p>
             </div>
             
@@ -165,15 +214,62 @@ const Index = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* Research Methodology Section */}
         <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-3xl mx-auto">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                Ready to Excel in Your SSC Assessment?
+                Evidence-Based Psychological Assessment
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Join thousands of successful candidates who have improved their TAT performance with our comprehensive platform
+                Experience the scientific rigor of Murray's projective methodology, refined through decades of psychological research
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <Card className="shadow-elegant border-primary/10">
+                <CardHeader className="text-center">
+                  <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <CardTitle className="text-lg">Projective Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center">
+                    Reveal unconscious personality traits through ambiguous stimulus interpretation and narrative construction
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-elegant border-primary/10">
+                <CardHeader className="text-center">
+                  <Brain className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <CardTitle className="text-lg">Psychodynamic Insight</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center">
+                    Explore underlying motivations, conflicts, and personality dynamics through thematic analysis
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="shadow-elegant border-primary/10">
+                <CardHeader className="text-center">
+                  <Award className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <CardTitle className="text-lg">Clinical Validation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center">
+                    Backed by extensive clinical research and validated against established psychological assessment standards
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="text-center">
+              <h3 className="text-2xl font-bold mb-4 text-foreground">
+                Begin Your Scientific Assessment Journey
+              </h3>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
               </p>
               
               <SignedOut>
