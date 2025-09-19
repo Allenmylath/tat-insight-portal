@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Send, AlertCircle, CheckCircle, WifiOff, Loader2 } from "lucide-react";
+import { Clock, Send, AlertCircle, CheckCircle, WifiOff, Loader2, X, Trophy } from "lucide-react";
 import { useModalTimer } from "@/hooks/useModalTimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserData } from "@/hooks/useUserData";
@@ -27,11 +27,12 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const [story, setStory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
-  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
-  const [isTimerCompleted, setIsTimerCompleted] = useState(false);
-  const [isCompletingSession, setIsCompletingSession] = useState(false);
-  const [isTimerExpired, setIsTimerExpired] = useState(false); // NEW: Specific flag for timer expiration
-  const [isAutoSubmitting, setIsAutoSubmitting] = useState(false); // NEW: Flag for auto-submit process
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+  const [completionData, setCompletionData] = useState<{
+    creditsDeducted: number;
+    remainingCredits: number;
+    wasAutoCompleted: boolean;
+  } | null>(null);
   
   // Responsive layout
   const isMobile = useIsMobile();
@@ -39,9 +40,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   // User data and credit management
   const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
   const { toast } = useToast();
-
-  // Ref to track beforeunload listener for proper cleanup
-  const beforeUnloadListenerRef = useRef<((event: BeforeUnloadEvent) => void) | null>(null);
 
   const {
     timeRemaining,
@@ -87,164 +85,70 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
   };
 
-  // Timer event handlers
+  // Timer completion handler - much simpler now
   async function handleTimerComplete() {
-    console.log('Timer completed - IMMEDIATELY disabling abandonment');
+    console.log('Timer completed - auto-submitting test');
     
-    // CRITICAL FIX: Set timer expired flag FIRST and SYNCHRONOUSLY
-    // This must happen before ANY other code to prevent beforeunload from triggering
-    setIsTimerExpired(true);
-    
-    // Remove beforeunload listener IMMEDIATELY - this is critical
-    if (beforeUnloadListenerRef.current) {
-      console.log('Removing beforeunload listener due to timer expiration');
-      window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-      beforeUnloadListenerRef.current = null;
+    if (!sessionId || !userData?.id) {
+      console.error('No session or user data available for auto-completion');
+      return;
     }
-    
-    // Now set other protective flags
-    setIsTimerCompleted(true);
-    setIsAutoSubmitting(true);
-    setIsCompletingSession(true);
-    setIsSubmittedSuccessfully(true); // Mark as submitted to prevent any further abandonment attempts
-    
-    // Update session status in database immediately
-    if (sessionId && userData?.id) {
-      try {
-        const { error: updateError } = await supabase
-          .from('test_sessions')
-          .update({ 
-            status: story.trim() ? 'completed' : 'abandoned',
-            story_content: story,
-            time_remaining: 0,
-            completed_at: new Date().toISOString()
-          })
-          .eq('id', sessionId)
-          .neq('status', 'completed'); // Prevent overwriting if somehow already completed
 
-        if (updateError) {
-          console.error('Error updating session on timer complete:', updateError);
-        } else {
-          console.log('Session marked as completed due to timer expiration');
-        }
+    try {
+      // Update session status to completed
+      const { error: updateError } = await supabase
+        .from('test_sessions')
+        .update({ 
+          status: story.trim() ? 'completed' : 'abandoned',
+          story_content: story,
+          time_remaining: 0,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
 
-        // Deduct credits after successful completion (only if story exists)
-        if (story.trim()) {
-          const result = await deductCreditsAfterCompletion(sessionId);
-          if (result.success) {
-            toast({
-              title: "Time's up! Test completed.",
-              description: `100 credits deducted. Remaining balance: ${result.newBalance} credits`,
-              variant: "default"
-            });
-          } else {
-            console.error('Credit deduction failed:', result.error);
-            toast({
-              title: "Time's up! Test completed.",
-              description: "Test completed successfully, but there was an issue processing credit deduction. Please contact support.",
-              variant: "default"
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error completing session on timer expiration:', error);
+      if (updateError) {
+        console.error('Error updating session on timer complete:', updateError);
+        throw updateError;
       }
-    }
 
-    // Handle the completion flow
-    if (story.trim()) {
-      await submitStory(true);
-    } else {
-      toast({
-        title: "Time's up!",
-        description: "Your session has been saved. You can continue later.",
-        variant: "default"
+      console.log('Session marked as completed due to timer expiration');
+      
+      // Complete the timer session
+      await completeSession();
+
+      // Deduct credits if story exists
+      let creditsResult = { success: false, newBalance: userData.credit_balance };
+      if (story.trim()) {
+        creditsResult = await deductCreditsAfterCompletion(sessionId);
+        if (!creditsResult.success) {
+          console.error('Credit deduction failed:', creditsResult.error);
+        }
+      }
+
+      // Show completion screen with details
+      setCompletionData({
+        creditsDeducted: story.trim() ? 100 : 0,
+        remainingCredits: creditsResult.success ? creditsResult.newBalance : userData.credit_balance,
+        wasAutoCompleted: true
       });
-      setIsSubmittedSuccessfully(true); // Mark as completed to prevent further abandonment attempts
-      onComplete();
+      setShowCompletionScreen(true);
+
+    } catch (error) {
+      console.error('Error in auto-completion:', error);
+      toast({
+        title: "Error",
+        description: "There was an error completing your test. Please try again.",
+        variant: "destructive"
+      });
     }
   }
 
   function handleTimerAbandon() {
-    // Only call onAbandon if this wasn't a timer expiration
-    if (!isTimerExpired && !isAutoSubmitting) {
-      onAbandon();
-    }
+    onAbandon();
   }
 
-  // FIXED: Simplified beforeunload handler that checks timer expiration FIRST
-  const createBeforeUnloadHandler = () => {
-    const handler = (event: BeforeUnloadEvent) => {
-      // CRITICAL: Check timer expiration FIRST - if timer expired, NEVER abandon
-      if (isTimerExpired) {
-        console.log('Beforeunload: Timer has expired, ignoring beforeunload completely');
-        return; // Exit immediately, don't even check other conditions
-      }
-      
-      // Secondary checks for other completion states
-      if (
-        isSubmittedSuccessfully || 
-        isCompletingSession || 
-        isAutoSubmitting ||
-        !isActive ||
-        !sessionId
-      ) {
-        console.log('Beforeunload: Test is completed or in completion process, not abandoning');
-        return;
-      }
-      
-      // Only abandon if we have an active session with content and timer hasn't expired
-      if (story.trim()) {
-        console.log('Beforeunload: Abandoning session due to page close');
-        handleAbandon();
-        event.preventDefault();
-        event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-      }
-    };
-    
-    return handler;
-  };
-
-  // Handle window close detection for true abandonment
-  useEffect(() => {
-    // CRITICAL FIX: Don't add beforeunload listener AT ALL if timer has expired
-    if (isTimerExpired) {
-      console.log('Timer expired - not adding beforeunload listener');
-      // Remove any existing listener
-      if (beforeUnloadListenerRef.current) {
-        window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-        beforeUnloadListenerRef.current = null;
-      }
-      return;
-    }
-    
-    // Remove existing listener if any
-    if (beforeUnloadListenerRef.current) {
-      window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-    }
-    
-    // Create and add new listener only if session is active and not in completion states
-    if (isActive && !isSubmittedSuccessfully && !isAutoSubmitting) {
-      const handler = createBeforeUnloadHandler();
-      beforeUnloadListenerRef.current = handler;
-      window.addEventListener('beforeunload', handler);
-      console.log('Beforeunload listener added');
-    } else {
-      beforeUnloadListenerRef.current = null;
-      console.log('Beforeunload listener not added due to protective conditions');
-    }
-    
-    // Cleanup function
-    return () => {
-      if (beforeUnloadListenerRef.current) {
-        window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-        beforeUnloadListenerRef.current = null;
-      }
-    };
-  }, [isActive, sessionId, story, isSubmittedSuccessfully, isCompletingSession, isTimerExpired, isAutoSubmitting]);
-
-  // Story submission
-  const submitStory = async (isTimerComplete = false) => {
+  // Manual story submission
+  const submitStory = async () => {
     if (!story.trim()) {
       toast({
         title: "Story required",
@@ -254,7 +158,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
-    if (!userData?.id) {
+    if (!userData?.id || !sessionId) {
       toast({
         title: "Authentication required",
         description: "Please log in to submit your story.",
@@ -263,24 +167,12 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
-    console.log('Starting story submission process');
     setIsSubmitting(true);
-    setIsCompletingSession(true);
-    
-    // FIXED: Remove beforeunload listener immediately when starting manual submission
-    if (!isTimerComplete && beforeUnloadListenerRef.current) {
-      window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-      beforeUnloadListenerRef.current = null;
-      console.log('Beforeunload listener removed for manual submission');
-    }
     
     try {
-      // Update the test session with the story content using session ID
-      if (!sessionId) {
-        throw new Error('No active session found');
-      }
-
-      console.log('Submitting story for session:', sessionId);
+      console.log('Manually submitting story for session:', sessionId);
+      
+      // Update the test session
       const { error: updateError } = await supabase
         .from('test_sessions')
         .update({
@@ -288,8 +180,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           status: 'completed',
           completed_at: new Date().toISOString()
         })
-        .eq('id', sessionId)
-        .neq('status', 'completed'); // Prevent overwriting if somehow already completed
+        .eq('id', sessionId);
 
       if (updateError) {
         console.error('Failed to update session:', updateError);
@@ -298,38 +189,23 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
       console.log('Story submitted successfully');
       
-      // FIXED: Mark as successfully submitted immediately after DB update
-      setIsSubmittedSuccessfully(true);
-      
-      // Complete the timer session (this will stop the timer)
+      // Complete the timer session
       await completeSession();
 
-      // Deduct credits after successful submission (only if not called from timer complete)
-      if (!isTimerComplete) {
-        const result = await deductCreditsAfterCompletion(sessionId);
-        if (result.success) {
-          toast({
-            title: "Story submitted successfully!",
-            description: `100 credits deducted. Remaining balance: ${result.newBalance} credits. Your TAT story will be analyzed.`,
-            variant: "default"
-          });
-        } else {
-          console.error('Credit deduction failed:', result.error);
-          toast({
-            title: "Story submitted successfully!",
-            description: "Test completed successfully, but there was an issue processing credit deduction. Please contact support.",
-            variant: "default"
-          });
-        }
-      } else {
-        toast({
-          title: "Story submitted successfully!",
-          description: "Your TAT story has been saved and will be analyzed.",
-          variant: "default"
-        });
+      // Deduct credits
+      const result = await deductCreditsAfterCompletion(sessionId);
+      if (!result.success) {
+        console.error('Credit deduction failed:', result.error);
       }
 
-      onComplete();
+      // Show completion screen
+      setCompletionData({
+        creditsDeducted: 100,
+        remainingCredits: result.success ? result.newBalance : userData.credit_balance - 100,
+        wasAutoCompleted: false
+      });
+      setShowCompletionScreen(true);
+
     } catch (error) {
       console.error('Error submitting story:', error);
       toast({
@@ -337,17 +213,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         description: "There was an error submitting your story. Please try again.",
         variant: "destructive"
       });
-      // FIXED: Reset completion flags on error so user can try again
-      setIsCompletingSession(false);
-      if (!isTimerComplete) {
-        setIsSubmittedSuccessfully(false);
-        // Re-add beforeunload listener if submission failed and timer hasn't expired
-        if (!isTimerExpired) {
-          const handler = createBeforeUnloadHandler();
-          beforeUnloadListenerRef.current = handler;
-          window.addEventListener('beforeunload', handler);
-        }
-      }
     } finally {
       setIsSubmitting(false);
     }
@@ -356,17 +221,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const handleSaveAndExit = async () => {
     if (!userData?.id || !sessionId) return;
     
-    // FIXED: Set protective flag before database operation
-    setIsCompletingSession(true);
-    
-    // Remove beforeunload listener since we're intentionally saving and exiting
-    if (beforeUnloadListenerRef.current) {
-      window.removeEventListener('beforeunload', beforeUnloadListenerRef.current);
-      beforeUnloadListenerRef.current = null;
-    }
-    
     try {
-      const { error: updateError } = await supabase
+      await supabase
         .from('test_sessions')
         .update({ 
           status: 'paused',
@@ -374,12 +230,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           time_remaining: timeRemaining,
           completed_at: new Date().toISOString()
         })
-        .eq('id', sessionId)
-        .neq('status', 'completed'); // Don't overwrite completed sessions
-
-      if (updateError) {
-        throw updateError;
-      }
+        .eq('id', sessionId);
 
       toast({
         title: "Progress Saved",
@@ -395,67 +246,13 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         description: "Failed to save progress. Please try again.",
         variant: "destructive",
       });
-      // Reset flag on error
-      setIsCompletingSession(false);
     }
   };
 
-  const handleAbandon = async () => {
-    // FIXED: Multiple checks to prevent abandoning completed sessions
-    if (
-      !userData?.id || 
-      !sessionId || 
-      isCompletingSession || 
-      isSubmittedSuccessfully || 
-      isTimerExpired ||
-      isAutoSubmitting
-    ) {
-      console.log('Abandon prevented due to protective conditions');
-      return;
-    }
-    
-    try {
-      console.log('Abandoning session:', sessionId);
-      
-      // FIXED: Check current session status before abandoning
-      const { data: currentSession, error: fetchError } = await supabase
-        .from('test_sessions')
-        .select('status')
-        .eq('id', sessionId)
-        .single();
-
-      if (fetchError) {
-        console.error('Error fetching session status:', fetchError);
-        return;
-      }
-
-      // FIXED: Only abandon if session is not already completed
-      if (currentSession?.status === 'completed') {
-        console.log('Session is already completed, not abandoning');
-        return;
-      }
-      
-      const { error: updateError } = await supabase
-        .from('test_sessions')
-        .update({ 
-          status: 'abandoned',
-          story_content: story,
-          time_remaining: timeRemaining,
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', sessionId)
-        .neq('status', 'completed'); // Additional safety check
-      
-      if (updateError) {
-        console.error('Error abandoning session:', updateError);
-        return;
-      }
-      
-      console.log('Session abandoned successfully');
-      abandonSession();
-    } catch (error) {
-      console.error('Error in handleAbandon:', error);
-    }
+  // Close completion screen and exit
+  const handleCloseCompletion = () => {
+    setShowCompletionScreen(false);
+    onComplete();
   };
 
   // UI helpers
@@ -500,6 +297,92 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         return <Badge variant="secondary">Unknown</Badge>;
     }
   };
+
+  // Show completion screen
+  if (showCompletionScreen && completionData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg shadow-elegant border-primary/20">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Trophy className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl text-primary">
+              {completionData.wasAutoCompleted ? "Time's Up!" : "Test Completed!"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="text-center space-y-2">
+              <p className="text-muted-foreground">
+                {completionData.wasAutoCompleted 
+                  ? "Your TAT test session has ended automatically." 
+                  : "Thank you for completing the TAT test!"
+                }
+              </p>
+              {story.trim() && (
+                <p className="text-sm text-muted-foreground">
+                  Your story has been saved and will be analyzed.
+                </p>
+              )}
+            </div>
+
+            {/* Credit Details */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+              <h3 className="font-semibold text-center">Credit Summary</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-center">
+                  <p className="text-muted-foreground">Credits Used</p>
+                  <p className="text-lg font-semibold text-primary">
+                    {completionData.creditsDeducted}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-muted-foreground">Remaining Balance</p>
+                  <p className="text-lg font-semibold">
+                    {completionData.remainingCredits}
+                  </p>
+                </div>
+              </div>
+              {completionData.creditsDeducted === 0 && (
+                <p className="text-xs text-muted-foreground text-center">
+                  No credits deducted - test was abandoned without content
+                </p>
+              )}
+            </div>
+
+            {/* Story Stats (if story exists) */}
+            {story.trim() && (
+              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+                <h3 className="font-semibold text-center">Your Story</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm text-center">
+                  <div>
+                    <p className="text-muted-foreground">Characters</p>
+                    <p className="font-semibold">{story.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Words</p>
+                    <p className="font-semibold">
+                      {story.trim().split(/\s+/).filter(word => word.length > 0).length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Close Button */}
+            <Button 
+              onClick={handleCloseCompletion}
+              className="w-full gap-2"
+              size="lg"
+            >
+              <X className="h-4 w-4" />
+              Close & Return to Tests
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Check for insufficient credits before rendering
   if (!hasEnoughCredits() && connectionStatus === 'idle') {
@@ -680,14 +563,14 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         <Button
           variant="outline"
           onClick={handleSaveAndExit}
-          disabled={isSubmitting || isConnecting || isTimerExpired}
+          disabled={isSubmitting || isConnecting}
           className="flex-1"
         >
           Save & Pause
         </Button>
         <Button
-          onClick={() => submitStory()}
-          disabled={isSubmitting || !story.trim() || !isActive || isTimerExpired}
+          onClick={submitStory}
+          disabled={isSubmitting || !story.trim() || !isActive}
           className="flex-1 gap-2"
         >
           {isSubmitting ? (
