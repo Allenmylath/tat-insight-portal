@@ -232,68 +232,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Pending Tests */}
-          {availablePendingTests.length > 0 && (
-            <Card className="shadow-elegant border-primary/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-muted-foreground" />
-                  Pending Tests
-                </CardTitle>
-                <CardDescription>
-                  Continue your assessment journey
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {testsLoading ? (
-                    [1, 2].map((i) => (
-                      <div key={i} className="flex items-center justify-between p-4 rounded-lg border">
-                        <div className="flex items-center gap-3">
-                          <div className="h-5 w-5 bg-muted rounded animate-pulse" />
-                          <div>
-                            <div className="h-4 w-32 bg-muted rounded animate-pulse mb-1" />
-                            <div className="h-3 w-24 bg-muted rounded animate-pulse" />
-                          </div>
-                        </div>
-                        <div className="h-6 w-16 bg-muted rounded animate-pulse" />
-                      </div>
-                    ))
-                  ) : (
-                    availablePendingTests.slice(0, 3).map((test) => (
-                      <div
-                        key={test.id}
-                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-primary/30 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Circle className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <h3 className="font-medium text-foreground">{test.title}</h3>
-                            <p className="text-sm text-muted-foreground">Ready to start</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="border-muted-foreground/20">
-                            Pending
-                          </Badge>
-                          <Button size="sm" variant="hero" className="ml-2">
-                            Start Test
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  {availablePendingTests.length > 3 && (
-                    <div className="text-center pt-2">
-                      <Button variant="outline" size="sm">
-                        View All Pending ({availablePendingTests.length})
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Completed Tests */}
           {availableCompletedTests.length > 0 && (
