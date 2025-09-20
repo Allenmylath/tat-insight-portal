@@ -25,17 +25,57 @@ export const AnalysisReportDialog = ({
 }: AnalysisReportDialogProps) => {
   if (!analysis) return null;
 
-  // Handle personality traits from analysis_data since direct column doesn't exist
-  const personalityTraits = analysis.personality_traits || analysis.analysis_data?.personality_traits || {};
-  const emotionalThemes = analysis.emotional_themes || [];
+  // Debug log to see what data we're getting
+  console.log('Analysis data received:', analysis);
+
+  // Handle data extraction from nested analysis structure
+  const personalityTraits = analysis.personality_traits || {};
+  const emotionalThemes = analysis.emotional_themes || [];  
   const copingMechanisms = analysis.coping_mechanisms || [];
-  const dominantEmotions = analysis.dominant_emotions || [];
-  const psychologicalInsights = analysis.psychological_insights || [];
-  const murrayNeeds = analysis.murray_needs || [];
+  const dominantEmotions = analysis.dominant_emotions || analysis.dominant_themes || [];
+  const psychologicalInsights = analysis.psychological_insights || analysis.clinical_insights || [];
+  
+  // Extract Murray Needs from nested structure
+  const murrayNeeds = analysis.murray_needs ? Object.entries(analysis.murray_needs)
+    .filter(([key, value]: [string, any]) => value?.present === true)
+    .map(([key, value]: [string, any]) => ({
+      name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      score: value.intensity || 0,
+      description: value.description || `Assessment of ${key.replace(/_/g, ' ')} psychological need`,
+      intensity: (value.intensity > 80 ? 'Very High' : value.intensity > 60 ? 'High' : value.intensity > 40 ? 'Moderate' : 'Low') as 'Very High' | 'High' | 'Moderate' | 'Low'
+    })) : [];
+    
+  // Extract Inner States from nested structure  
+  const innerStates = analysis.inner_states ? Object.entries(analysis.inner_states)
+    .filter(([key, value]: [string, any]) => value?.present === true)
+    .map(([key, value]: [string, any]) => ({
+      state: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      intensity: value.intensity || 0,
+      description: value.description || `${key.replace(/_/g, ' ')} emotional state`,
+      valence: value.intensity > 50 ? 'Positive' : value.intensity > 0 ? 'Neutral' : 'Negative'
+    })) : [];
+    
   const murrayPresses = analysis.murray_presses || [];
-  const innerStates = analysis.inner_states || [];
-  const militaryAssessment = analysis.military_assessment;
-  const selectionRecommendation = analysis.selection_recommendation;
+  const militaryAssessment = analysis.military_assessment || null;
+  const selectionRecommendation = analysis.selection_recommendation || null;
+
+  // Convert military assessment to expected format if needed
+  const formattedMilitaryAssessment = militaryAssessment ? {
+    overall_rating: calculateOverallRating(militaryAssessment),
+    suitability: getSuitabilityLevel(militaryAssessment),
+    leadership_potential: getScoreValue(militaryAssessment.leadership_potential),
+    stress_tolerance: getScoreValue(militaryAssessment.stress_resilience),
+    team_compatibility: getScoreValue(militaryAssessment.team_dynamics),
+    adaptability: getScoreValue(militaryAssessment.adaptability),
+    decision_making: getScoreValue(militaryAssessment.decision_making),
+    scores: Object.entries(militaryAssessment).map(([key, value]: [string, any]) => ({
+      category: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      score: getScoreValue(value),
+      assessment: getAssessmentLevel(getScoreValue(value)),
+      recommendation: value?.analysis || `Recommendation for ${key.replace(/_/g, ' ')}`
+    })),
+    notes: "Assessment based on psychological analysis and behavioral indicators"
+  } : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,7 +97,7 @@ export const AnalysisReportDialog = ({
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {analysis.summary}
+                {analysis.summary || "Comprehensive psychological assessment completed. View detailed results in the tabs below."}
               </p>
             </CardContent>
           </Card>
@@ -72,7 +112,6 @@ export const AnalysisReportDialog = ({
             </TabsList>
 
             <TabsContent value="traditional" className="space-y-6 mt-6">
-
               {/* Personality Traits */}
               {Object.keys(personalityTraits).length > 0 && (
                 <Card>
@@ -94,53 +133,17 @@ export const AnalysisReportDialog = ({
                 </Card>
               )}
 
-              {/* Emotional Themes */}
-              {emotionalThemes.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Emotional Themes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {emotionalThemes.map((theme: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="capitalize">
-                          {theme}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Coping Mechanisms */}
-              {copingMechanisms.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Coping Mechanisms</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {copingMechanisms.map((mechanism: string, index: number) => (
-                        <Badge key={index} variant="outline" className="capitalize">
-                          {mechanism}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Dominant Emotions */}
+              {/* Dominant Emotions/Themes */}
               {dominantEmotions.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Dominant Emotions</CardTitle>
+                    <CardTitle className="text-lg">Dominant Themes</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {dominantEmotions.map((emotion: string, index: number) => (
+                      {dominantEmotions.map((theme: string, index: number) => (
                         <Badge key={index} variant="default" className="capitalize bg-primary/20 text-primary">
-                          {emotion}
+                          {theme}
                         </Badge>
                       ))}
                     </div>
@@ -152,7 +155,7 @@ export const AnalysisReportDialog = ({
               {psychologicalInsights.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Psychological Insights</CardTitle>
+                    <CardTitle className="text-lg">Clinical Insights</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
@@ -167,30 +170,20 @@ export const AnalysisReportDialog = ({
                 </Card>
               )}
 
-              {/* Interpersonal Style */}
-              {analysis.interpersonal_style && (
+              {/* Environmental Factors */}
+              {analysis.environmental_factors && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Interpersonal Style</CardTitle>
+                    <CardTitle className="text-lg">Environmental Factors</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {analysis.interpersonal_style}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Motivation Patterns */}
-              {analysis.motivation_patterns && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Motivation Patterns</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {analysis.motivation_patterns}
-                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {analysis.environmental_factors.map((factor: string, index: number) => (
+                        <Badge key={index} variant="outline" className="capitalize">
+                          {factor}
+                        </Badge>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -199,27 +192,13 @@ export const AnalysisReportDialog = ({
             <TabsContent value="murray" className="space-y-6 mt-6">
               {/* Murray Needs */}
               {murrayNeeds.length > 0 && <MurrayNeedsChart needs={murrayNeeds} />}
-
-              {/* Murray Presses */}
-              {murrayPresses.length > 0 && (
+              
+              {murrayNeeds.length === 0 && (
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Environmental Pressures (Murray Presses)</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {murrayPresses.map((press: any, index: number) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{press.name}</h4>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">{press.category}</Badge>
-                            <span className="text-sm font-medium">{press.influence}%</span>
-                          </div>
-                        </div>
-                        <Progress value={press.influence} className="h-2" />
-                        <p className="text-xs text-muted-foreground">{press.description}</p>
-                      </div>
-                    ))}
+                  <CardContent className="pt-6">
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">No specific Murray psychological needs identified in this analysis.</p>
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -252,8 +231,8 @@ export const AnalysisReportDialog = ({
             </TabsContent>
 
             <TabsContent value="military" className="space-y-6 mt-6">
-              {militaryAssessment && <MilitaryAssessmentCard assessment={militaryAssessment} />}
-              {!militaryAssessment && (
+              {formattedMilitaryAssessment && <MilitaryAssessmentCard assessment={formattedMilitaryAssessment} />}
+              {!formattedMilitaryAssessment && (
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-center py-8">
@@ -282,3 +261,32 @@ export const AnalysisReportDialog = ({
     </Dialog>
   );
 };
+
+// Helper functions
+function calculateOverallRating(assessment: any): number {
+  if (!assessment) return 0;
+  const scores = Object.values(assessment).filter((value: any) => value?.score).map((value: any) => value.score);
+  return scores.length > 0 ? Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length) : 0;
+}
+
+function getSuitabilityLevel(assessment: any): 'Highly Suitable' | 'Suitable' | 'Moderately Suitable' | 'Not Suitable' {
+  const rating = calculateOverallRating(assessment);
+  if (rating >= 80) return 'Highly Suitable';
+  if (rating >= 70) return 'Suitable';
+  if (rating >= 60) return 'Moderately Suitable';
+  return 'Not Suitable';
+}
+
+function getScoreValue(item: any): number {
+  if (typeof item === 'number') return item;
+  if (item?.score) return item.score;
+  if (item?.intensity) return item.intensity;
+  return 0;
+}
+
+function getAssessmentLevel(score: number): 'Excellent' | 'Good' | 'Satisfactory' | 'Needs Improvement' {
+  if (score >= 80) return 'Excellent';
+  if (score >= 70) return 'Good';
+  if (score >= 60) return 'Satisfactory';
+  return 'Needs Improvement';
+}
