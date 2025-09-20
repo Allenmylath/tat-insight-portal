@@ -9,6 +9,7 @@ import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
 import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
 import { useState } from "react";
 import { Button as LinkButton } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AttemptedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
@@ -90,7 +91,8 @@ const AttemptedTests = () => {
   const visibleTests = isPro ? (attemptedTests || []) : (attemptedTests || []).filter(test => !test.isPremium);
 
   return (
-    <div className="space-y-6">
+    <TooltipProvider>
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Attempted Tests</h1>
@@ -166,10 +168,24 @@ const AttemptedTests = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-muted/30 rounded-lg p-4">
-                  <h4 className="font-medium text-sm text-foreground mb-2">Analysis Summary</h4>
-                  <p className="text-sm text-muted-foreground">{test.analysis}</p>
-                </div>
+                {test.score === null ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="bg-muted/30 rounded-lg p-4 cursor-help">
+                        <h4 className="font-medium text-sm text-foreground mb-2">Analysis Summary</h4>
+                        <p className="text-sm text-muted-foreground">{test.analysis}</p>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Story is being evaluated. Processing time varies depending on server traffic and availability.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <h4 className="font-medium text-sm text-foreground mb-2">Analysis Summary</h4>
+                    <p className="text-sm text-muted-foreground">{test.analysis}</p>
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Button 
                     variant="government" 
@@ -220,6 +236,7 @@ const AttemptedTests = () => {
         score={selectedAnalysis?.score || 0}
       />
     </div>
+    </TooltipProvider>
   );
 };
 
