@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle, Circle, Clock, Award, BarChart3, Crown, Lock, Star, Coins, Zap } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [tests, setTests] = useState<any[]>([]);
   const [completedTests, setCompletedTests] = useState<any[]>([]);
   const [testsLoading, setTestsLoading] = useState(true);
+  const [showNoTestDialog, setShowNoTestDialog] = useState(false);
+  const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -41,7 +44,24 @@ const Dashboard = () => {
           return;
         }
 
-        // Get user's test sessions
+        // Check if user has any test sessions at all
+        const { data: allUserSessions, error: allSessionsError } = await supabase
+          .from('test_sessions')
+          .select('id')
+          .eq('user_id', userData.id)
+          .limit(1);
+
+        if (allSessionsError) {
+          console.error('Error checking user sessions:', allSessionsError);
+        } else {
+          const hasAnySessions = allUserSessions && allUserSessions.length > 0;
+          setHasAnyTestSessions(hasAnySessions);
+          if (!hasAnySessions) {
+            setShowNoTestDialog(true);
+          }
+        }
+
+        // Get user's test sessions for active tests
         const testIds = allTests.map(test => test.id);
         const { data: userSessions, error: sessionsError } = await supabase
           .from('test_sessions')
@@ -112,7 +132,32 @@ const Dashboard = () => {
   const progressPercentage = totalTests > 0 ? (availableCompletedTests.length / totalTests) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <>
+      <Dialog open={showNoTestDialog} onOpenChange={setShowNoTestDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>No Tests Taken</DialogTitle>
+            <DialogDescription>
+              You haven't taken any tests yet. Take one to start your psychological assessment journey.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setShowNoTestDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowNoTestDialog(false);
+                navigate('/dashboard/pending');
+              }}
+            >
+              Take a Test
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="space-y-6">
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -387,7 +432,8 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
