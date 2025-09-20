@@ -44,7 +44,13 @@ const AttemptedTests = () => {
           analysis_results!test_session_id (
             confidence_score,
             personality_traits,
-            analysis_data
+            analysis_data,
+            murray_needs,
+            murray_presses,
+            inner_states,
+            military_assessment,
+            selection_recommendation,
+            analysis_type
           )
         `)
         .eq('user_id', userData.id)
