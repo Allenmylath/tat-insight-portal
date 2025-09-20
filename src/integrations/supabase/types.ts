@@ -22,9 +22,11 @@ export type Database = {
           generated_at: string
           id: string
           inner_states: Json | null
+          military_assessment: Json | null
           murray_needs: Json | null
           murray_presses: Json | null
           personality_traits: Json | null
+          selection_recommendation: Json | null
           test_session_id: string
           user_id: string
         }
@@ -35,9 +37,11 @@ export type Database = {
           generated_at?: string
           id?: string
           inner_states?: Json | null
+          military_assessment?: Json | null
           murray_needs?: Json | null
           murray_presses?: Json | null
           personality_traits?: Json | null
+          selection_recommendation?: Json | null
           test_session_id: string
           user_id: string
         }
@@ -48,9 +52,11 @@ export type Database = {
           generated_at?: string
           id?: string
           inner_states?: Json | null
+          military_assessment?: Json | null
           murray_needs?: Json | null
           murray_presses?: Json | null
           personality_traits?: Json | null
+          selection_recommendation?: Json | null
           test_session_id?: string
           user_id?: string
         }
