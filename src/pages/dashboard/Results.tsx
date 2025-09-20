@@ -284,8 +284,9 @@ function extractPersonalityTraits(results: any[]) {
   const traits: Array<{ name: string; score: number; description: string }> = [];
   
   results.forEach(result => {
-    if (result.personality_traits) {
-      Object.entries(result.personality_traits).forEach(([trait, data]: [string, any]) => {
+    // Since personality_traits column doesn't exist, we'll extract from analysis_data instead
+    if (result.analysis_data && result.analysis_data.personality_traits) {
+      Object.entries(result.analysis_data.personality_traits).forEach(([trait, data]: [string, any]) => {
         const existingTrait = traits.find(t => t.name === trait);
         if (existingTrait) {
           // Average the scores if multiple results exist

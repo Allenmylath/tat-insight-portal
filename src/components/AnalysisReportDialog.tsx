@@ -25,7 +25,8 @@ export const AnalysisReportDialog = ({
 }: AnalysisReportDialogProps) => {
   if (!analysis) return null;
 
-  const personalityTraits = analysis.personality_traits || {};
+  // Handle personality traits from analysis_data since direct column doesn't exist
+  const personalityTraits = analysis.personality_traits || analysis.analysis_data?.personality_traits || {};
   const emotionalThemes = analysis.emotional_themes || [];
   const copingMechanisms = analysis.coping_mechanisms || [];
   const dominantEmotions = analysis.dominant_emotions || [];

@@ -43,7 +43,6 @@ const AttemptedTests = () => {
           ),
           analysis_results!test_session_id (
             confidence_score,
-            personality_traits,
             analysis_data,
             murray_needs,
             murray_presses,

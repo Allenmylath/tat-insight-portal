@@ -71,7 +71,7 @@ const Dashboard = () => {
             completed_at, 
             time_remaining, 
             started_at,
-            analysis_results(confidence_score, personality_traits)
+            analysis_results(confidence_score)
           `)
           .eq('user_id', userData.id)
           .in('tattest_id', testIds);
