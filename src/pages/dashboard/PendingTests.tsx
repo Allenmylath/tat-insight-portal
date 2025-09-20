@@ -26,6 +26,8 @@ const PendingTests = () => {
   const [loading, setLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [showActiveSessionDialog, setShowActiveSessionDialog] = useState(false);
+  const [activeSession, setActiveSession] = useState<any>(null);
 
   useEffect(() => {
     console.log('PendingTests - useEffect triggered', { 
@@ -132,7 +134,39 @@ const PendingTests = () => {
   const availableTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const lockedTests = isPro ? [] : tests.filter(test => test.isPremium);
 
-  const startTest = (test: any) => {
+  // Check for any active test session across all tests
+  const checkForActiveSession = async () => {
+    if (!userData?.id) return null;
+
+    try {
+      const { data: activeSession, error } = await supabase
+        .from('test_sessions')
+        .select(`
+          *,
+          tattest:tattest_id (
+            id,
+            title
+          )
+        `)
+        .eq('user_id', userData.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking for active session:', error);
+        return null;
+      }
+
+      return activeSession;
+    } catch (error) {
+      console.error('Error checking for active session:', error);
+      return null;
+    }
+  };
+
+  const startTest = async (test: any) => {
     // Check if user has enough credits before starting test
     if (!hasEnoughCredits(100)) {
       toast({
@@ -140,6 +174,15 @@ const PendingTests = () => {
         description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
         variant: "destructive"
       });
+      return;
+    }
+
+    // Check for any active test session first
+    const existingActiveSession = await checkForActiveSession();
+    if (existingActiveSession) {
+      setActiveSession(existingActiveSession);
+      setSelectedTest(test);
+      setShowActiveSessionDialog(true);
       return;
     }
 
@@ -198,6 +241,76 @@ const PendingTests = () => {
 
   const handleTestAbandon = () => {
     fetchTests(); // Refresh the test list
+  };
+
+  const handleResumeActiveSession = () => {
+    if (!activeSession) return;
+    
+    // Open the active test in new window
+    const testUrl = `/test/${activeSession.tattest_id}`;
+    const testWindow = window.open(testUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    
+    if (!testWindow) {
+      toast({
+        title: "Popup blocked",
+        description: "Please allow popups for this site to open the test in a new window.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Close active session dialog
+    setShowActiveSessionDialog(false);
+    setActiveSession(null);
+    setSelectedTest(null);
+
+    // Monitor window closure and refresh
+    const checkClosed = setInterval(() => {
+      if (testWindow.closed) {
+        clearInterval(checkClosed);
+        fetchTests();
+      }
+    }, 1000);
+  };
+
+  const handleAbandonActiveSession = async () => {
+    if (!activeSession) return;
+
+    try {
+      // Update session status to abandoned
+      const { error } = await supabase
+        .from('test_sessions')
+        .update({ status: 'abandoned' })
+        .eq('id', activeSession.id);
+
+      if (error) {
+        console.error('Error abandoning session:', error);
+        toast({
+          title: "Error",
+          description: "Failed to abandon the active session. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Close active session dialog and show confirmation dialog for new test
+      setShowActiveSessionDialog(false);
+      setActiveSession(null);
+      setShowConfirmDialog(true);
+
+      toast({
+        title: "Session Abandoned",
+        description: "Your previous test session has been abandoned. You can now start a new test.",
+      });
+
+    } catch (error) {
+      console.error('Error abandoning session:', error);
+      toast({
+        title: "Error",
+        description: "Failed to abandon the active session. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -402,6 +515,46 @@ const PendingTests = () => {
           ))}
         </div>
       )}
+
+      {/* Active Session Dialog */}
+      <AlertDialog open={showActiveSessionDialog} onOpenChange={setShowActiveSessionDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Active Test Session Running
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-left">
+              <p>
+                You currently have an active test session running: <strong>{activeSession?.tattest?.title || 'Unknown Test'}</strong>
+              </p>
+              <p>
+                You can only have one active test session at a time. Please choose an option:
+              </p>
+              <ul className="list-disc list-inside space-y-1 ml-2 text-sm">
+                <li><strong>Resume Current Test:</strong> Continue your active session</li>
+                <li><strong>Abandon Current Test:</strong> End the active session and start the new test</li>
+                <li><strong>Cancel:</strong> Stay on this page without making changes</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel onClick={() => {
+              setShowActiveSessionDialog(false);
+              setActiveSession(null);
+              setSelectedTest(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <Button variant="outline" onClick={handleAbandonActiveSession}>
+              Abandon Current Test
+            </Button>
+            <AlertDialogAction onClick={handleResumeActiveSession}>
+              Resume Current Test
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
