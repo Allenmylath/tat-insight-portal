@@ -17,27 +17,39 @@ export type Database = {
       analysis_results: {
         Row: {
           analysis_data: Json
+          analysis_type: string | null
           confidence_score: number | null
           generated_at: string
           id: string
+          inner_states: Json | null
+          murray_needs: Json | null
+          murray_presses: Json | null
           personality_traits: Json | null
           test_session_id: string
           user_id: string
         }
         Insert: {
           analysis_data: Json
+          analysis_type?: string | null
           confidence_score?: number | null
           generated_at?: string
           id?: string
+          inner_states?: Json | null
+          murray_needs?: Json | null
+          murray_presses?: Json | null
           personality_traits?: Json | null
           test_session_id: string
           user_id: string
         }
         Update: {
           analysis_data?: Json
+          analysis_type?: string | null
           confidence_score?: number | null
           generated_at?: string
           id?: string
+          inner_states?: Json | null
+          murray_needs?: Json | null
+          murray_presses?: Json | null
           personality_traits?: Json | null
           test_session_id?: string
           user_id?: string
