@@ -9,9 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { CreditHeader } from "@/components/CreditHeader";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { userData, loading, isPro } = useUserData();
+  const navigate = useNavigate();
   const [tests, setTests] = useState<any[]>([]);
   const [completedTests, setCompletedTests] = useState<any[]>([]);
   const [testsLoading, setTestsLoading] = useState(true);
@@ -347,7 +349,11 @@ const Dashboard = () => {
                     <p className="text-sm text-muted-foreground">
                       Continue with your assessment to receive comprehensive feedback.
                     </p>
-                    <Button variant="hero" className="w-full">
+                    <Button 
+                      variant="hero" 
+                      className="w-full"
+                      onClick={() => navigate('/dashboard/pending')}
+                    >
                       Continue Assessment
                     </Button>
                   </>
