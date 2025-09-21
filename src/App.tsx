@@ -19,7 +19,7 @@ import StandaloneTestPage from "@/pages/StandaloneTestPage"; // IMPORTANT: Add t
 import NotFound from "@/pages/NotFound";
 import "./App.css";
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY = "pk_test_YWRhcHRlZC15YWstOTkuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
