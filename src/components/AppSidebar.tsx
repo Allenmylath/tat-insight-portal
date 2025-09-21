@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut } from "lucide-react";
+import { useClerk } from "@clerk/clerk-react";
 import {
   Sidebar,
   SidebarContent,
@@ -59,6 +60,7 @@ export function AppSidebar() {
   const location = useLocation();
   const { isPro, loading } = useUserData();
   const { activeTest, isTestActive } = useTestContext();
+  const { signOut } = useClerk();
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
 
@@ -158,6 +160,15 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => signOut()}
+                  className="hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {!isCollapsed && <span>Sign Out</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
