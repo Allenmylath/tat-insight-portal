@@ -14,7 +14,7 @@ interface TestContextType {
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
 
-export const TestContextProvider = ({ children }: { children: ReactNode }) => {
+export const TestProvider = ({ children }: { children: ReactNode }) => {
   const [activeTest, setActiveTest] = useState<TestContextType['activeTest']>(null);
 
   return (
