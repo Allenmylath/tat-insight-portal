@@ -36,7 +36,17 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider 
+      publishableKey={PUBLISHABLE_KEY}
+      appearance={{
+        elements: {
+          rootBox: "mx-auto",
+          card: "shadow-lg"
+        }
+      }}
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+    >
       <QueryClientProvider client={queryClient}>
         <TestContextProvider>
           <Router>

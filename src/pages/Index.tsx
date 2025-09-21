@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
+import { ClerkErrorBoundary } from "@/components/ClerkErrorBoundary";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -57,17 +58,28 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="outline">Sign In</Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Button onClick={() => navigate("/dashboard")} variant="government">
-                Dashboard
-              </Button>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+            <ClerkErrorBoundary>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button variant="outline">Sign In</Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Button onClick={() => navigate("/dashboard")} variant="government">
+                  Dashboard
+                </Button>
+                <div className="flex items-center">
+                  <UserButton 
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        userButtonAvatarBox: "w-8 h-8"
+                      }
+                    }}
+                  />
+                </div>
+              </SignedIn>
+            </ClerkErrorBoundary>
           </div>
         </div>
       </header>

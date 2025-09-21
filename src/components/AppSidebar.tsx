@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { useUserData } from "@/hooks/useUserData";
 import { useTestContext } from "@/contexts/TestContext";
 import { CreditHeader } from "@/components/CreditHeader";
+import { ClerkErrorBoundary } from "@/components/ClerkErrorBoundary";
 
 const navigationItems = [
   { 
@@ -161,13 +162,20 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => signOut()}
-                  className="hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  {!isCollapsed && <span>Sign Out</span>}
-                </SidebarMenuButton>
+                <ClerkErrorBoundary fallback={
+                  <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </div>
+                }>
+                  <SidebarMenuButton 
+                    onClick={() => signOut()}
+                    className="hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {!isCollapsed && <span>Sign Out</span>}
+                  </SidebarMenuButton>
+                </ClerkErrorBoundary>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
