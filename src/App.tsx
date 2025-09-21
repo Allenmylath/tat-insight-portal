@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TestContextProvider } from "@/contexts/TestContext";
 import { AppSidebar } from "@/components/AppSidebar";
+
+// Import your pages
 import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import AttemptedTests from "@/pages/dashboard/AttemptedTests";
@@ -13,7 +15,7 @@ import Results from "@/pages/dashboard/Results";
 import Pricing from "@/pages/dashboard/Pricing";
 import Settings from "@/pages/dashboard/Settings";
 import TatTestInfo from "@/pages/TatTestInfo";
-import StandaloneTestPage from "@/pages/StandaloneTestPage"; // Add this import
+import StandaloneTestPage from "@/pages/StandaloneTestPage"; // IMPORTANT: Add this import
 import NotFound from "@/pages/NotFound";
 import "./App.css";
 
@@ -43,7 +45,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/about-tat" element={<TatTestInfo />} />
               
-              {/* Standalone test route - Add this route */}
+              {/* CRITICAL: Add the standalone test route */}
               <Route 
                 path="/test/:testId" 
                 element={
@@ -79,7 +81,7 @@ function App() {
                 } 
               />
               
-              {/* Redirect signed out users to home */}
+              {/* Redirect signed out users trying to access dashboard */}
               <Route 
                 path="/dashboard" 
                 element={
@@ -89,7 +91,7 @@ function App() {
                 } 
               />
               
-              {/* 404 route */}
+              {/* 404 catch-all - MUST be last */}
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
