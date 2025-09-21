@@ -3,7 +3,7 @@
     { "source": "/test/:path*", "destination": "/index.html" },
     { "source": "/dashboard/:path*", "destination": "/index.html" },
     { "source": "/about-tat", "destination": "/index.html" },
-    { "source": "/((?!api|_next|_static|_vercel|favicon.ico|robots.txt|sitemap.xml|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|json)).*)", "destination": "/index.html" }
+    { "source": "/((?!api|_next|_static|_vercel|favicon.ico|robots.txt|sitemap.xml).+)", "destination": "/index.html" }
   ],
   "headers": [
     {
