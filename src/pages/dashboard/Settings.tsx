@@ -71,50 +71,52 @@ const Settings = () => {
         </p>
       </div>
 
-      {/* Admin Tools */}
-      <Card className="shadow-elegant border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <SettingsIcon className="h-5 w-5 text-primary" />
-            Admin Tools
-          </CardTitle>
-          <CardDescription>
-            Administrative functions for managing TAT tests
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="mb-4">
-            <Button 
-              onClick={async () => {
-                try {
-                  const { data, error } = await supabase
-                    .from('tattest')
-                    .insert({
-                      title: "Debug Test",
-                      description: "Testing database connectivity",
-                      prompt_text: "Debug test prompt",
-                      image_url: "/src/assets/tatim.jpeg",
-                      is_active: true
-                    })
-                    .select()
-                    .single();
+      {/* Admin Tools - Only visible for specific admin user */}
+      {user?.primaryEmailAddress?.emailAddress === "allengeorgemylath@gmail.com" && (
+        <Card className="shadow-elegant border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <SettingsIcon className="h-5 w-5 text-primary" />
+              Admin Tools
+            </CardTitle>
+            <CardDescription>
+              Administrative functions for managing TAT tests
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="mb-4">
+              <Button 
+                onClick={async () => {
+                  try {
+                    const { data, error } = await supabase
+                      .from('tattest')
+                      .insert({
+                        title: "Debug Test",
+                        description: "Testing database connectivity",
+                        prompt_text: "Debug test prompt",
+                        image_url: "/src/assets/tatim.jpeg",
+                        is_active: true
+                      })
+                      .select()
+                      .single();
 
-                  if (error) throw error;
-                  alert('Test created successfully!');
-                } catch (error: any) {
-                  alert('Error: ' + error.message);
-                  console.error('Database error:', error);
-                }
-              }}
-              variant="outline"
-              size="sm"
-            >
-              Test Database Connection
-            </Button>
-          </div>
-          <AdminTatTestCreator />
-        </CardContent>
-      </Card>
+                    if (error) throw error;
+                    alert('Test created successfully!');
+                  } catch (error: any) {
+                    alert('Error: ' + error.message);
+                    console.error('Database error:', error);
+                  }
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Test Database Connection
+              </Button>
+            </div>
+            <AdminTatTestCreator />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Profile Information */}
       <Card className="shadow-elegant">
