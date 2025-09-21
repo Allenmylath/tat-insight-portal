@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { TestProvider } from "@/contexts/TestContext";
+import { TestContextProvider } from "@/contexts/TestContext";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -22,8 +22,8 @@ createRoot(document.getElementById("root")!).render(
     afterSignInUrl="/"
     afterSignUpUrl="/"
   >
-    <TestProvider>
+    <TestContextProvider>
       <App />
-    </TestProvider>
+    </TestContextProvider>
   </ClerkProvider>
 );
