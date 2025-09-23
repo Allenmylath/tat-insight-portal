@@ -74,8 +74,9 @@ serve(async (req) => {
     const phonepeData = await phonepeResponse.json();
     console.log('PhonePe API response:', phonepeData);
 
-    if (!phonepeResponse.ok || !phonepeData.success) {
-      throw new Error(`PhonePe API error: ${phonepeData.message || 'Unknown error'}`);
+    // PhonePe v2 API doesn't return 'success' field - check for orderId instead
+    if (!phonepeResponse.ok || !phonepeData.orderId) {
+      throw new Error(`PhonePe API error: ${phonepeData.message || phonepeData.error || 'Unknown error'}`);
     }
 
     // Store order in database
@@ -84,7 +85,7 @@ serve(async (req) => {
       .insert({
         user_id: user_id,
         merchant_order_id: merchantOrderId,
-        phonepe_order_id: phonepeData.data?.merchantTransactionId,
+        phonepe_order_id: phonepeData.orderId,
         amount: amount,
         currency: 'INR',
         status: 'CREATED',
@@ -107,7 +108,7 @@ serve(async (req) => {
         package_name: package_name,
         payment_method: 'phonepe',
         merchant_order_id: merchantOrderId,
-        phonepe_order_id: phonepeData.data?.merchantTransactionId,
+        phonepe_order_id: phonepeData.orderId,
         status: 'pending',
       });
 
@@ -118,9 +119,9 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       data: {
-        checkoutUrl: phonepeData.data?.instrumentResponse?.redirectInfo?.url,
+        checkoutUrl: phonepeData.redirectUrl,
         merchantOrderId: merchantOrderId,
-        orderId: phonepeData.data?.merchantTransactionId,
+        orderId: phonepeData.orderId,
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
