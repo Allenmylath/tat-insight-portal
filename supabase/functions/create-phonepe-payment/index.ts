@@ -48,28 +48,25 @@ serve(async (req) => {
 
     const { token } = tokenResponse.data;
 
-    // Create PhonePe payment order
+    // Create PhonePe payment order using v2 API format
     const orderPayload = {
-      merchantId: phonepeClientId,
       merchantOrderId: merchantOrderId,
       amount: amount * 100, // Convert to paise
-      currency: "INR",
-      redirectUrl: redirectUrl,
-      callbackUrl: callbackUrl,
-      mobileNumber: "9999999999", // Default mobile number
-      deviceContext: {
-        deviceOS: "WEB"
+      paymentFlow: {
+        type: "PG_CHECKOUT",
+        merchantUrls: {
+          redirectUrl: redirectUrl
+        }
       }
     };
 
     console.log('PhonePe order payload:', orderPayload);
 
-    const phonepeResponse = await fetch('https://api-uat.phonepe.com/apis/pg-sandbox/pg/v1/pay', {
+    const phonepeResponse = await fetch('https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        'X-VERIFY': phonepeClientId,
+        'Authorization': `O-Bearer ${token}`,
       },
       body: JSON.stringify(orderPayload),
     });
