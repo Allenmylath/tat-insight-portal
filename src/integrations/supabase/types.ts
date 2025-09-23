@@ -235,39 +235,129 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_callbacks: {
+        Row: {
+          callback_data: Json
+          id: string
+          merchant_order_id: string | null
+          phonepe_order_id: string | null
+          processed: boolean
+          processed_at: string | null
+          processing_error: string | null
+          received_at: string
+        }
+        Insert: {
+          callback_data: Json
+          id?: string
+          merchant_order_id?: string | null
+          phonepe_order_id?: string | null
+          processed?: boolean
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
+        }
+        Update: {
+          callback_data?: Json
+          id?: string
+          merchant_order_id?: string | null
+          phonepe_order_id?: string | null
+          processed?: boolean
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
+        }
+        Relationships: []
+      }
+      phonepe_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          merchant_order_id: string
+          phonepe_order_id: string | null
+          purchase_id: string | null
+          redirect_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          merchant_order_id: string
+          phonepe_order_id?: string | null
+          purchase_id?: string | null
+          redirect_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          merchant_order_id?: string
+          phonepe_order_id?: string | null
+          purchase_id?: string | null
+          redirect_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
           amount: number
+          callback_received_at: string | null
           credits_purchased: number
           currency: string
           id: string
+          merchant_order_id: string | null
           package_name: string | null
           payment_method: string | null
           payment_reference: string | null
+          phonepe_order_id: string | null
+          phonepe_transaction_id: string | null
           purchased_at: string
           status: string
           user_id: string
         }
         Insert: {
           amount: number
+          callback_received_at?: string | null
           credits_purchased?: number
           currency?: string
           id?: string
+          merchant_order_id?: string | null
           package_name?: string | null
           payment_method?: string | null
           payment_reference?: string | null
+          phonepe_order_id?: string | null
+          phonepe_transaction_id?: string | null
           purchased_at?: string
           status?: string
           user_id: string
         }
         Update: {
           amount?: number
+          callback_received_at?: string | null
           credits_purchased?: number
           currency?: string
           id?: string
+          merchant_order_id?: string | null
           package_name?: string | null
           payment_method?: string | null
           payment_reference?: string | null
+          phonepe_order_id?: string | null
+          phonepe_transaction_id?: string | null
           purchased_at?: string
           status?: string
           user_id?: string
