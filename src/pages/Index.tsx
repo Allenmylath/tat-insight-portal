@@ -6,9 +6,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
-import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText } from "lucide-react";
+import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText, TestTube } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
+import { testPhonePeTokenGeneration } from "@/utils/testPhonePeToken";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -46,6 +48,18 @@ const Index = () => {
     link.click();
   };
 
+  const testPhonePeFunction = async () => {
+    toast.info("Testing PhonePe token generation...");
+    const result = await testPhonePeTokenGeneration();
+    if (result.success) {
+      toast.success("PhonePe token generated successfully!");
+      console.log("Token result:", result.data);
+    } else {
+      toast.error(`Error: ${result.error}`);
+      console.error("Token error:", result.error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -62,6 +76,10 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <Button onClick={testPhonePeFunction} variant="outline" size="sm" className="gap-2">
+              <TestTube className="h-4 w-4" />
+              Test PhonePe
+            </Button>
             {!isSignedIn ? (
               <div className="flex items-center gap-2">
                 <Link to="/auth/signin">

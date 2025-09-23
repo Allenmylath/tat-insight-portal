@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test PhonePe Token Generation</title>
+</head>
+<body>
+    <h1>PhonePe Token Test</h1>
+    <button onclick="testToken()">Generate Token</button>
+    <div id="result"></div>
+
+    <script>
+        async function testToken() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('https://ianqebxtpviuekwfhjtq.supabase.co/functions/v1/generate-phonepe-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhbnFlYnh0cHZpdWVrd2ZoanRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NDIyNDIsImV4cCI6MjA3MzUxODI0Mn0.wfrK1p_fuqbVlmxSxuhteQu4IPVsPgy-wAY5sT33AA4'
+                    }
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
