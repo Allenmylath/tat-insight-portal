@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useUserData } from '@/hooks/useUserData';
 import { useToast } from '@/hooks/use-toast';
 import { Coins, Star } from 'lucide-react';
+import '@/types/phonepe';
 
 interface CreditPackage {
   id: string;
@@ -63,31 +64,58 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
 
     setPurchasing(packageItem.id);
     try {
-      // For now, just show a placeholder toast
-      // In production, this would integrate with PhonePe/Razorpay
-      toast({
-        title: "Payment Integration Required",
-        description: `Selected ${packageItem.name} for ₹${packageItem.price}. Payment gateway integration needed.`,
-        variant: "default"
-      });
-
-      // Simulate adding credits for demo purposes
-      // In production, this would only happen after successful payment
-      const { error } = await supabase.rpc('add_credits_after_purchase', {
-        p_user_id: userData.id,
-        p_purchase_id: crypto.randomUUID(),
-        p_credits_purchased: packageItem.credits
+      // Create PhonePe payment order
+      const { data, error } = await supabase.functions.invoke('create-phonepe-payment', {
+        body: {
+          user_id: userData.id,
+          package_id: packageItem.id,
+          amount: packageItem.price,
+          credits: packageItem.credits,
+          package_name: packageItem.name,
+        },
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Credits Added!",
-        description: `Successfully added ${packageItem.credits} credits to your account.`,
-        variant: "default"
-      });
+      if (!data.success || !data.data?.checkoutUrl) {
+        throw new Error('Failed to create payment order');
+      }
 
-      onOpenChange(false);
+      // Open PhonePe payment in iframe
+      if (window.PhonePeCheckout) {
+        window.PhonePeCheckout.transact({
+          tokenUrl: data.data.checkoutUrl,
+          type: "IFRAME",
+          callback: (response: string) => {
+            console.log('PhonePe callback response:', response);
+            
+            if (response === 'USER_CANCEL') {
+              toast({
+                title: "Payment Cancelled",
+                description: "You cancelled the payment process.",
+                variant: "destructive"
+              });
+            } else if (response === 'CONCLUDED') {
+              toast({
+                title: "Payment Processing",
+                description: "Your payment is being processed. Credits will be added shortly.",
+                variant: "default"
+              });
+              
+              // Close modal and refresh page to update credit balance
+              setTimeout(() => {
+                onOpenChange(false);
+                window.location.reload();
+              }, 2000);
+            }
+            
+            setPurchasing(null);
+          }
+        });
+      } else {
+        throw new Error('PhonePe checkout not available');
+      }
+
     } catch (error) {
       console.error('Error processing purchase:', error);
       toast({
@@ -95,7 +123,6 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
         description: "There was an error processing your purchase. Please try again.",
         variant: "destructive"
       });
-    } finally {
       setPurchasing(null);
     }
   };

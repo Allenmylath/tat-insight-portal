@@ -10,6 +10,9 @@ verify_jwt = false
 [functions.generate-phonepe-token]
 verify_jwt = false
 
+[functions.phonepe-payment-callback]
+verify_jwt = false
+
 [db.webhooks.analyze-story]
 enabled = true
 events = ["UPDATE"]
