@@ -1,6 +1,5 @@
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { TestProvider } from "@/contexts/TestContext";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -19,11 +18,9 @@ createRoot(document.getElementById("root")!).render(
         card: "shadow-lg"
       }
     }}
-    afterSignInUrl="/"
-    afterSignUpUrl="/"
+    afterSignInUrl="/dashboard"
+    afterSignUpUrl="/dashboard"
   >
-    <TestProvider>
-      <App />
-    </TestProvider>
+    <App />
   </ClerkProvider>
 );

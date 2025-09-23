@@ -1,14 +1,19 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LogOut, User } from "lucide-react";
 import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
   const features = [
     {
@@ -57,17 +62,43 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="outline">Sign In</Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Button onClick={() => navigate("/dashboard")} variant="government">
-                Dashboard
-              </Button>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+            {!isSignedIn ? (
+              <div className="flex items-center gap-2">
+                <Link to="/auth/signin">
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link to="/auth/signup">
+                  <Button variant="default">Sign Up</Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Button onClick={() => navigate("/dashboard")} variant="government">
+                  Dashboard
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {user?.emailAddresses[0]?.emailAddress?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuItem onClick={() => navigate("/dashboard/settings")}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => signOut(() => navigate("/"))}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -98,15 +129,14 @@ const Index = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <SignedOut>
-                  <SignInButton mode="modal">
+                {!isSignedIn ? (
+                  <Link to="/auth/signup">
                     <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </SignInButton>
-                </SignedOut>
-                <SignedIn>
+                  </Link>
+                ) : (
                   <Button 
                     size="lg" 
                     variant="hero" 
@@ -116,7 +146,7 @@ const Index = () => {
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </SignedIn>
+                )}
                 <Button 
                   size="lg" 
                   variant="government" 
@@ -284,15 +314,14 @@ const Index = () => {
                 Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
               </p>
               
-              <SignedOut>
-                <SignInButton mode="modal">
+              {!isSignedIn ? (
+                <Link to="/auth/signup">
                   <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
                     Get Started Today
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
+                </Link>
+              ) : (
                 <Button 
                   size="lg" 
                   variant="hero" 
@@ -302,7 +331,7 @@ const Index = () => {
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
-              </SignedIn>
+              )}
             </div>
           </div>
         </section>

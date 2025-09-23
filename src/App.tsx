@@ -15,6 +15,8 @@ import PendingTests from "./pages/dashboard/PendingTests";
 import Results from "./pages/dashboard/Results";
 import Pricing from "./pages/dashboard/Pricing";
 import Settings from "./pages/dashboard/Settings";
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
 
 import { TestProvider } from "@/contexts/TestContext";
@@ -47,6 +49,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about-tat" element={<TatTestInfo />} />
+            
+            {/* Auth routes */}
+            <Route path="/auth/signin" element={<SignIn />} />
+            <Route path="/auth/signup" element={<SignUp />} />
             
             {/* Standalone test route - no dashboard layout */}
             <Route path="/test/:testId" element={
