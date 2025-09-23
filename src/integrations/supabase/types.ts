@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          provider: string
+          token_type: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          provider: string
+          token_type?: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          provider?: string
+          token_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       analysis_results: {
         Row: {
           analysis_data: Json
@@ -25,7 +55,6 @@ export type Database = {
           military_assessment: Json | null
           murray_needs: Json | null
           murray_presses: Json | null
-          personality_traits: Json | null
           selection_recommendation: Json | null
           test_session_id: string
           user_id: string
@@ -40,7 +69,6 @@ export type Database = {
           military_assessment?: Json | null
           murray_needs?: Json | null
           murray_presses?: Json | null
-          personality_traits?: Json | null
           selection_recommendation?: Json | null
           test_session_id: string
           user_id: string
@@ -55,7 +83,6 @@ export type Database = {
           military_assessment?: Json | null
           murray_needs?: Json | null
           murray_presses?: Json | null
-          personality_traits?: Json | null
           selection_recommendation?: Json | null
           test_session_id?: string
           user_id?: string
