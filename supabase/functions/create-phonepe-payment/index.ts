@@ -72,14 +72,42 @@ serve(async (req) => {
     });
 
     const phonepeData = await phonepeResponse.json();
-    console.log('PhonePe API response:', phonepeData);
+    console.log('PhonePe API response status:', phonepeResponse.status);
+    console.log('PhonePe API response data:', JSON.stringify(phonepeData, null, 2));
 
-    // PhonePe v2 API doesn't return 'success' field - check for orderId instead
-    if (!phonepeResponse.ok || !phonepeData.orderId) {
-      throw new Error(`PhonePe API error: ${phonepeData.message || phonepeData.error || 'Unknown error'}`);
+    // Handle PhonePe error responses
+    if (!phonepeResponse.ok) {
+      const errorMessage = phonepeData.message || phonepeData.error || `HTTP ${phonepeResponse.status}`;
+      console.error('PhonePe API HTTP error:', errorMessage);
+      throw new Error(`PhonePe API error: ${errorMessage}`);
     }
 
-    // Store order in database
+    // Check for PhonePe-specific error codes
+    if (phonepeData.code && (phonepeData.code === 'BAD_REQUEST' || phonepeData.code === 'INTERNAL_SERVER_ERROR')) {
+      console.error('PhonePe API business error:', phonepeData.code, phonepeData.message);
+      throw new Error(`PhonePe API error: ${phonepeData.message || phonepeData.code}`);
+    }
+
+    // Validate required response fields
+    if (!phonepeData.orderId || !phonepeData.redirectUrl) {
+      console.error('Missing required fields in PhonePe response:', {
+        hasOrderId: !!phonepeData.orderId,
+        hasRedirectUrl: !!phonepeData.redirectUrl,
+        state: phonepeData.state
+      });
+      throw new Error(`Invalid PhonePe response: missing required fields`);
+    }
+
+    // Validate state is PENDING
+    if (phonepeData.state !== 'PENDING') {
+      console.warn('Unexpected PhonePe order state:', phonepeData.state);
+    }
+
+    // Store order in database with PhonePe expiry time
+    const expiresAt = phonepeData.expireAt 
+      ? new Date(phonepeData.expireAt).toISOString()
+      : new Date(Date.now() + 15 * 60 * 1000).toISOString(); // fallback: 15 minutes from now
+
     const { error: dbError } = await supabase
       .from('phonepe_orders')
       .insert({
@@ -90,7 +118,7 @@ serve(async (req) => {
         currency: 'INR',
         status: 'CREATED',
         redirect_url: redirectUrl,
-        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutes from now
+        expires_at: expiresAt,
       });
 
     if (dbError) {
