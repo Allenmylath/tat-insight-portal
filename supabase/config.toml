@@ -7,6 +7,9 @@ domain = "adapted-yak-99.clerk.accounts.dev"
 [functions.clerk-webhook]
 verify_jwt = false
 
+[functions.create-phonepe-payment]
+verify_jwt = false
+
 [functions.generate-phonepe-token]
 verify_jwt = false
 
