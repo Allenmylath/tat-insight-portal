@@ -46,7 +46,7 @@ serve(async (req) => {
       throw new Error('Failed to get PhonePe token');
     }
 
-    const { token } = tokenResponse.data;
+    const { access_token } = tokenResponse.data;
 
     // Create PhonePe payment order using v2 API format
     const orderPayload = {
@@ -66,7 +66,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `O-Bearer ${token}`,
+        'Authorization': `O-Bearer ${access_token}`,
       },
       body: JSON.stringify(orderPayload),
     });
