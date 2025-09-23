@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSignUp } from "@clerk/clerk-react";
+import { useState, useEffect } from "react";
+import { useSignUp, useUser } from "@clerk/clerk-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { isSignedIn } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,8 +23,19 @@ const SignUp = () => {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
+  // Redirect if already signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate("/dashboard");
+    }
+  }, [isSignedIn, navigate]);
+
   const handleGoogleSignUp = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
+
+    console.log("Attempting Google sign up...", { isLoaded, isSignedIn });
+    setIsLoading(true);
+    setError("");
 
     try {
       await signUp.authenticateWithRedirect({
@@ -33,13 +45,17 @@ const SignUp = () => {
       });
     } catch (err: any) {
       console.error("Google sign up error:", err);
-      setError(err.errors?.[0]?.message || "An error occurred with Google sign up");
+      setError(err.errors?.[0]?.message || err.message || "An error occurred with Google sign up");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
+
+    console.log("Attempting email sign up...", { isLoaded, isSignedIn });
 
     if (password !== confirmPassword) {
       setError("Passwords don't match");
@@ -64,7 +80,7 @@ const SignUp = () => {
       setPendingVerification(true);
     } catch (err: any) {
       console.error("Sign up error:", err);
-      setError(err.errors?.[0]?.message || "An error occurred during sign up");
+      setError(err.errors?.[0]?.message || err.message || "An error occurred during sign up");
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +109,21 @@ const SignUp = () => {
       setIsLoading(false);
     }
   };
+
+  // Show loading state if not loaded yet
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/50 p-4">
+        <div className="w-full max-w-md space-y-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">Loading...</div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (pendingVerification) {
     return (

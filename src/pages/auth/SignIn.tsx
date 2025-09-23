@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSignIn } from "@clerk/clerk-react";
+import { useState, useEffect } from "react";
+import { useSignIn, useUser } from "@clerk/clerk-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const SignIn = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { isSignedIn } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +19,19 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Redirect if already signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate("/dashboard");
+    }
+  }, [isSignedIn, navigate]);
+
   const handleGoogleSignIn = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
+
+    console.log("Attempting Google sign in...", { isLoaded, isSignedIn });
+    setIsLoading(true);
+    setError("");
 
     try {
       await signIn.authenticateWithRedirect({
@@ -29,14 +41,17 @@ const SignIn = () => {
       });
     } catch (err: any) {
       console.error("Google sign in error:", err);
-      setError(err.errors?.[0]?.message || "An error occurred with Google sign in");
+      setError(err.errors?.[0]?.message || err.message || "An error occurred with Google sign in");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
 
+    console.log("Attempting email sign in...", { isLoaded, isSignedIn });
     setIsLoading(true);
     setError("");
 
@@ -52,11 +67,26 @@ const SignIn = () => {
       }
     } catch (err: any) {
       console.error("Sign in error:", err);
-      setError(err.errors?.[0]?.message || "An error occurred during sign in");
+      setError(err.errors?.[0]?.message || err.message || "An error occurred during sign in");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Show loading state if not loaded yet
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/50 p-4">
+        <div className="w-full max-w-md space-y-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">Loading...</div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/50 p-4">
