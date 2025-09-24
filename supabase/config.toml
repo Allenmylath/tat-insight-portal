@@ -16,6 +16,9 @@ verify_jwt = false
 [functions.phonepe-payment-callback]
 verify_jwt = false
 
+[functions.check-phonepe-order-status]
+verify_jwt = false
+
 [db.webhooks.analyze-story]
 enabled = true
 events = ["UPDATE"]
