@@ -30,6 +30,16 @@ export const PaymentReconciliation = () => {
   const [bulkLoading, setBulkLoading] = useState(false);
   const [results, setResults] = useState<ReconcileResult[]>([]);
 
+  // Debug function to safely log results
+  const debugResults = (results: ReconcileResult[]) => {
+    console.log('Results received:', results?.map(r => ({
+      merchantOrderId: r.merchantOrderId,
+      hasPhonePeStatus: !!r.phonePeStatus,
+      phonePeState: r.phonePeStatus?.state || 'null',
+      success: r.reconcileResult?.success
+    })));
+  };
+
   const checkSingleOrder = async () => {
     if (!singleOrderId.trim()) {
       toast.error('Please enter a merchant order ID');
@@ -49,7 +59,9 @@ export const PaymentReconciliation = () => {
         throw error;
       }
 
+      console.log('Single order response:', data);
       setResults([data]);
+      debugResults([data]);
       
       if (data.reconcileResult.success) {
         toast.success(`Order reconciled successfully! ${data.reconcileResult.creditsAdded > 0 ? `${data.reconcileResult.creditsAdded} credits added.` : ''}`);
@@ -77,7 +89,9 @@ export const PaymentReconciliation = () => {
         throw error;
       }
 
+      console.log('Bulk reconcile response:', data);
       setResults(data.results || []);
+      debugResults(data.results || []);
       
       const successful = data.results?.filter((r: ReconcileResult) => r.reconcileResult.success).length || 0;
       const creditsAdded = data.results?.reduce((sum: number, r: ReconcileResult) => 

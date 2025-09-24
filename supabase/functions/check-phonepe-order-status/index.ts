@@ -51,27 +51,39 @@ async function getPhonePeAccessToken(): Promise<string | null> {
 async function checkOrderStatus(merchantOrderId: string, accessToken: string): Promise<PhonePeStatusResponse | null> {
   try {
     console.log(`Checking status for order: ${merchantOrderId}`);
+    console.log(`Using access token (first 20 chars): ${accessToken?.substring(0, 20)}...`);
     
-    const response = await fetch(
-      `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${merchantOrderId}/status`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `O-Bearer ${accessToken}`,
-        },
-      }
-    );
+    const url = `https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/${merchantOrderId}/status`;
+    console.log(`API URL: ${url}`);
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `O-Bearer ${accessToken}`,
+      },
+    });
+
+    console.log(`PhonePe API Response Status: ${response.status} ${response.statusText}`);
+    
+    const responseText = await response.text();
+    console.log(`PhonePe API Response Body: ${responseText}`);
 
     if (!response.ok) {
       console.error(`PhonePe API error: ${response.status} ${response.statusText}`);
+      console.error(`Response body: ${responseText}`);
       return null;
     }
 
-    const data: PhonePeStatusResponse = await response.json();
-    console.log(`PhonePe status response for ${merchantOrderId}:`, JSON.stringify(data, null, 2));
-    
-    return data;
+    try {
+      const data: PhonePeStatusResponse = JSON.parse(responseText);
+      console.log(`PhonePe status response for ${merchantOrderId}:`, JSON.stringify(data, null, 2));
+      return data;
+    } catch (parseError) {
+      console.error(`Failed to parse PhonePe response: ${parseError.message}`);
+      console.error(`Raw response: ${responseText}`);
+      return null;
+    }
   } catch (error) {
     console.error(`Error checking order status for ${merchantOrderId}:`, error);
     return null;
