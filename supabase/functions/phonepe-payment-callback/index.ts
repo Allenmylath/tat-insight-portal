@@ -16,7 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const webhookUsername = Deno.env.get('PHONEPE_WEBHOOK_USERNAME')!;
 const webhookPassword = Deno.env.get('PHONEPE_WEBHOOK_PASSWORD')!;
 
-// Create expected authorization hash
+// Create expected authorization hash (PhonePe format: SHA256(username:password))
 async function createAuthHash(username: string, password: string): Promise<string> {
   const credentials = `${username}:${password}`;
   const encoder = new TextEncoder();
@@ -31,15 +31,24 @@ interface PhonePeWebhookPayload {
   payload: {
     merchantOrderId: string;
     orderId?: string;
+    merchantId?: string;
     state: 'COMPLETED' | 'FAILED';
     amount: number;
     expireAt?: number;
+    metaInfo?: {
+      udf1?: string;
+      udf2?: string;
+      udf3?: string;
+      udf4?: string;
+    };
     paymentDetails?: Array<{
       paymentMode: string;
       transactionId: string;
       timestamp: number;
       amount: number;
       state: string;
+      errorCode?: string;
+      detailedErrorCode?: string;
     }>;
   };
 }
@@ -51,7 +60,7 @@ serve(async (req) => {
   }
 
   try {
-    // Verify webhook authorization
+    // Verify webhook authorization (PhonePe sends SHA256 hash directly)
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
       console.error('Missing authorization header');
@@ -59,10 +68,10 @@ serve(async (req) => {
     }
 
     const expectedHash = await createAuthHash(webhookUsername, webhookPassword);
-    const receivedHash = authHeader.replace('SHA256 ', '').toLowerCase();
+    const receivedHash = authHeader.replace(/^SHA256\s+/, '').toLowerCase();
 
     if (receivedHash !== expectedHash) {
-      console.error('Invalid authorization hash');
+      console.error('Invalid authorization hash. Expected:', expectedHash, 'Received:', receivedHash);
       return new Response('Unauthorized', { status: 401 });
     }
 
@@ -131,11 +140,18 @@ serve(async (req) => {
 });
 
 async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
-  const { merchantOrderId, orderId } = webhookData.payload;
+  const { merchantOrderId, orderId, paymentDetails } = webhookData.payload;
   
   console.log('Processing successful payment for order:', merchantOrderId);
+  console.log('Payment details received:', JSON.stringify(paymentDetails, null, 2));
 
-  // Update PhonePe order status
+  // Extract payment details
+  const paymentInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0] : null;
+  const transactionId = paymentInfo?.transactionId || orderId;
+  const paymentMode = paymentInfo?.paymentMode || 'UNKNOWN';
+  const timestamp = paymentInfo?.timestamp;
+
+  // Update PhonePe order status with payment details
   const { error: orderError } = await supabase
     .from('phonepe_orders')
     .update({
@@ -150,12 +166,13 @@ async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
     throw orderError;
   }
 
-  // Update purchase status
+  // Update purchase status with complete payment information
   const { error: purchaseError } = await supabase
     .from('purchases')
     .update({
       status: 'completed',
-      phonepe_transaction_id: orderId,
+      phonepe_transaction_id: transactionId,
+      payment_method: paymentMode,
       callback_received_at: new Date().toISOString(),
     })
     .eq('merchant_order_id', merchantOrderId);
@@ -165,23 +182,42 @@ async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
     throw purchaseError;
   }
 
-  // Get purchase details to add credits
-  const { data: purchase, error: fetchError } = await supabase
+  // Get purchase details and user information to add credits
+  const { data: purchaseData, error: fetchError } = await supabase
     .from('purchases')
-    .select('user_id, credits_purchased')
+    .select(`
+      user_id, 
+      credits_purchased, 
+      id,
+      users!inner(email, clerk_id)
+    `)
     .eq('merchant_order_id', merchantOrderId)
     .single();
 
-  if (fetchError || !purchase) {
+  if (fetchError || !purchaseData) {
     console.error('Failed to fetch purchase details:', fetchError);
     throw new Error('Purchase not found');
   }
 
-  // Add credits to user account
+  // Prepare payment metadata for transaction record
+  const paymentMetadata = {
+    phonepe_order_id: orderId,
+    merchant_order_id: merchantOrderId,
+    transaction_id: transactionId,
+    payment_mode: paymentMode,
+    amount: webhookData.payload.amount,
+    timestamp: timestamp ? new Date(timestamp).toISOString() : null,
+    webhook_event: webhookData.event,
+    payment_details: paymentInfo
+  };
+
+  // Add credits to user account with enhanced information
   const { error: creditError } = await supabase.rpc('add_credits_after_purchase', {
-    p_user_id: purchase.user_id,
-    p_purchase_id: crypto.randomUUID(),
-    p_credits_purchased: purchase.credits_purchased,
+    p_user_id: purchaseData.user_id,
+    p_purchase_id: purchaseData.id,
+    p_credits_purchased: purchaseData.credits_purchased,
+    p_user_email: purchaseData.users.email,
+    p_payment_metadata: paymentMetadata,
   });
 
   if (creditError) {
@@ -189,15 +225,25 @@ async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
     throw creditError;
   }
 
-  console.log(`Successfully processed payment and added ${purchase.credits_purchased} credits to user ${purchase.user_id}`);
+  console.log(`Successfully processed payment for user ${purchaseData.users.email}`);
+  console.log(`Added ${purchaseData.credits_purchased} credits via ${paymentMode} payment`);
+  console.log(`Transaction ID: ${transactionId}`);
 }
 
 async function processFailedPayment(webhookData: PhonePeWebhookPayload) {
-  const { merchantOrderId, orderId } = webhookData.payload;
+  const { merchantOrderId, orderId, paymentDetails } = webhookData.payload;
   
   console.log('Processing failed payment for order:', merchantOrderId);
+  console.log('Payment failure details:', JSON.stringify(paymentDetails, null, 2));
 
-  // Update PhonePe order status
+  // Extract payment details for failure analysis
+  const paymentInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0] : null;
+  const transactionId = paymentInfo?.transactionId || orderId;
+  const paymentMode = paymentInfo?.paymentMode || 'UNKNOWN';
+  const errorCode = paymentInfo?.errorCode;
+  const detailedErrorCode = paymentInfo?.detailedErrorCode;
+
+  // Update PhonePe order status with failure details
   const { error: orderError } = await supabase
     .from('phonepe_orders')
     .update({
@@ -211,12 +257,13 @@ async function processFailedPayment(webhookData: PhonePeWebhookPayload) {
     console.error('Failed to update PhonePe order:', orderError);
   }
 
-  // Update purchase status
+  // Update purchase status with failure information
   const { error: purchaseError } = await supabase
     .from('purchases')
     .update({
       status: 'failed',
-      phonepe_transaction_id: orderId,
+      phonepe_transaction_id: transactionId,
+      payment_method: paymentMode,
       callback_received_at: new Date().toISOString(),
     })
     .eq('merchant_order_id', merchantOrderId);
@@ -225,5 +272,9 @@ async function processFailedPayment(webhookData: PhonePeWebhookPayload) {
     console.error('Failed to update purchase:', purchaseError);
   }
 
-  console.log('Processed failed payment for order:', merchantOrderId);
+  console.log(`Processed failed payment for order: ${merchantOrderId}`);
+  if (errorCode || detailedErrorCode) {
+    console.log(`Failure reason - Error Code: ${errorCode}, Detailed Code: ${detailedErrorCode}`);
+  }
+  console.log(`Payment method: ${paymentMode}, Transaction ID: ${transactionId}`);
 }
