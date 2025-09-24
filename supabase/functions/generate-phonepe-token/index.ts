@@ -22,21 +22,25 @@ interface TokenResponse {
   expires_in: number;
 }
 
-async function getValidToken(): Promise<string | null> {
+async function getValidToken(forceRefresh = false): Promise<string | null> {
   try {
-    // Check if we have a valid existing token
-    const { data: existingToken } = await supabase
-      .from('access_tokens')
-      .select('*')
-      .eq('provider', 'phonepe')
-      .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    // Check if we should use existing token (only if not forced refresh)
+    if (!forceRefresh) {
+      const { data: existingToken } = await supabase
+        .from('access_tokens')
+        .select('*')
+        .eq('provider', 'phonepe')
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
 
-    if (existingToken) {
-      console.log('Using existing valid token');
-      return existingToken.access_token;
+      if (existingToken) {
+        console.log('Using existing valid token');
+        return existingToken.access_token;
+      }
+    } else {
+      console.log('Force refresh requested - generating new token');
     }
 
     // Generate new token if none exists or expired
@@ -98,7 +102,19 @@ serve(async (req) => {
   }
 
   try {
-    const token = await getValidToken();
+    // Parse request body to check for force_refresh parameter
+    let forceRefresh = false;
+    try {
+      if (req.method === 'POST') {
+        const body = await req.json();
+        forceRefresh = body.force_refresh === true;
+      }
+    } catch (e) {
+      // Ignore parsing errors for backwards compatibility
+    }
+
+    console.log(`Token generation requested with force_refresh: ${forceRefresh}`);
+    const token = await getValidToken(forceRefresh);
 
     return new Response(
       JSON.stringify({ 

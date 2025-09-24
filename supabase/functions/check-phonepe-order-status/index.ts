@@ -31,17 +31,25 @@ interface PhonePeStatusResponse {
   };
 }
 
-async function getPhonePeAccessToken(): Promise<string | null> {
+async function getPhonePeAccessToken(forceRefresh = true): Promise<string | null> {
   try {
-    console.log('Getting PhonePe access token...');
-    const { data, error } = await supabase.functions.invoke('generate-phonepe-token');
+    console.log(`Getting PhonePe access token with force_refresh: ${forceRefresh}`);
+    const { data, error } = await supabase.functions.invoke('generate-phonepe-token', {
+      body: { force_refresh: forceRefresh }
+    });
     
     if (error) {
       console.error('Error getting access token:', error);
       return null;
     }
+
+    if (!data?.access_token) {
+      console.error('No access token returned from generate-phonepe-token');
+      return null;
+    }
     
-    return data?.access_token || null;
+    console.log('Successfully retrieved fresh access token');
+    return data.access_token;
   } catch (error) {
     console.error('Failed to get PhonePe access token:', error);
     return null;
@@ -200,10 +208,17 @@ serve(async (req) => {
     const { action, merchantOrderId } = await req.json();
 
     if (action === 'check_single' && merchantOrderId) {
-      // Check single order status
-      const accessToken = await getPhonePeAccessToken();
+      console.log(`Checking single order: ${merchantOrderId}`);
+      
+      // Always use fresh token for order status checks
+      const accessToken = await getPhonePeAccessToken(true);
       if (!accessToken) {
-        return new Response(JSON.stringify({ error: 'Failed to get access token' }), {
+        return new Response(JSON.stringify({ 
+          error: 'Failed to get fresh access token',
+          merchantOrderId,
+          phonePeStatus: null,
+          reconcileResult: { success: false, error: 'Failed to get fresh access token' }
+        }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -252,9 +267,15 @@ serve(async (req) => {
 
       console.log(`Found ${pendingOrders?.length || 0} pending orders to reconcile`);
 
-      const accessToken = await getPhonePeAccessToken();
+      // Get fresh access token for bulk reconciliation
+      const accessToken = await getPhonePeAccessToken(true);
       if (!accessToken) {
-        return new Response(JSON.stringify({ error: 'Failed to get access token' }), {
+        return new Response(JSON.stringify({ 
+          error: 'Failed to get fresh access token for bulk reconciliation',
+          action: 'reconcile_all',
+          totalProcessed: 0,
+          results: []
+        }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
