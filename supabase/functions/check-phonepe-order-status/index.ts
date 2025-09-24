@@ -13,22 +13,18 @@ const supabase = createClient(
 );
 
 interface PhonePeStatusResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data: {
-    merchantOrderId: string;
-    orderId: string;
-    state: 'COMPLETED' | 'FAILED' | 'PENDING' | 'EXPIRED';
-    responseCode: string;
+  orderId: string;
+  state: 'COMPLETED' | 'FAILED' | 'PENDING' | 'EXPIRED';
+  amount: number;
+  expireAt: number;
+  paymentDetails?: {
+    paymentMode: string;
+    transactionId: string;
+    timestamp: number;
     amount: number;
-    paymentInstrument?: {
-      type: string;
-      cardType?: string;
-      pgTransactionId?: string;
-    };
-    transactionId?: string;
-  };
+    state: string;
+    splitInstruments?: any[];
+  }[];
 }
 
 async function getPhonePeAccessToken(forceRefresh = true): Promise<string | null> {
@@ -68,7 +64,7 @@ async function checkOrderStatus(merchantOrderId: string, accessToken: string): P
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `O-Bearer ${accessToken}`,
+        'Authorization': accessToken,
       },
     });
 
@@ -126,15 +122,15 @@ async function reconcileOrder(merchantOrderId: string, phonePeStatus: PhonePeSta
     }
 
     // Update order status
-    const newOrderStatus = phonePeStatus.data.state === 'COMPLETED' ? 'SUCCESS' : 
-                          phonePeStatus.data.state === 'FAILED' ? 'FAILED' : 
-                          phonePeStatus.data.state;
+    const newOrderStatus = phonePeStatus.state === 'COMPLETED' ? 'SUCCESS' : 
+                          phonePeStatus.state === 'FAILED' ? 'FAILED' : 
+                          phonePeStatus.state;
 
     const { error: updateOrderError } = await supabase
       .from('phonepe_orders')
       .update({
         status: newOrderStatus,
-        phonepe_order_id: phonePeStatus.data.orderId,
+        phonepe_order_id: phonePeStatus.orderId,
         updated_at: new Date().toISOString(),
       })
       .eq('merchant_order_id', merchantOrderId);
@@ -145,16 +141,20 @@ async function reconcileOrder(merchantOrderId: string, phonePeStatus: PhonePeSta
     }
 
     // Update purchase status
-    const newPurchaseStatus = phonePeStatus.data.state === 'COMPLETED' ? 'completed' : 
-                             phonePeStatus.data.state === 'FAILED' ? 'failed' : 'pending';
+    const newPurchaseStatus = phonePeStatus.state === 'COMPLETED' ? 'completed' : 
+                             phonePeStatus.state === 'FAILED' ? 'failed' : 'pending';
+
+    // Extract transaction ID from payment details if available
+    const transactionId = phonePeStatus.paymentDetails?.[0]?.transactionId || null;
+    const paymentMethod = phonePeStatus.paymentDetails?.[0]?.paymentMode || null;
 
     const { error: updatePurchaseError } = await supabase
       .from('purchases')
       .update({
         status: newPurchaseStatus,
-        phonepe_order_id: phonePeStatus.data.orderId,
-        phonepe_transaction_id: phonePeStatus.data.transactionId,
-        payment_method: phonePeStatus.data.paymentInstrument?.type,
+        phonepe_order_id: phonePeStatus.orderId,
+        phonepe_transaction_id: transactionId,
+        payment_method: paymentMethod,
         callback_received_at: new Date().toISOString(),
       })
       .eq('merchant_order_id', merchantOrderId);
@@ -165,7 +165,7 @@ async function reconcileOrder(merchantOrderId: string, phonePeStatus: PhonePeSta
     }
 
     // Add credits if payment was successful
-    if (phonePeStatus.data.state === 'COMPLETED' && purchase.status !== 'completed') {
+    if (phonePeStatus.state === 'COMPLETED' && purchase.status !== 'completed') {
       console.log(`Adding credits for successful payment: ${purchase.credits_purchased} credits to user ${purchase.user_id}`);
       
       const { data: creditResult, error: creditError } = await supabase.rpc(
@@ -188,9 +188,9 @@ async function reconcileOrder(merchantOrderId: string, phonePeStatus: PhonePeSta
     return { 
       success: true, 
       message: `Order ${merchantOrderId} reconciled successfully`,
-      phonePeStatus: phonePeStatus.data.state,
+      phonePeStatus: phonePeStatus.state,
       localStatus: newPurchaseStatus,
-      creditsAdded: phonePeStatus.data.state === 'COMPLETED' && purchase.status !== 'completed' ? purchase.credits_purchased : 0
+      creditsAdded: phonePeStatus.state === 'COMPLETED' && purchase.status !== 'completed' ? purchase.credits_purchased : 0
     };
 
   } catch (error) {
@@ -240,7 +240,7 @@ serve(async (req) => {
       
       return new Response(JSON.stringify({
         merchantOrderId,
-        phonePeStatus: phonePeStatus.data,
+        phonePeStatus: phonePeStatus,
         reconcileResult
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -288,7 +288,7 @@ serve(async (req) => {
           const reconcileResult = await reconcileOrder(order.merchant_order_id, phonePeStatus);
           results.push({
             merchantOrderId: order.merchant_order_id,
-            phonePeStatus: phonePeStatus.data,
+            phonePeStatus: phonePeStatus,
             reconcileResult
           });
         } else {
