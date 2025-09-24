@@ -555,19 +555,13 @@ export type Database = {
     }
     Functions: {
       add_credits_after_purchase: {
-        Args:
-          | {
-              p_credits_purchased: number
-              p_payment_metadata?: Json
-              p_purchase_id: string
-              p_user_email?: string
-              p_user_id: string
-            }
-          | {
-              p_credits_purchased: number
-              p_purchase_id: string
-              p_user_id: string
-            }
+        Args: {
+          p_credits_purchased: number
+          p_payment_metadata?: Json
+          p_purchase_id: string
+          p_user_email?: string
+          p_user_id: string
+        }
         Returns: boolean
       }
       analyze_existing_completed_sessions: {
