@@ -64,7 +64,7 @@ async function checkOrderStatus(merchantOrderId: string, accessToken: string): P
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': accessToken,
+        'Authorization': `O-Bearer ${accessToken}`,
       },
     });
 
