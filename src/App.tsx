@@ -18,6 +18,7 @@ import Settings from "./pages/dashboard/Settings";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
+import { PaymentReconciliation } from "@/components/PaymentReconciliation";
 
 import { TestProvider } from "@/contexts/TestContext";
 
@@ -100,6 +101,13 @@ const App = () => (
               <SignedIn>
                 <DashboardLayout>
                   <Settings />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/reconciliation" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <PaymentReconciliation />
                 </DashboardLayout>
               </SignedIn>
             } />
