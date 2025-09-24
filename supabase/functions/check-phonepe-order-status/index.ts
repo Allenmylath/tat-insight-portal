@@ -58,7 +58,7 @@ async function checkOrderStatus(merchantOrderId: string, accessToken: string): P
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `O-Bearer ${accessToken}`,
         },
       }
     );
@@ -217,14 +217,14 @@ serve(async (req) => {
     }
 
     if (action === 'reconcile_all') {
-      // Get all pending orders older than 5 minutes
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      // Get all pending orders older than 1 minute
+      const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000).toISOString();
       
       const { data: pendingOrders, error } = await supabase
         .from('phonepe_orders')
         .select('merchant_order_id, created_at')
         .eq('status', 'CREATED')
-        .lt('created_at', fiveMinutesAgo);
+        .lt('created_at', oneMinuteAgo);
 
       if (error) {
         console.error('Error fetching pending orders:', error);
