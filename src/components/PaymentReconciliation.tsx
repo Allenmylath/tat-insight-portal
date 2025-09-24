@@ -15,7 +15,7 @@ interface ReconcileResult {
     state: string;
     orderId: string;
     amount: number;
-  };
+  } | null;
   reconcileResult: {
     success: boolean;
     message?: string;
@@ -126,7 +126,7 @@ export const PaymentReconciliation = () => {
               className="w-full"
             >
               {bulkLoading && <RefreshCw className="w-4 h-4 mr-2 animate-spin" />}
-              Reconcile All Pending Orders (5+ minutes old)
+              Reconcile All Pending Orders (1+ minute old)
             </Button>
           </div>
         </CardContent>
@@ -157,13 +157,13 @@ export const PaymentReconciliation = () => {
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <strong>PhonePe Status:</strong> {result.phonePeStatus.state}
+                      <strong>PhonePe Status:</strong> {result.phonePeStatus?.state || 'Unknown'}
                     </div>
                     <div>
-                      <strong>Amount:</strong> ₹{(result.phonePeStatus.amount / 100).toFixed(2)}
+                      <strong>Amount:</strong> {result.phonePeStatus?.amount ? `₹${(result.phonePeStatus.amount / 100).toFixed(2)}` : 'N/A'}
                     </div>
                     <div>
-                      <strong>PhonePe Order ID:</strong> {result.phonePeStatus.orderId}
+                      <strong>PhonePe Order ID:</strong> {result.phonePeStatus?.orderId || 'N/A'}
                     </div>
                     {result.reconcileResult.creditsAdded && (
                       <div>

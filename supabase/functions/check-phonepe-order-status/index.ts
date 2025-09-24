@@ -199,8 +199,12 @@ serve(async (req) => {
 
       const phonePeStatus = await checkOrderStatus(merchantOrderId, accessToken);
       if (!phonePeStatus) {
-        return new Response(JSON.stringify({ error: 'Failed to check order status' }), {
-          status: 500,
+        return new Response(JSON.stringify({ 
+          merchantOrderId,
+          phonePeStatus: null,
+          reconcileResult: { success: false, error: 'Failed to check order status with PhonePe API' }
+        }), {
+          status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
@@ -253,6 +257,13 @@ serve(async (req) => {
             merchantOrderId: order.merchant_order_id,
             phonePeStatus: phonePeStatus.data,
             reconcileResult
+          });
+        } else {
+          // Handle failed API calls gracefully
+          results.push({
+            merchantOrderId: order.merchant_order_id,
+            phonePeStatus: null,
+            reconcileResult: { success: false, error: 'Failed to check order status with PhonePe API' }
           });
         }
         
