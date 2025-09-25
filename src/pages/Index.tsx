@@ -381,7 +381,7 @@ const Index = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p><strong className="text-foreground">Company:</strong> MYLATH HOLDINGS</p>
                 <p><strong className="text-foreground">Email:</strong> support@tatpro.com</p>
-                <p><strong className="text-foreground">Phone:</strong> +91 XXX XXX XXXX</p>
+                <p><strong className="text-foreground">Phone:</strong> +91 9605214280</p>
               </div>
             </div>
 
