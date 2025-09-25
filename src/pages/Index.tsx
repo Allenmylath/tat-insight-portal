@@ -385,13 +385,13 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Refund Policy */}
+            {/* Quick Links */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Refund Policy</h3>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>We offer refunds within <strong className="text-foreground">5 working days</strong> of purchase.</p>
-                <p>Refund requests must be submitted through our support system with valid reasons.</p>
-                <p>Processing time: 3-7 business days after approval.</p>
+              <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p><a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a></p>
+                <p><a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a></p>
+                <p><a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a></p>
               </div>
             </div>
           </div>
@@ -402,9 +402,9 @@ const Index = () => {
               © 2024 TAT Pro by MYLATH HOLDINGS. Designed for SSC candidate success.
             </p>
             <div className="flex gap-4 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-foreground transition-colors">Refund Policy</a>
+              <a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+              <a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a>
+              <a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a>
             </div>
           </div>
         </div>
