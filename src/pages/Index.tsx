@@ -356,21 +356,56 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-card/30 py-8">
+      <footer className="border-t bg-card/30 py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-white" />
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Company Info */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">TAT Pro</p>
+                  <p className="text-xs text-muted-foreground">SSC Assessment Platform</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-foreground">TAT Pro</p>
-                <p className="text-xs text-muted-foreground">SSC Assessment Platform</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Advanced psychological assessment platform based on Henry Murray's original TAT methodology.
+              </p>
+            </div>
+
+            {/* Contact Details */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">Contact Information</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p><strong className="text-foreground">Company:</strong> MYLATH HOLDINGS</p>
+                <p><strong className="text-foreground">Email:</strong> support@tatpro.com</p>
+                <p><strong className="text-foreground">Phone:</strong> +91 XXX XXX XXXX</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground text-center md:text-right">
-              © 2024 TAT Pro. Designed for SSC candidate success.
+
+            {/* Refund Policy */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">Refund Policy</h3>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>We offer refunds within <strong className="text-foreground">5 working days</strong> of purchase.</p>
+                <p>Refund requests must be submitted through our support system with valid reasons.</p>
+                <p>Processing time: 3-7 business days after approval.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+              © 2024 TAT Pro by MYLATH HOLDINGS. Designed for SSC candidate success.
             </p>
+            <div className="flex gap-4 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-foreground transition-colors">Refund Policy</a>
+            </div>
           </div>
         </div>
       </footer>
