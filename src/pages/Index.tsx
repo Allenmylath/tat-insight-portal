@@ -370,9 +370,6 @@ const Index = () => {
                   <p className="text-xs text-muted-foreground">SSC Assessment Platform</p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Advanced psychological assessment platform based on Henry Murray's original TAT methodology.
-              </p>
             </div>
 
             {/* Contact Details */}
