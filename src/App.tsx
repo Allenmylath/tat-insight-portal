@@ -19,6 +19,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import RefundPolicy from "./pages/RefundPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import { PaymentReconciliation } from "@/components/PaymentReconciliation";
 
@@ -52,8 +53,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about-tat" element={<TatTestInfo />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/about-us" element={<AboutUs />} />
             
             {/* Auth routes */}
             <Route path="/auth/signin" element={<SignIn />} />

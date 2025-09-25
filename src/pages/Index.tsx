@@ -389,6 +389,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
               <div className="space-y-2 text-sm text-muted-foreground">
+                <p><a href="/about-us" className="hover:text-foreground transition-colors">About Us</a></p>
                 <p><a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a></p>
                 <p><a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a></p>
                 <p><a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a></p>
