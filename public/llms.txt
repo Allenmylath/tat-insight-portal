@@ -1,0 +1,31 @@
+# AI/LLMs.txt
+# Specification for AI/LLM data usage permissions
+
+# TAT Pro Assessment Platform
+# This file specifies usage permissions for AI models and language learning models
+
+User-agent: *
+Allow: /
+Allow: /about-tat
+Allow: /about-us
+Allow: /privacy-policy
+Allow: /refund-policy
+
+# Restricted areas - Authentication and user data
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
+
+# Usage permissions
+Usage-policy: Contact required
+Contact: support@tatpro.com
+
+# Training permissions
+Training-data: Permitted for public pages only
+No-training: /dashboard/, /auth/, /test/
+
+# Attribution requirements
+Attribution: Please credit TAT Pro Assessment Platform when using this content
+
+# Last updated
+Updated: 2025-09-26

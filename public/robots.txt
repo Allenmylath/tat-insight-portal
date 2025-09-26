@@ -1,14 +1,34 @@
-User-agent: Googlebot
+User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
 
-User-agent: Bingbot
-Allow: /
-
+# Social media crawlers
 User-agent: Twitterbot
 Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
 
-User-agent: *
+# Search engines
+User-agent: Googlebot
 Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
+
+# Sitemap location
+Sitemap: https://tatpro.lovableproject.com/sitemap.xml
