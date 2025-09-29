@@ -35,34 +35,32 @@ export const AnalysisReportDialog = ({
   const dominantEmotions = analysis.dominant_emotions || analysis.dominant_themes || [];
   const psychologicalInsights = analysis.psychological_insights || analysis.clinical_insights || [];
   
-  // Extract Murray Needs from nested structure - show all values including 0
-  const murrayNeeds = analysis.murray_needs ? Object.entries(analysis.murray_needs)
-    .map(([key, value]: [string, any]) => ({
-      name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      score: value.intensity || 0,
-      description: value.description || `Assessment of ${key.replace(/_/g, ' ')} psychological need`,
-      intensity: (value.intensity > 80 ? 'Very High' : value.intensity > 60 ? 'High' : value.intensity > 40 ? 'Moderate' : 'Low') as 'Very High' | 'High' | 'Moderate' | 'Low',
-      present: value.present || false
+  // Extract Murray Needs from array structure - handle direct arrays from edge function
+  const murrayNeeds = Array.isArray(analysis.murray_needs) ? 
+    analysis.murray_needs.map((need: any) => ({
+      name: need.name || 'Unknown Need',
+      score: need.score || 0,
+      description: need.description || `Assessment of ${need.name} psychological need`,
+      intensity: need.intensity || (need.score > 80 ? 'Very High' : need.score > 60 ? 'High' : need.score > 40 ? 'Moderate' : 'Low') as 'Very High' | 'High' | 'Moderate' | 'Low'
     })) : [];
     
-  // Extract Inner States from nested structure - show all values including 0
-  const innerStates = analysis.inner_states ? Object.entries(analysis.inner_states)
-    .map(([key, value]: [string, any]) => ({
-      state: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      intensity: value.intensity || 0,
-      description: value.description || `${key.replace(/_/g, ' ')} emotional state`,
-      valence: value.intensity > 50 ? 'Positive' : value.intensity > 0 ? 'Neutral' : 'Negative',
-      present: value.present || false
+  // Extract Inner States from array structure - handle direct arrays from edge function
+  const innerStates = Array.isArray(analysis.inner_states) ? 
+    analysis.inner_states.map((state: any) => ({
+      state: state.state || 'Unknown State',
+      intensity: state.intensity || 0,
+      description: state.description || `${state.state} emotional state`,
+      valence: state.valence || 'Neutral' // Use the actual valence from data
     })) : [];
     
-  // Extract Murray Presses from nested structure - show all values including 0
-  const murrayPresses = analysis.murray_presses ? Object.entries(analysis.murray_presses)
-    .map(([key, value]: [string, any]) => ({
-      name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      score: value.intensity || 0,
-      description: value.description || `Assessment of ${key.replace(/_/g, ' ')} environmental press`,
-      intensity: (value.intensity > 80 ? 'Very High' : value.intensity > 60 ? 'High' : value.intensity > 40 ? 'Moderate' : 'Low') as 'Very High' | 'High' | 'Moderate' | 'Low',
-      present: value.present || false
+  // Extract Murray Presses from array structure - handle direct arrays from edge function  
+  const murrayPresses = Array.isArray(analysis.murray_presses) ?
+    analysis.murray_presses.map((press: any) => ({
+      name: press.name || 'Unknown Press',
+      score: press.influence || 0, // Use influence as the score value
+      description: press.description || `Assessment of ${press.name} environmental press`,
+      category: press.category || press.subcategory || 'Unknown',
+      intensity: press.influence > 80 ? 'Very High' : press.influence > 60 ? 'High' : press.influence > 40 ? 'Moderate' : 'Low' as 'Very High' | 'High' | 'Moderate' | 'Low'
     })) : [];
   const militaryAssessment = analysis.military_assessment || null;
   const selectionRecommendation = analysis.selection_recommendation || null;
@@ -223,8 +221,8 @@ export const AnalysisReportDialog = ({
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium">{press.name}</h4>
                           <div className="flex items-center gap-2">
-                            <Badge variant={press.present ? 'default' : 'outline'}>
-                              {press.present ? 'Present' : 'Absent'}
+                            <Badge variant="outline">
+                              {press.category}
                             </Badge>
                             <span className="text-sm font-medium">{press.score}%</span>
                           </div>
@@ -249,9 +247,6 @@ export const AnalysisReportDialog = ({
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium">{state.state}</h4>
                           <div className="flex items-center gap-2">
-                            <Badge variant={state.present ? 'default' : 'outline'}>
-                              {state.present ? 'Present' : 'Absent'}
-                            </Badge>
                             <Badge variant={state.valence === 'Positive' ? 'default' : state.valence === 'Negative' ? 'destructive' : 'secondary'}>
                               {state.valence}
                             </Badge>
