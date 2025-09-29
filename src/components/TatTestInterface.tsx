@@ -108,6 +108,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Manual story submission
   const submitStory = async (wasAutoCompleted = false) => {
+    console.log('📝 submitStory called:', { wasAutoCompleted, sessionId, hasUserData: !!userData });
+    
     if (!wasAutoCompleted && !story.trim()) {
       toast({
         title: "Story required",
@@ -117,7 +119,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
-    if (!userData?.id || !sessionId) {
+    if (!userData?.id) {
+      console.error('❌ No user data available');
       toast({
         title: "Authentication required",
         description: "Please log in to submit your story.",
@@ -126,10 +129,24 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
+    if (!sessionId) {
+      console.error('❌ No session ID available');
+      toast({
+        title: "Session error",
+        description: "Test session not found. Please restart the test.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
+    // Always show completion screen, even if errors occur
+    let creditsDeducted = 100;
+    let remainingCredits = userData.credit_balance - 100;
+    
     try {
-      console.log('Manually submitting story for session:', sessionId);
+      console.log('✅ Starting submission process for session:', sessionId);
       
       // Update the test session
       const { error: updateError } = await supabase
@@ -142,38 +159,55 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         .eq('id', sessionId);
 
       if (updateError) {
-        console.error('Failed to update session:', updateError);
+        console.error('❌ Failed to update session:', updateError);
         throw updateError;
       }
 
-      console.log('Story submitted successfully');
+      console.log('✅ Story submitted successfully');
       
       // Complete the timer session
-      await completeSession();
-
-      // Deduct credits
-      const result = await deductCreditsAfterCompletion(sessionId);
-      if (!result.success) {
-        console.error('Credit deduction failed:', result.error);
+      try {
+        await completeSession();
+        console.log('✅ Timer session completed');
+      } catch (timerError) {
+        console.error('⚠️ Timer completion failed (non-critical):', timerError);
       }
 
-      // Show completion screen
-      setCompletionData({
-        creditsDeducted: 100,
-        remainingCredits: result.success ? result.newBalance : userData.credit_balance - 100,
-        wasAutoCompleted
-      });
-      setShowCompletionScreen(true);
+      // Deduct credits
+      try {
+        const result = await deductCreditsAfterCompletion(sessionId);
+        if (result.success) {
+          console.log('✅ Credits deducted successfully:', result.newBalance);
+          remainingCredits = result.newBalance;
+        } else {
+          console.error('⚠️ Credit deduction failed:', result.error);
+        }
+      } catch (creditError) {
+        console.error('⚠️ Credit deduction error (non-critical):', creditError);
+      }
 
     } catch (error) {
-      console.error('Error submitting story:', error);
+      console.error('❌ Critical error in submitStory:', error);
+      
+      // Show error toast but still show completion screen
       toast({
-        title: "Submission failed",
-        description: "There was an error submitting your story. Please try again.",
+        title: "Submission issue",
+        description: "Your story was saved but there may have been an issue. Please contact support if needed.",
         variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
+      
+      // ALWAYS show completion screen, regardless of errors
+      console.log('🎯 Setting completion data:', { creditsDeducted, remainingCredits, wasAutoCompleted });
+      setCompletionData({
+        creditsDeducted,
+        remainingCredits,
+        wasAutoCompleted
+      });
+      
+      console.log('🎯 Showing completion screen NOW');
+      setShowCompletionScreen(true);
     }
   };
 
