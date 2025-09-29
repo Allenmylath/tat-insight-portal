@@ -123,7 +123,7 @@ serve(async (req) => {
         await supabase
           .from('payment_callbacks')
           .update({
-            processing_error: error.message,
+            processing_error: error instanceof Error ? error.message : 'Unknown error occurred',
             processed_at: new Date().toISOString(),
           })
           .eq('merchant_order_id', body.payload.merchantOrderId);
@@ -216,7 +216,7 @@ async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
     p_user_id: purchaseData.user_id,
     p_purchase_id: purchaseData.id,
     p_credits_purchased: purchaseData.credits_purchased,
-    p_user_email: purchaseData.users.email,
+    p_user_email: (purchaseData.users as any)?.email || (purchaseData.users as any)?.[0]?.email,
     p_payment_metadata: paymentMetadata,
   });
 
@@ -225,7 +225,8 @@ async function processSuccessfulPayment(webhookData: PhonePeWebhookPayload) {
     throw creditError;
   }
 
-  console.log(`Successfully processed payment for user ${purchaseData.users.email}`);
+  const userEmail = (purchaseData.users as any)?.email || (purchaseData.users as any)?.[0]?.email;
+  console.log(`Successfully processed payment for user ${userEmail}`);
   console.log(`Added ${purchaseData.credits_purchased} credits via ${paymentMode} payment`);
   console.log(`Transaction ID: ${transactionId}`);
 }

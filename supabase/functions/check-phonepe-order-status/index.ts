@@ -84,7 +84,8 @@ async function checkOrderStatus(merchantOrderId: string, accessToken: string): P
       console.log(`PhonePe status response for ${merchantOrderId}:`, JSON.stringify(data, null, 2));
       return data;
     } catch (parseError) {
-      console.error(`Failed to parse PhonePe response: ${parseError.message}`);
+      const errorMessage = parseError instanceof Error ? parseError.message : 'Unknown parsing error';
+      console.error(`Failed to parse PhonePe response: ${errorMessage}`);
       console.error(`Raw response: ${responseText}`);
       return null;
     }
@@ -195,7 +196,8 @@ async function reconcileOrder(merchantOrderId: string, phonePeStatus: PhonePeSta
 
   } catch (error) {
     console.error(`Error reconciling order ${merchantOrderId}:`, error);
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -320,7 +322,8 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in check-phonepe-order-status function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

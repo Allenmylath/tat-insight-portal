@@ -92,10 +92,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error processing credit purchase:', error);
     
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Failed to process credit purchase'
+        error: errorMessage || 'Failed to process credit purchase'
       }),
       {
         status: 500,
