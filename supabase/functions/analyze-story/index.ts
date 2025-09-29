@@ -190,7 +190,6 @@ Provide scores and insights based on psychological principles and TAT interpreta
         test_session_id: testSessionId,
         user_id: userId,
         analysis_data: analysisData,
-        personality_traits: analysisData.personality_traits || null,
         confidence_score: Math.round(confidenceScore * 100) / 100
       });
 
