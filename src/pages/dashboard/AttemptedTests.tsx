@@ -79,7 +79,16 @@ const AttemptedTests = () => {
             : null,
           analysis: analysisResult?.analysis_data?.summary || 
                    'Analysis will be available soon. We are working on implementing the analysis feature.',
-          fullAnalysis: analysisResult?.analysis_data || null,
+          fullAnalysis: analysisResult ? {
+            ...analysisResult.analysis_data,
+            murray_needs: analysisResult.murray_needs,
+            murray_presses: analysisResult.murray_presses,
+            inner_states: analysisResult.inner_states,
+            military_assessment: analysisResult.military_assessment,
+            selection_recommendation: analysisResult.selection_recommendation,
+            confidence_score: analysisResult.confidence_score,
+            analysis_type: analysisResult.analysis_type
+          } : null,
           isPremium: false,
           sessionId: session.id
         };
