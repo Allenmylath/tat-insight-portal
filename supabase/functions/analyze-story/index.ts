@@ -1,11 +1,99 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import OpenAI from "https://esm.sh/openai@4.73.1";
+import { z } from "https://esm.sh/zod@3.24.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Comprehensive Zod schemas matching the analysis components
+const MurrayNeedSchema = z.object({
+  name: z.string(),
+  score: z.number().min(0).max(100),
+  description: z.string(),
+  intensity: z.enum(['Low', 'Moderate', 'High', 'Very High'])
+});
+
+const MurrayPressSchema = z.object({
+  name: z.string(),
+  influence: z.number().min(0).max(100),
+  description: z.string(),
+  category: z.enum(['Social', 'Environmental', 'Personal', 'Professional'])
+});
+
+const InnerStateSchema = z.object({
+  state: z.string(),
+  intensity: z.number().min(0).max(100),
+  description: z.string(),
+  valence: z.enum(['Positive', 'Negative', 'Neutral'])
+});
+
+const MilitaryAssessmentScoreSchema = z.object({
+  category: z.string(),
+  score: z.number().min(0).max(100),
+  assessment: z.enum(['Excellent', 'Good', 'Satisfactory', 'Needs Improvement']),
+  recommendation: z.string()
+});
+
+const MilitaryAssessmentSchema = z.object({
+  overall_rating: z.number().min(0).max(100),
+  suitability: z.enum(['Highly Suitable', 'Suitable', 'Moderately Suitable', 'Not Suitable']),
+  scores: z.array(MilitaryAssessmentScoreSchema),
+  leadership_potential: z.number().min(0).max(100),
+  stress_tolerance: z.number().min(0).max(100),
+  team_compatibility: z.number().min(0).max(100),
+  adaptability: z.number().min(0).max(100),
+  decision_making: z.number().min(0).max(100),
+  notes: z.string()
+});
+
+const RoleSuitabilitySchema = z.object({
+  role: z.string(),
+  suitability_score: z.number().min(0).max(100),
+  rationale: z.string()
+});
+
+const SelectionRecommendationSchema = z.object({
+  overall_recommendation: z.enum(['Strongly Recommend', 'Recommend', 'Consider', 'Not Recommended']),
+  confidence_level: z.number().min(0).max(100),
+  key_strengths: z.array(z.string()),
+  areas_for_development: z.array(z.string()),
+  role_suitability: z.array(RoleSuitabilitySchema),
+  next_steps: z.array(z.string()),
+  follow_up_assessments: z.array(z.string())
+});
+
+const PersonalityTraitSchema = z.object({
+  score: z.number().min(0).max(100),
+  description: z.string()
+});
+
+const EnhancedAnalysisSchema = z.object({
+  summary: z.string(),
+  personality_traits: z.object({
+    openness: PersonalityTraitSchema,
+    conscientiousness: PersonalityTraitSchema,
+    extraversion: PersonalityTraitSchema,
+    agreeableness: PersonalityTraitSchema,
+    neuroticism: PersonalityTraitSchema
+  }),
+  emotional_themes: z.array(z.string()),
+  coping_mechanisms: z.array(z.string()),
+  dominant_emotions: z.array(z.string()),
+  psychological_insights: z.array(z.string()),
+  interpersonal_style: z.string(),
+  motivation_patterns: z.string(),
+  murray_needs: z.array(MurrayNeedSchema),
+  murray_presses: z.array(MurrayPressSchema),
+  inner_states: z.array(InnerStateSchema),
+  military_assessment: MilitaryAssessmentSchema,
+  selection_recommendation: SelectionRecommendationSchema,
+  analysis_type: z.string().default('murray_tat'),
+  confidence_score: z.number().min(0).max(100)
+});
 
 interface AnalysisRequest {
   testSessionId: string;
@@ -86,138 +174,419 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Call OpenAI API for story analysis
+    // Initialize OpenAI client
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    const analysisPrompt = `
-You are a professional psychologist specializing in Thematic Apperception Test (TAT) analysis. Analyze the following story written in response to a TAT image and provide insights into the person's personality traits, emotional patterns, and psychological themes.
+    const openai = new OpenAI({
+      apiKey: openAIApiKey,
+    });
+
+    console.log('Calling OpenAI API for comprehensive TAT analysis');
+    
+    // Comprehensive TAT analysis prompt
+    const analysisPrompt = `You are a professional psychologist specializing in Thematic Apperception Test (TAT) analysis and Murray's personality theory. Analyze the following story and provide a comprehensive psychological assessment.
 
 Story to analyze:
 "${storyContent}"
 
-Please provide a comprehensive analysis in the following JSON format:
-{
-  "summary": "A 2-3 sentence summary of key personality insights",
-  "personality_traits": {
-    "openness": {"score": 0-100, "description": "brief explanation"},
-    "conscientiousness": {"score": 0-100, "description": "brief explanation"},
-    "extraversion": {"score": 0-100, "description": "brief explanation"},
-    "agreeableness": {"score": 0-100, "description": "brief explanation"},
-    "neuroticism": {"score": 0-100, "description": "brief explanation"}
-  },
-  "emotional_themes": ["theme1", "theme2", "theme3"],
-  "narrative_structure": {
-    "creativity": 0-100,
-    "detail_orientation": 0-100,
-    "emotional_depth": 0-100
-  },
-  "psychological_insights": [
-    "insight 1",
-    "insight 2", 
-    "insight 3"
-  ],
-  "dominant_emotions": ["emotion1", "emotion2"],
-  "coping_mechanisms": ["mechanism1", "mechanism2"],
-  "interpersonal_style": "brief description of how they relate to others",
-  "motivation_patterns": "what drives this person"
-}
+Provide a complete Murray TAT analysis including:
 
-Provide scores and insights based on psychological principles and TAT interpretation guidelines. Be professional and constructive in your analysis.`;
+1. **Murray Needs Assessment**: Analyze key psychological needs like Achievement, Affiliation, Aggression, Autonomy, Deference, Dominance, Exhibition, Harm Avoidance, Nurturance, Order, Play, Rejection, Sentience, Succorance, Understanding, etc. Rate each relevant need 0-100 and classify intensity.
 
-    console.log('Calling OpenAI API for analysis');
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
+2. **Murray Environmental Presses**: Identify environmental pressures and influences affecting the individual. Categorize as Social, Environmental, Personal, or Professional pressures.
+
+3. **Inner Psychological States**: Assess current emotional and psychological states with valence (positive/negative/neutral) and intensity ratings.
+
+4. **Military/Leadership Assessment**: Evaluate leadership potential, stress tolerance, team compatibility, adaptability, and decision-making abilities for organizational contexts.
+
+5. **Selection Recommendations**: Provide structured recommendations with role suitability scores and development areas.
+
+6. **Personality Analysis**: Assess Big Five personality traits with detailed psychological insights.
+
+Be thorough, professional, and provide actionable insights based on established psychological principles.`;
+
+    try {
+      // Use OpenAI structured output with Zod validation
+      const response = await openai.beta.chat.completions.parse({
+        model: "gpt-4o-2024-08-06",
         messages: [
           {
-            role: 'system',
-            content: 'You are a professional psychologist specializing in TAT analysis. Respond only with valid JSON.'
+            role: "system",
+            content: "You are a professional psychologist specializing in TAT analysis and Murray's personality theory. Provide comprehensive, structured psychological analysis."
           },
           {
-            role: 'user',
+            role: "user",
             content: analysisPrompt
           }
         ],
-        max_tokens: 2000,
-        temperature: 0.3
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
-    }
-
-    const aiResponse = await response.json();
-    const analysisText = aiResponse.choices[0].message.content;
-    
-    console.log('Received analysis from OpenAI');
-    
-    let analysisData;
-    try {
-      analysisData = JSON.parse(analysisText);
-    } catch (parseError) {
-      console.error('Failed to parse OpenAI response as JSON:', parseError);
-      // Fallback analysis if JSON parsing fails
-      analysisData = {
-        summary: "Analysis completed but format error occurred. The story shows creative expression and personal reflection.",
-        error: "JSON parsing failed",
-        raw_response: analysisText
-      };
-    }
-
-    // Calculate confidence score based on story length and content quality
-    const confidenceScore = Math.min(95, Math.max(60, 
-      (storyContent.length / 500) * 40 + 
-      (storyContent.split(' ').length / 50) * 30 + 25
-    ));
-
-    console.log(`Calculated confidence score: ${confidenceScore}`);
-
-    // Insert analysis results into database
-    const { error: insertError } = await supabase
-      .from('analysis_results')
-      .insert({
-        test_session_id: testSessionId,
-        user_id: userId,
-        analysis_data: analysisData,
-        confidence_score: Math.round(confidenceScore * 100) / 100
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "comprehensive_tat_analysis",
+            schema: {
+              type: "object",
+              properties: {
+                summary: { type: "string" },
+                personality_traits: {
+                  type: "object",
+                  properties: {
+                    openness: {
+                      type: "object",
+                      properties: {
+                        score: { type: "number", minimum: 0, maximum: 100 },
+                        description: { type: "string" }
+                      },
+                      required: ["score", "description"]
+                    },
+                    conscientiousness: {
+                      type: "object",
+                      properties: {
+                        score: { type: "number", minimum: 0, maximum: 100 },
+                        description: { type: "string" }
+                      },
+                      required: ["score", "description"]
+                    },
+                    extraversion: {
+                      type: "object",
+                      properties: {
+                        score: { type: "number", minimum: 0, maximum: 100 },
+                        description: { type: "string" }
+                      },
+                      required: ["score", "description"]
+                    },
+                    agreeableness: {
+                      type: "object",
+                      properties: {
+                        score: { type: "number", minimum: 0, maximum: 100 },
+                        description: { type: "string" }
+                      },
+                      required: ["score", "description"]
+                    },
+                    neuroticism: {
+                      type: "object",
+                      properties: {
+                        score: { type: "number", minimum: 0, maximum: 100 },
+                        description: { type: "string" }
+                      },
+                      required: ["score", "description"]
+                    }
+                  },
+                  required: ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"]
+                },
+                emotional_themes: {
+                  type: "array",
+                  items: { type: "string" }
+                },
+                coping_mechanisms: {
+                  type: "array",
+                  items: { type: "string" }
+                },
+                dominant_emotions: {
+                  type: "array",
+                  items: { type: "string" }
+                },
+                psychological_insights: {
+                  type: "array",
+                  items: { type: "string" }
+                },
+                interpersonal_style: { type: "string" },
+                motivation_patterns: { type: "string" },
+                murray_needs: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string" },
+                      score: { type: "number", minimum: 0, maximum: 100 },
+                      description: { type: "string" },
+                      intensity: { type: "string", enum: ["Low", "Moderate", "High", "Very High"] }
+                    },
+                    required: ["name", "score", "description", "intensity"]
+                  }
+                },
+                murray_presses: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string" },
+                      influence: { type: "number", minimum: 0, maximum: 100 },
+                      description: { type: "string" },
+                      category: { type: "string", enum: ["Social", "Environmental", "Personal", "Professional"] }
+                    },
+                    required: ["name", "influence", "description", "category"]
+                  }
+                },
+                inner_states: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      state: { type: "string" },
+                      intensity: { type: "number", minimum: 0, maximum: 100 },
+                      description: { type: "string" },
+                      valence: { type: "string", enum: ["Positive", "Negative", "Neutral"] }
+                    },
+                    required: ["state", "intensity", "description", "valence"]
+                  }
+                },
+                military_assessment: {
+                  type: "object",
+                  properties: {
+                    overall_rating: { type: "number", minimum: 0, maximum: 100 },
+                    suitability: { type: "string", enum: ["Highly Suitable", "Suitable", "Moderately Suitable", "Not Suitable"] },
+                    scores: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          category: { type: "string" },
+                          score: { type: "number", minimum: 0, maximum: 100 },
+                          assessment: { type: "string", enum: ["Excellent", "Good", "Satisfactory", "Needs Improvement"] },
+                          recommendation: { type: "string" }
+                        },
+                        required: ["category", "score", "assessment", "recommendation"]
+                      }
+                    },
+                    leadership_potential: { type: "number", minimum: 0, maximum: 100 },
+                    stress_tolerance: { type: "number", minimum: 0, maximum: 100 },
+                    team_compatibility: { type: "number", minimum: 0, maximum: 100 },
+                    adaptability: { type: "number", minimum: 0, maximum: 100 },
+                    decision_making: { type: "number", minimum: 0, maximum: 100 },
+                    notes: { type: "string" }
+                  },
+                  required: ["overall_rating", "suitability", "scores", "leadership_potential", "stress_tolerance", "team_compatibility", "adaptability", "decision_making", "notes"]
+                },
+                selection_recommendation: {
+                  type: "object",
+                  properties: {
+                    overall_recommendation: { type: "string", enum: ["Strongly Recommend", "Recommend", "Consider", "Not Recommended"] },
+                    confidence_level: { type: "number", minimum: 0, maximum: 100 },
+                    key_strengths: {
+                      type: "array",
+                      items: { type: "string" }
+                    },
+                    areas_for_development: {
+                      type: "array",
+                      items: { type: "string" }
+                    },
+                    role_suitability: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          role: { type: "string" },
+                          suitability_score: { type: "number", minimum: 0, maximum: 100 },
+                          rationale: { type: "string" }
+                        },
+                        required: ["role", "suitability_score", "rationale"]
+                      }
+                    },
+                    next_steps: {
+                      type: "array",
+                      items: { type: "string" }
+                    },
+                    follow_up_assessments: {
+                      type: "array",
+                      items: { type: "string" }
+                    }
+                  },
+                  required: ["overall_recommendation", "confidence_level", "key_strengths", "areas_for_development", "role_suitability", "next_steps", "follow_up_assessments"]
+                },
+                analysis_type: { type: "string" },
+                confidence_score: { type: "number", minimum: 0, maximum: 100 }
+              },
+              required: ["summary", "personality_traits", "emotional_themes", "coping_mechanisms", "dominant_emotions", "psychological_insights", "interpersonal_style", "motivation_patterns", "murray_needs", "murray_presses", "inner_states", "military_assessment", "selection_recommendation", "analysis_type", "confidence_score"]
+            }
+          }
+        },
+        max_completion_tokens: 4000
       });
 
-    if (insertError) {
-      console.error('Database insert error:', insertError);
-      throw new Error(`Failed to save analysis: ${insertError.message}`);
-    }
-
-    console.log(`Analysis saved successfully for session ${testSessionId}`);
-
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Analysis completed and saved',
-        confidence_score: Math.round(confidenceScore * 100) / 100
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
+      if (response.choices[0].finish_reason === 'length') {
+        console.warn('OpenAI response was truncated due to length limits');
       }
-    );
+
+      const analysisData = response.choices[0].message.parsed;
+
+      if (!analysisData) {
+        throw new Error('Failed to parse OpenAI response');
+      }
+
+      // Validate with Zod schema
+      const validatedAnalysis = EnhancedAnalysisSchema.parse(analysisData);
+
+      console.log('Received and validated comprehensive analysis from OpenAI');
+
+      // Calculate confidence score based on story quality
+      const storyLength = storyContent.length;
+      const wordCount = storyContent.split(/\s+/).length;
+      const calculatedConfidence = Math.min(95, Math.max(60, 
+        (storyLength / 500) * 40 + (wordCount / 100) * 30 + 25
+      ));
+
+      // Override confidence score with calculated value
+      validatedAnalysis.confidence_score = Math.round(calculatedConfidence * 100) / 100;
+
+      console.log(`Calculated confidence score: ${validatedAnalysis.confidence_score}`);
+
+      // Insert comprehensive analysis results into database
+      const { error: insertError } = await supabase
+        .from('analysis_results')
+        .insert({
+          test_session_id: testSessionId,
+          user_id: userId,
+          analysis_data: {
+            summary: validatedAnalysis.summary,
+            personality_traits: validatedAnalysis.personality_traits,
+            emotional_themes: validatedAnalysis.emotional_themes,
+            coping_mechanisms: validatedAnalysis.coping_mechanisms,
+            dominant_emotions: validatedAnalysis.dominant_emotions,
+            psychological_insights: validatedAnalysis.psychological_insights,
+            interpersonal_style: validatedAnalysis.interpersonal_style,
+            motivation_patterns: validatedAnalysis.motivation_patterns,
+            analysis_type: validatedAnalysis.analysis_type
+          },
+          murray_needs: validatedAnalysis.murray_needs,
+          murray_presses: validatedAnalysis.murray_presses,
+          inner_states: validatedAnalysis.inner_states,
+          military_assessment: validatedAnalysis.military_assessment,
+          selection_recommendation: validatedAnalysis.selection_recommendation,
+          confidence_score: validatedAnalysis.confidence_score,
+          analysis_type: validatedAnalysis.analysis_type
+        });
+
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        throw new Error(`Failed to save analysis: ${insertError.message}`);
+      }
+
+      console.log(`Comprehensive analysis saved successfully for session ${testSessionId}`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Comprehensive TAT analysis completed and saved',
+          confidence_score: validatedAnalysis.confidence_score,
+          analysis_components: {
+            murray_needs: validatedAnalysis.murray_needs.length,
+            murray_presses: validatedAnalysis.murray_presses.length,
+            inner_states: validatedAnalysis.inner_states.length,
+            has_military_assessment: !!validatedAnalysis.military_assessment,
+            has_selection_recommendation: !!validatedAnalysis.selection_recommendation
+          }
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200
+        }
+      );
+
+    } catch (openaiError) {
+      console.error('OpenAI API error:', openaiError);
+      
+      // Create fallback analysis if OpenAI fails
+      const fallbackAnalysis = {
+        summary: "Analysis completed with limited data due to processing constraints. The story demonstrates creative expression and personal narrative construction.",
+        personality_traits: {
+          openness: { score: 50, description: "Unable to determine from limited analysis" },
+          conscientiousness: { score: 50, description: "Unable to determine from limited analysis" },
+          extraversion: { score: 50, description: "Unable to determine from limited analysis" },
+          agreeableness: { score: 50, description: "Unable to determine from limited analysis" },
+          neuroticism: { score: 50, description: "Unable to determine from limited analysis" }
+        },
+        emotional_themes: ["Limited analysis available"],
+        coping_mechanisms: ["Story writing as expression"],
+        dominant_emotions: ["Creative expression"],
+        psychological_insights: ["Demonstrates narrative ability"],
+        interpersonal_style: "Unable to determine from limited analysis",
+        motivation_patterns: "Shows engagement with creative tasks",
+        murray_needs: [],
+        murray_presses: [],
+        inner_states: [],
+        military_assessment: {
+          overall_rating: 50,
+          suitability: "Moderately Suitable" as const,
+          scores: [],
+          leadership_potential: 50,
+          stress_tolerance: 50,
+          team_compatibility: 50,
+          adaptability: 50,
+          decision_making: 50,
+          notes: "Analysis limited due to processing constraints"
+        },
+        selection_recommendation: {
+          overall_recommendation: "Consider" as const,
+          confidence_level: 30,
+          key_strengths: ["Demonstrates narrative ability"],
+          areas_for_development: ["Requires more detailed assessment"],
+          role_suitability: [],
+          next_steps: ["Conduct additional assessment"],
+          follow_up_assessments: ["Consider in-person evaluation"]
+        },
+        analysis_type: "murray_tat_fallback",
+        confidence_score: 30
+      };
+
+      // Insert fallback analysis
+      const { error: fallbackInsertError } = await supabase
+        .from('analysis_results')
+        .insert({
+          test_session_id: testSessionId,
+          user_id: userId,
+          analysis_data: {
+            summary: fallbackAnalysis.summary,
+            personality_traits: fallbackAnalysis.personality_traits,
+            emotional_themes: fallbackAnalysis.emotional_themes,
+            coping_mechanisms: fallbackAnalysis.coping_mechanisms,
+            dominant_emotions: fallbackAnalysis.dominant_emotions,
+            psychological_insights: fallbackAnalysis.psychological_insights,
+            interpersonal_style: fallbackAnalysis.interpersonal_style,
+            motivation_patterns: fallbackAnalysis.motivation_patterns,
+            analysis_type: fallbackAnalysis.analysis_type,
+            error: "OpenAI processing failed, fallback analysis provided"
+          },
+          murray_needs: fallbackAnalysis.murray_needs,
+          murray_presses: fallbackAnalysis.murray_presses,
+          inner_states: fallbackAnalysis.inner_states,
+          military_assessment: fallbackAnalysis.military_assessment,
+          selection_recommendation: fallbackAnalysis.selection_recommendation,
+          confidence_score: fallbackAnalysis.confidence_score,
+          analysis_type: fallbackAnalysis.analysis_type
+        });
+
+      if (fallbackInsertError) {
+        console.error('Fallback database insert error:', fallbackInsertError);
+        throw new Error(`Failed to save fallback analysis: ${fallbackInsertError.message}`);
+      }
+
+      console.log(`Fallback analysis saved for session ${testSessionId}`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Analysis completed with fallback processing',
+          confidence_score: 30,
+          warning: 'Limited analysis due to processing constraints'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200
+        }
+      );
+    }
 
   } catch (error) {
     console.error('Error in analyze-story function:', error);
     
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: errorMessage,
         success: false 
       }),
       {
