@@ -41,15 +41,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
   const { toast } = useToast();
 
-  // Timer completion handler - defined BEFORE useModalTimer
-  const handleTimerComplete = async () => {
-    console.log('⏰ Timer completed - calling submitStory with timer flag');
-    await submitStory(true);
-  };
-
-  const handleTimerAbandon = () => {
-    console.log('🚫 Timer abandon called but ignoring - using submitStory flow instead');
-  };
+  // Create a ref to store the session ID that can be accessed by handlers
+  const sessionIdRef = React.useRef<string | null>(null);
 
   const {
     timeRemaining,
@@ -70,9 +63,20 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   } = useModalTimer({
     tatTestId: test.id,
     durationMinutes: 6, // 6 minutes
-    onTimeUp: handleTimerComplete,
-    onSessionEnd: handleTimerAbandon,
+    onTimeUp: async () => {
+      console.log('⏰ Timer completed - triggering auto-submission');
+      // Force the submission to happen even if story is blank
+      await handleAutoSubmission();
+    },
+    onSessionEnd: () => {
+      console.log('🚫 Timer session ended');
+    },
   });
+
+  // Update ref when sessionId changes
+  React.useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
 
   // Add useEffect to monitor state changes for debugging
   useEffect(() => {
@@ -83,6 +87,87 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     console.log('- timeRemaining:', timeRemaining);
     console.log('- isActive:', isActive);
   }, [showCompletionScreen, completionData, connectionStatus, timeRemaining, isActive]);
+
+  // Handle automatic submission when timer expires
+  const handleAutoSubmission = async () => {
+    console.log('📝 AUTO-SUBMISSION triggered - starting process');
+    const currentSessionId = sessionIdRef.current;
+    
+    if (!userData?.id) {
+      console.error('❌ No user data available for auto-submission');
+      return;
+    }
+
+    if (!currentSessionId) {
+      console.error('❌ No session ID available for auto-submission');
+      return;
+    }
+
+    console.log('✅ Proceeding with auto-submission for session:', currentSessionId);
+    setIsSubmitting(true);
+    
+    let creditsDeducted = 100;
+    let remainingCredits = userData.credit_balance - 100;
+    
+    try {
+      console.log('💾 Saving story to database...');
+      
+      const { error: updateError } = await supabase
+        .from('test_sessions')
+        .update({
+          story_content: story,
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', currentSessionId);
+
+      if (updateError) {
+        console.error('❌ Database update failed:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ Story saved successfully');
+      
+      try {
+        await completeSession();
+        console.log('✅ Timer session completed');
+      } catch (timerError) {
+        console.error('⚠️ Timer completion failed (non-critical):', timerError);
+      }
+
+      try {
+        const result = await deductCreditsAfterCompletion(currentSessionId);
+        if (result.success) {
+          console.log('✅ Credits deducted:', result.newBalance);
+          remainingCredits = result.newBalance;
+        } else {
+          console.error('⚠️ Credit deduction failed:', result.error);
+        }
+      } catch (creditError) {
+        console.error('⚠️ Credit error (non-critical):', creditError);
+      }
+
+    } catch (error) {
+      console.error('❌ Critical error in auto-submission:', error);
+      toast({
+        title: "Submission issue",
+        description: "Your story was saved but there may have been an issue.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+      
+      console.log('🎯 Setting completion data for auto-submission');
+      setCompletionData({
+        creditsDeducted,
+        remainingCredits,
+        wasAutoCompleted: true
+      });
+      
+      console.log('🎯 Showing completion screen');
+      setShowCompletionScreen(true);
+    }
+  };
 
   // Start test with credit deduction 
   const handleStartTest = async () => {
