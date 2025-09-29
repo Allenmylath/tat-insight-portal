@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +42,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const { toast } = useToast();
 
   // Create a ref to store the session ID that can be accessed by handlers
-  const sessionIdRef = React.useRef<string | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
   const {
     timeRemaining,
@@ -66,7 +66,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     onTimeUp: async () => {
       console.log('⏰ Timer completed - triggering auto-submission');
       // Force the submission to happen even if story is blank
-      await handleAutoSubmission();
+      await submitStory(true);
     },
     onSessionEnd: () => {
       console.log('🚫 Timer session ended');
@@ -74,7 +74,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   });
 
   // Update ref when sessionId changes
-  React.useEffect(() => {
+  useEffect(() => {
     sessionIdRef.current = sessionId;
   }, [sessionId]);
 
