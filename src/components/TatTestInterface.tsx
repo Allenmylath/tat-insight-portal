@@ -41,6 +41,16 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
   const { toast } = useToast();
 
+  // Timer completion handler - defined BEFORE useModalTimer
+  const handleTimerComplete = async () => {
+    console.log('⏰ Timer completed - calling submitStory with timer flag');
+    await submitStory(true);
+  };
+
+  const handleTimerAbandon = () => {
+    console.log('🚫 Timer abandon called but ignoring - using submitStory flow instead');
+  };
+
   const {
     timeRemaining,
     timeFormatted,
@@ -94,17 +104,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       });
     }
   };
-
-  // Timer completion handler - just call the same submit function
-  async function handleTimerComplete() {
-    console.log('⏰ Timer completed - calling submitStory with timer flag');
-    await submitStory(true); // Use the same submission logic, just mark as timer-completed
-  }
-
-  function handleTimerAbandon() {
-    // Removed abandon logic - timer completion uses submitStory instead
-    console.log('🚫 Timer abandon called but ignoring - using submitStory flow instead');
-  }
 
   // Manual story submission
   const submitStory = async (wasAutoCompleted = false) => {
