@@ -76,6 +76,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   // Update ref when sessionId changes
   useEffect(() => {
     sessionIdRef.current = sessionId;
+    console.log('📌 Session ID updated in ref:', sessionId);
   }, [sessionId]);
 
   // Add useEffect to monitor state changes for debugging
@@ -111,7 +112,15 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Manual story submission
   const submitStory = async (wasAutoCompleted = false) => {
-    console.log('📝 submitStory called:', { wasAutoCompleted, sessionId, hasUserData: !!userData });
+    // CRITICAL: Use the ref instead of state to get the current session ID
+    const currentSessionId = sessionIdRef.current;
+    
+    console.log('📝 submitStory called:', { 
+      wasAutoCompleted, 
+      sessionId: currentSessionId, 
+      hasUserData: !!userData,
+      storyLength: story.length 
+    });
     
     if (!wasAutoCompleted && !story.trim()) {
       toast({
@@ -132,8 +141,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
-    if (!sessionId) {
-      console.error('❌ No session ID available');
+    if (!currentSessionId) {
+      console.error('❌ No session ID available in ref');
       toast({
         title: "Session error",
         description: "Test session not found. Please restart the test.",
@@ -149,7 +158,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     let remainingCredits = userData.credit_balance - 100;
     
     try {
-      console.log('✅ Starting submission process for session:', sessionId);
+      console.log('✅ Starting submission process for session:', currentSessionId);
       
       // Update the test session
       const { error: updateError } = await supabase
@@ -159,7 +168,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           status: 'completed',
           completed_at: new Date().toISOString()
         })
-        .eq('id', sessionId);
+        .eq('id', currentSessionId);
 
       if (updateError) {
         console.error('❌ Failed to update session:', updateError);
@@ -178,7 +187,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
       // Deduct credits
       try {
-        const result = await deductCreditsAfterCompletion(sessionId);
+        const result = await deductCreditsAfterCompletion(currentSessionId);
         if (result.success) {
           console.log('✅ Credits deducted successfully:', result.newBalance);
           remainingCredits = result.newBalance;
@@ -215,7 +224,9 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   };
 
   const handleSaveAndExit = async () => {
-    if (!userData?.id || !sessionId) return;
+    const currentSessionId = sessionIdRef.current;
+    
+    if (!userData?.id || !currentSessionId) return;
     
     try {
       await supabase
@@ -226,7 +237,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           time_remaining: timeRemaining,
           completed_at: new Date().toISOString()
         })
-        .eq('id', sessionId);
+        .eq('id', currentSessionId);
 
       toast({
         title: "Progress Saved",
@@ -377,11 +388,6 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
               <X className="h-4 w-4" />
               Close & Return to Tests
             </Button>
-
-            {/* Debug Info - Remove this after testing */}
-            <div className="text-xs text-muted-foreground text-center border-t pt-2">
-              Debug: Screen shown at {new Date().toLocaleTimeString()}
-            </div>
           </CardContent>
         </Card>
       </div>
