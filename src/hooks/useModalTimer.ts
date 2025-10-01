@@ -62,6 +62,7 @@ export const useModalTimer = ({
   const wsRef = useRef<WebSocket | null>(null);
   const mountedRef = useRef<boolean>(true);
   const initializationStartedRef = useRef<boolean>(false);
+  const timeUpCalledRef = useRef<boolean>(false); // Track if onTimeUp was already called
 
   // Track component mount status
   useEffect(() => {
@@ -157,6 +158,9 @@ export const useModalTimer = ({
       wsRef.current = null;
     }
 
+    // Reset the timeUpCalled flag for new connections
+    timeUpCalledRef.current = false;
+
     safeSetState(prev => ({ 
       ...prev, 
       connectionState: 'connecting',
@@ -219,7 +223,10 @@ export const useModalTimer = ({
                     .then(() => console.log(`Updated DB time remaining: ${message.timeRemaining}`));
                 }
 
-                if (message.timeRemaining === 0) {
+                // Call onTimeUp when timer reaches 0 (backup mechanism)
+                if (message.timeRemaining === 0 && !timeUpCalledRef.current) {
+                  console.log('⏰ Timer reached 0 via timer_update - triggering onTimeUp');
+                  timeUpCalledRef.current = true;
                   onTimeUp?.();
                 }
               }
@@ -232,6 +239,17 @@ export const useModalTimer = ({
                 connectionState: 'completed',
                 timeRemaining: 0
               }));
+              
+              // CRITICAL FIX: Call onTimeUp BEFORE onSessionEnd
+              // Check if onTimeUp hasn't been called yet to avoid double-calling
+              if (!timeUpCalledRef.current) {
+                console.log('⏰ Timer completed - triggering onTimeUp from timer_complete');
+                timeUpCalledRef.current = true;
+                onTimeUp?.();
+              }
+              
+              // Then call onSessionEnd for cleanup
+              console.log('🚫 Calling onSessionEnd after timer completion');
               onSessionEnd?.();
               break;
 
@@ -384,7 +402,7 @@ export const useModalTimer = ({
       console.error('Error pausing session:', error);
     }
     stopTimer();
-  }, []);
+  }, [stopTimer]);
 
   const completeSession = useCallback(async () => {
     console.log('Completing session...');
