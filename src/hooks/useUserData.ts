@@ -74,6 +74,32 @@ export const useUserData = () => {
     syncUserData();
   }, [user, isLoaded]);
 
+  // Subscribe to realtime updates for the user's data
+  useEffect(() => {
+    if (!userData?.id) return;
+
+    const channel = supabase
+      .channel('user-data-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'users',
+          filter: `id=eq.${userData.id}`
+        },
+        (payload) => {
+          console.log('Realtime user data update:', payload);
+          setUserData(payload.new as UserData);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userData?.id]);
+
   const updateMembership = async (membershipType: 'free' | 'pro', expiresAt?: string) => {
     if (!userData) return;
 
