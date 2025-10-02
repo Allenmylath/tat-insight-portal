@@ -37,6 +37,7 @@ const AttemptedTests = () => {
           completed_at,
           session_duration_seconds,
           story_content,
+          tattest_id,
           tattest:tattest_id (
             id,
             title,
@@ -62,14 +63,23 @@ const AttemptedTests = () => {
         return [];
       }
 
+      // Group by test and count attempts
+      const testAttemptCounts = new Map<string, number>();
+      
       return data.map(session => {
+        const testId = session.tattest_id;
+        const currentAttempt = (testAttemptCounts.get(testId) || 0) + 1;
+        testAttemptCounts.set(testId, currentAttempt);
+        
         const analysisResult = Array.isArray(session.analysis_results) 
           ? session.analysis_results[0] 
           : session.analysis_results;
         
         return {
           id: session.id,
+          testId: testId,
           title: session.tattest?.title || 'Untitled Test',
+          attemptNumber: currentAttempt,
           completedAt: session.completed_at,
           duration: session.session_duration_seconds 
             ? `${Math.round(session.session_duration_seconds / 60)} minutes`
@@ -149,7 +159,7 @@ const AttemptedTests = () => {
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-primary" />
-                      {test.title}
+                      {test.title} - Attempt #{test.attemptNumber}
                       {test.isPremium && (
                         <Badge variant="secondary" className="text-xs">Pro</Badge>
                       )}
@@ -215,7 +225,13 @@ const AttemptedTests = () => {
                     <Eye className="h-4 w-4" />
                     View Full Report
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      window.location.href = `/test/${test.testId}`;
+                    }}
+                  >
                     Retake Test
                   </Button>
                 </div>
