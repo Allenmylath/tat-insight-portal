@@ -33,6 +33,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     remainingCredits: number;
     wasAutoCompleted: boolean;
   } | null>(null);
+  const [acknowledgedMobileWarning, setAcknowledgedMobileWarning] = useState(false);
   
   // Responsive layout
   const isMobile = useIsMobile();
@@ -428,6 +429,35 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     return (
       <>
         <div className="space-y-6">
+          {/* Mobile Warning Banner */}
+          {isMobile && !acknowledgedMobileWarning && (
+            <Card className="border-amber-600/30 bg-amber-50/50 dark:bg-amber-950/20">
+              <CardContent className="pt-6">
+                <div className="flex gap-3">
+                  <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-3 flex-1">
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Desktop Recommended</h3>
+                      <p className="text-sm text-muted-foreground">
+                        For the best test-taking experience, we recommend using a desktop or laptop computer. 
+                        You'll have more screen space, better typing comfort, and can focus without distractions.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setAcknowledgedMobileWarning(true)}
+                      >
+                        I understand, continue anyway
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           {/* Test Preview */}
           <Card className="shadow-elegant border-primary/20">
             <CardHeader>

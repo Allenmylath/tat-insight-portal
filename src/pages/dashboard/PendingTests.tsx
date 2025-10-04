@@ -1,11 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Play, Lock, Crown, Image, AlertTriangle } from "lucide-react";
+import { Clock, Play, Lock, Crown, Image, AlertTriangle, Monitor, Smartphone } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { DeviceSwitchInstructions } from "@/components/DeviceSwitchInstructions";
 import { CreditHeader } from "@/components/CreditHeader";
 import {
   AlertDialog,
@@ -22,12 +24,15 @@ import {
 const PendingTests = () => {
   const { isPro, userData, hasEnoughCredits } = useUserData();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedTest, setSelectedTest] = useState<any>(null);
   const [showActiveSessionDialog, setShowActiveSessionDialog] = useState(false);
   const [activeSession, setActiveSession] = useState<any>(null);
+  const [showMobileWarningDialog, setShowMobileWarningDialog] = useState(false);
+  const [showDeviceSwitchDialog, setShowDeviceSwitchDialog] = useState(false);
 
   useEffect(() => {
     console.log('PendingTests - useEffect triggered', { 
@@ -174,6 +179,13 @@ const PendingTests = () => {
         description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
         variant: "destructive"
       });
+      return;
+    }
+
+    // Check for mobile device and show warning
+    if (isMobile) {
+      setSelectedTest(test);
+      setShowMobileWarningDialog(true);
       return;
     }
 
@@ -552,6 +564,94 @@ const PendingTests = () => {
             <AlertDialogAction onClick={handleResumeActiveSession}>
               Resume Current Test
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mobile Warning Dialog */}
+      <AlertDialog open={showMobileWarningDialog} onOpenChange={setShowMobileWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Monitor className="h-5 w-5 text-amber-600" />
+              Desktop Recommended
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 text-left">
+              <p>
+                For the best test-taking experience, we strongly recommend using a desktop or laptop computer.
+              </p>
+              <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-sm">
+                <p className="font-medium text-foreground">Benefits of using desktop:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Larger screen for better image visibility</li>
+                  <li>Physical keyboard for comfortable typing</li>
+                  <li>Better focus without mobile distractions</li>
+                  <li>More reliable for timed sessions</li>
+                </ul>
+              </div>
+              <p className="text-sm">
+                Would you like to switch to a desktop device or continue on mobile?
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel onClick={() => {
+              setShowMobileWarningDialog(false);
+              setSelectedTest(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <Button 
+              variant="outline"
+              onClick={async () => {
+                setShowMobileWarningDialog(false);
+                // Check for active session before continuing
+                const existingActiveSession = await checkForActiveSession();
+                if (existingActiveSession) {
+                  setActiveSession(existingActiveSession);
+                  setShowActiveSessionDialog(true);
+                } else {
+                  setShowConfirmDialog(true);
+                }
+              }}
+              className="gap-2"
+            >
+              <Smartphone className="h-4 w-4" />
+              Continue on Mobile
+            </Button>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowMobileWarningDialog(false);
+                setShowDeviceSwitchDialog(true);
+              }}
+              className="gap-2"
+            >
+              <Monitor className="h-4 w-4" />
+              Switch to Desktop
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Device Switch Instructions Dialog */}
+      <AlertDialog open={showDeviceSwitchDialog} onOpenChange={setShowDeviceSwitchDialog}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="sr-only">Device Switch Instructions</AlertDialogTitle>
+          </AlertDialogHeader>
+          {selectedTest && (
+            <DeviceSwitchInstructions 
+              testId={selectedTest.id} 
+              testTitle={selectedTest.title}
+            />
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowDeviceSwitchDialog(false);
+              setSelectedTest(null);
+            }}>
+              Close
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
