@@ -67,20 +67,20 @@ export const AnalysisReportDialog = ({
 
   // Convert military assessment to expected format if needed
   const formattedMilitaryAssessment = militaryAssessment ? {
-    overall_rating: calculateOverallRating(militaryAssessment),
-    suitability: getSuitabilityLevel(militaryAssessment),
-    leadership_potential: getScoreValue(militaryAssessment.leadership_potential),
-    stress_tolerance: getScoreValue(militaryAssessment.stress_resilience),
-    team_compatibility: getScoreValue(militaryAssessment.team_dynamics),
-    adaptability: getScoreValue(militaryAssessment.adaptability),
-    decision_making: getScoreValue(militaryAssessment.decision_making),
-    scores: Object.entries(militaryAssessment).map(([key, value]: [string, any]) => ({
+    overall_rating: militaryAssessment.overall_rating ?? calculateOverallRating(militaryAssessment),
+    suitability: militaryAssessment.suitability ?? getSuitabilityLevel(militaryAssessment),
+    leadership_potential: militaryAssessment.leadership_potential ?? getScoreValue(militaryAssessment.leadership_potential),
+    stress_tolerance: militaryAssessment.stress_tolerance ?? getScoreValue(militaryAssessment.stress_resilience),
+    team_compatibility: militaryAssessment.team_compatibility ?? getScoreValue(militaryAssessment.team_dynamics),
+    adaptability: militaryAssessment.adaptability ?? getScoreValue(militaryAssessment.adaptability),
+    decision_making: militaryAssessment.decision_making ?? getScoreValue(militaryAssessment.decision_making),
+    scores: militaryAssessment.scores || Object.entries(militaryAssessment).map(([key, value]: [string, any]) => ({
       category: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
       score: getScoreValue(value),
       assessment: getAssessmentLevel(getScoreValue(value)),
       recommendation: value?.analysis || `Recommendation for ${key.replace(/_/g, ' ')}`
     })),
-    notes: "Assessment based on psychological analysis and behavioral indicators"
+    notes: militaryAssessment.notes || "Assessment based on psychological analysis and behavioral indicators"
   } : null;
 
   return (
