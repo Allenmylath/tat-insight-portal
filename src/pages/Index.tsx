@@ -6,7 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
-import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText, TestTube } from "lucide-react";
+import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText, TestTube, MessageCircle } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
 import { testPhonePeTokenGeneration } from "@/utils/testPhonePeToken";
@@ -76,6 +76,15 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <Button 
+              onClick={() => window.open('https://wa.link/2qqn9v', '_blank')} 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Contact Us
+            </Button>
             <Button onClick={testPhonePeFunction} variant="outline" size="sm" className="gap-2">
               <TestTube className="h-4 w-4" />
               Test PhonePe
