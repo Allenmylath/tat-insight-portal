@@ -77,7 +77,7 @@ const Index = () => {
           
           <div className="flex items-center gap-4">
             <Button 
-              onClick={() => window.open('https://wa.link/2qqn9v', '_blank')} 
+              onClick={() => window.open('https://wa.link/1mj98f', '_blank')} 
               variant="outline" 
               size="sm" 
               className="gap-2"
