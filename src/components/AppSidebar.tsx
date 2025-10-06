@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 import {
   Sidebar,
@@ -47,6 +47,11 @@ const settingsItems = [
     title: "Pricing & Plans", 
     url: "/dashboard/pricing", 
     icon: CreditCard 
+  },
+  { 
+    title: "Transactions", 
+    url: "/dashboard/transactions", 
+    icon: Receipt 
   },
   { 
     title: "Payment Reconciliation", 

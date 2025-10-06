@@ -15,6 +15,7 @@ import PendingTests from "./pages/dashboard/PendingTests";
 import Results from "./pages/dashboard/Results";
 import Pricing from "./pages/dashboard/Pricing";
 import Settings from "./pages/dashboard/Settings";
+import Transactions from "./pages/dashboard/Transactions";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import RefundPolicy from "./pages/RefundPolicy";
@@ -109,6 +110,13 @@ const App = () => (
               <SignedIn>
                 <DashboardLayout>
                   <Settings />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/transactions" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <Transactions />
                 </DashboardLayout>
               </SignedIn>
             } />
