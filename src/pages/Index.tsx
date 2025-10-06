@@ -390,6 +390,7 @@ const Index = () => {
                 <p><a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a></p>
                 <p><a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a></p>
                 <p><a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a></p>
+                <p><a href="/terms-and-conditions" className="hover:text-foreground transition-colors">Terms & Conditions</a></p>
               </div>
             </div>
           </div>
@@ -402,6 +403,7 @@ const Index = () => {
             <div className="flex gap-4 text-sm text-muted-foreground">
               <a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a>
               <a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a>
+              <a href="/terms-and-conditions" className="hover:text-foreground transition-colors">Terms & Conditions</a>
               <a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a>
             </div>
           </div>
