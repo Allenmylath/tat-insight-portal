@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
 
 const Settings = () => {
   const { userData, isPro } = useUserData();
@@ -21,6 +22,7 @@ const Settings = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -304,9 +306,20 @@ const Settings = () => {
             <Button variant="outline" className="w-full">
               Download My Data
             </Button>
-            <Button variant="outline" className="w-full">
-              Change Password
-            </Button>
+            {user?.passwordEnabled && (
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setChangePasswordOpen(true)}
+              >
+                Change Password
+              </Button>
+            )}
+            {!user?.passwordEnabled && (
+              <p className="text-sm text-muted-foreground text-center">
+                Your account is secured through Google authentication
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -372,6 +385,11 @@ const Settings = () => {
           </p>
         </CardContent>
       </Card>
+
+      <ChangePasswordDialog 
+        open={changePasswordOpen} 
+        onOpenChange={setChangePasswordOpen} 
+      />
     </div>
   );
 };
