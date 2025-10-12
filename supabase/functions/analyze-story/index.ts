@@ -281,6 +281,12 @@ Provide a complete Murray TAT analysis including:
 3. **Inner Psychological States**: Assess current emotional and psychological states with valence (positive/negative/neutral) and intensity ratings.
 
 4. **Military/Leadership Assessment**: Evaluate leadership potential, stress tolerance, team compatibility, adaptability, and decision-making abilities for organizational contexts.
+   **CRITICAL**: ALL top-level metrics (leadership_potential, stress_tolerance, team_compatibility, adaptability, decision_making) MUST use a 0-100 scale:
+   - 0-40: Needs Improvement/Low
+   - 41-60: Satisfactory
+   - 61-80: Good
+   - 81-100: Excellent
+   Ensure these top-level scores match the scale used in the detailed scores array.
 
 5. **Selection Recommendations**: Provide structured recommendations with role suitability scores and development areas.
 
