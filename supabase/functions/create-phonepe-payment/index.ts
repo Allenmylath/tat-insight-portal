@@ -62,11 +62,11 @@ serve(async (req) => {
 
     console.log('PhonePe order payload:', orderPayload);
 
-    const phonepeResponse = await fetch('https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay', {
+    const phonepeResponse = await fetch('https://api.phonepe.com/apis/hermes/pg/v1/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `O-Bearer ${access_token}`,
+        'Authorization': `Bearer ${access_token}`,
       },
       body: JSON.stringify(orderPayload),
     });
