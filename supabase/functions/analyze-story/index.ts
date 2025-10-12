@@ -203,12 +203,56 @@ serve(async (req) => {
       console.warn('Error fetching image URL:', error);
     }
 
+    // Download image and convert to base64 to avoid OpenAI timeout issues
+    let imageBase64: string | null = null;
+    if (imageUrl) {
+      try {
+        // Extract filename from the storage URL
+        const urlParts = imageUrl.split('/tat-images/');
+        if (urlParts.length > 1) {
+          const fileName = urlParts[1];
+          
+          console.log('Downloading image from storage:', fileName);
+          
+          // Download image from storage
+          const { data: imageData, error: downloadError } = await supabase
+            .storage
+            .from('tat-images')
+            .download(fileName);
+          
+          if (downloadError) {
+            console.error('Error downloading image:', downloadError);
+            imageUrl = null; // Fall back to text-only analysis
+          } else {
+            // Convert to base64
+            const arrayBuffer = await imageData.arrayBuffer();
+            const bytes = new Uint8Array(arrayBuffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            const base64 = btoa(binary);
+            
+            // Determine MIME type from blob
+            const mimeType = imageData.type || 'image/png';
+            imageBase64 = `data:${mimeType};base64,${base64}`;
+            
+            console.log(`Image converted to base64, MIME: ${mimeType}, size: ${base64.length} chars`);
+          }
+        }
+      } catch (error) {
+        console.error('Error processing image for base64:', error);
+        imageUrl = null; // Fall back to text-only
+        imageBase64 = null;
+      }
+    }
+
     console.log('Calling OpenAI API for comprehensive TAT analysis');
     
     // Comprehensive TAT analysis prompt
     const analysisPrompt = `You are a professional psychologist specializing in Thematic Apperception Test (TAT) analysis and Murray's personality theory.
 
-${imageUrl ? 
+${imageBase64 ? 
   `You are analyzing a TAT response where the subject was shown an image and asked to write a story about it. Both the TAT image and the subject's story are provided.
 
 IMPORTANT: Analyze both:
@@ -242,7 +286,7 @@ Provide a complete Murray TAT analysis including:
 
 6. **Personality Analysis**: Assess Big Five personality traits with detailed psychological insights.
 
-${imageUrl ? 
+${imageBase64 ? 
   `7. **Image-Story Analysis**: Provide specific insights about:
    - How the subject's interpretation differs from the actual image content
    - What psychological projections are evident in their response
@@ -264,7 +308,7 @@ Be thorough, professional, and provide actionable insights based on established 
           },
           {
             role: "user",
-            content: imageUrl ? [
+            content: imageBase64 ? [
               {
                 type: "text",
                 text: analysisPrompt
@@ -272,7 +316,7 @@ Be thorough, professional, and provide actionable insights based on established 
               {
                 type: "image_url",
                 image_url: {
-                  url: imageUrl,
+                  url: imageBase64,
                   detail: "high"
                 }
               }
