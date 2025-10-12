@@ -63,13 +63,22 @@ const AttemptedTests = () => {
         return [];
       }
 
-      // Group by test and count attempts
-      const testAttemptCounts = new Map<string, number>();
+      // First pass: Count total attempts per test
+      const totalAttemptsByTest = new Map<string, number>();
+      data.forEach(session => {
+        const testId = session.tattest_id;
+        totalAttemptsByTest.set(testId, (totalAttemptsByTest.get(testId) || 0) + 1);
+      });
+
+      // Second pass: Assign attempt numbers (newest = highest)
+      const attemptCounters = new Map<string, number>();
       
       return data.map(session => {
         const testId = session.tattest_id;
-        const currentAttempt = (testAttemptCounts.get(testId) || 0) + 1;
-        testAttemptCounts.set(testId, currentAttempt);
+        const totalAttempts = totalAttemptsByTest.get(testId) || 1;
+        const attemptsProcessed = (attemptCounters.get(testId) || 0);
+        const currentAttempt = totalAttempts - attemptsProcessed;
+        attemptCounters.set(testId, attemptsProcessed + 1);
         
         const analysisResult = Array.isArray(session.analysis_results) 
           ? session.analysis_results[0] 
