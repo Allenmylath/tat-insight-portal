@@ -53,7 +53,7 @@ async function getValidToken(forceRefresh = false): Promise<string | null> {
       client_secret: phonePeClientSecret,
     });
 
-    const response = await fetch('https://api.phonepe.com/apis/pg-sandbox/v1/oauth/token', {
+    const response = await fetch('https://api.phonepe.com/apis/identity-manager/v1/oauth/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

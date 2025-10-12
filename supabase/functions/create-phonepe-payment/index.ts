@@ -62,7 +62,7 @@ serve(async (req) => {
 
     console.log('PhonePe order payload:', orderPayload);
 
-    const phonepeResponse = await fetch('https://api.phonepe.com/apis/hermes/pg/v1/pay', {
+    const phonepeResponse = await fetch('https://api.phonepe.com/apis/pg/checkout/v2/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
