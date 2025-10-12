@@ -7,6 +7,98 @@ import { MurrayNeedsChart } from "@/components/MurrayNeedsChart";
 import { MilitaryAssessmentCard } from "@/components/MilitaryAssessmentCard";
 import { SelectionRecommendationPanel } from "@/components/SelectionRecommendationPanel";
 import { EnhancedAnalysisData } from "@/types/analysis";
+import { Button } from "@/components/ui/button";
+import { Copy, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+
+// Helper function to format analysis for ChatGPT
+const formatAnalysisForChatGPT = (
+  testTitle: string,
+  score: number,
+  analysis: any
+): string => {
+  let formattedText = `# TAT Psychological Assessment Report\n\n`;
+  formattedText += `**Test:** ${testTitle}\n`;
+  formattedText += `**Confidence Score:** ${score}%\n\n`;
+  
+  // Summary
+  if (analysis.summary) {
+    formattedText += `## Summary\n${analysis.summary}\n\n`;
+  }
+  
+  // Personality Traits
+  const personalityTraits = analysis.personality_traits || {};
+  if (Object.keys(personalityTraits).length > 0) {
+    formattedText += `## Personality Traits\n`;
+    Object.entries(personalityTraits).forEach(([trait, data]: [string, any]) => {
+      formattedText += `- **${trait}:** ${data.score}% - ${data.description}\n`;
+    });
+    formattedText += `\n`;
+  }
+  
+  // Murray Needs
+  if (Array.isArray(analysis.murray_needs) && analysis.murray_needs.length > 0) {
+    formattedText += `## Murray Psychological Needs\n`;
+    analysis.murray_needs.forEach((need: any) => {
+      formattedText += `- **${need.name}:** ${need.score}% (${need.intensity}) - ${need.description}\n`;
+    });
+    formattedText += `\n`;
+  }
+  
+  // Inner States
+  if (Array.isArray(analysis.inner_states) && analysis.inner_states.length > 0) {
+    formattedText += `## Psychological Inner States\n`;
+    analysis.inner_states.forEach((state: any) => {
+      formattedText += `- **${state.state}:** ${state.intensity}% (${state.valence}) - ${state.description}\n`;
+    });
+    formattedText += `\n`;
+  }
+  
+  // Military Assessment
+  if (analysis.military_assessment) {
+    const ma = analysis.military_assessment;
+    formattedText += `## Military/Leadership Assessment\n`;
+    formattedText += `- **Overall Rating:** ${ma.overall_rating}%\n`;
+    formattedText += `- **Leadership Potential:** ${ma.leadership_potential}%\n`;
+    formattedText += `- **Stress Tolerance:** ${ma.stress_tolerance}%\n`;
+    formattedText += `- **Team Compatibility:** ${ma.team_compatibility}%\n`;
+    formattedText += `- **Adaptability:** ${ma.adaptability}%\n`;
+    formattedText += `- **Decision Making:** ${ma.decision_making}%\n\n`;
+  }
+  
+  // Selection Recommendation
+  if (analysis.selection_recommendation) {
+    const sr = analysis.selection_recommendation;
+    formattedText += `## Selection Recommendation\n`;
+    formattedText += `- **Recommendation:** ${sr.overall_recommendation}\n`;
+    formattedText += `- **Confidence:** ${sr.confidence_level}%\n`;
+    if (sr.key_strengths && sr.key_strengths.length > 0) {
+      formattedText += `\n**Key Strengths:**\n`;
+      sr.key_strengths.forEach((strength: string) => {
+        formattedText += `  - ${strength}\n`;
+      });
+    }
+    if (sr.areas_for_development && sr.areas_for_development.length > 0) {
+      formattedText += `\n**Areas for Development:**\n`;
+      sr.areas_for_development.forEach((area: string) => {
+        formattedText += `  - ${area}\n`;
+      });
+    }
+    formattedText += `\n`;
+  }
+  
+  // Psychological Insights
+  const insights = analysis.psychological_insights || analysis.clinical_insights || [];
+  if (insights.length > 0) {
+    formattedText += `## Clinical Insights\n`;
+    insights.forEach((insight: string) => {
+      formattedText += `- ${insight}\n`;
+    });
+    formattedText += `\n`;
+  }
+  
+  return formattedText;
+};
 
 interface AnalysisReportDialogProps {
   open: boolean;
@@ -65,6 +157,20 @@ export const AnalysisReportDialog = ({
   const militaryAssessment = analysis.military_assessment || null;
   const selectionRecommendation = analysis.selection_recommendation || null;
 
+  // Handler to copy analysis to clipboard and open ChatGPT
+  const handleCopyToChatGPT = async () => {
+    const formattedText = formatAnalysisForChatGPT(testTitle, score, analysis);
+    
+    try {
+      await navigator.clipboard.writeText(formattedText);
+      toast.success("Analysis copied to clipboard!");
+      window.open("https://chat.openai.com/", '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      toast.error("Failed to copy analysis to clipboard");
+    }
+  };
+
   // Convert military assessment to expected format if needed
   const formattedMilitaryAssessment = militaryAssessment ? {
     overall_rating: militaryAssessment.overall_rating ?? calculateOverallRating(militaryAssessment),
@@ -87,12 +193,24 @@ export const AnalysisReportDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {testTitle} - Full Analysis Report
-            <Badge variant="default" className="bg-primary/10 text-primary">
-              {score}% Confidence
-            </Badge>
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              {testTitle} - Full Analysis Report
+              <Badge variant="default" className="bg-primary/10 text-primary">
+                {score}% Confidence
+              </Badge>
+            </DialogTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyToChatGPT}
+              className="gap-2"
+            >
+              <Copy className="h-4 w-4" />
+              Copy to ChatGPT
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
