@@ -11,43 +11,47 @@ import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
 import { testPhonePeTokenGeneration } from "@/utils/testPhonePeToken";
 import { toast } from "sonner";
-
 const Index = () => {
   const navigate = useNavigate();
-  const { isSignedIn, user } = useUser();
-  const { signOut } = useClerk();
-
-  const features = [
-    {
-      icon: Microscope,
-      title: "Murray's TAT Methodology",
-      description: "Based on Henry Murray's original Thematic Apperception Test framework developed at Harvard Psychological Clinic"
-    },
-    {
-      icon: Brain,
-      title: "Psychodynamic Analysis", 
-      description: "Deep psychological assessment through projective storytelling and personality dynamics evaluation"
-    },
-    {
-      icon: GraduationCap,
-      title: "Research-Based Framework",
-      description: "Grounded in decades of psychological research and validated assessment methodologies"
-    }
-  ];
-
-  const stats = [
-    { label: "Research Foundation", value: "Since 1935", icon: Award },
-    { label: "Scientific Validity", value: "Harvard Clinic", icon: Users },
-    { label: "Psychological Depth", value: "Projective Analysis", icon: CheckCircle }
-  ];
-
+  const {
+    isSignedIn,
+    user
+  } = useUser();
+  const {
+    signOut
+  } = useClerk();
+  const features = [{
+    icon: Microscope,
+    title: "Murray's TAT Methodology",
+    description: "Based on Henry Murray's original Thematic Apperception Test framework developed at Harvard Psychological Clinic"
+  }, {
+    icon: Brain,
+    title: "Psychodynamic Analysis",
+    description: "Deep psychological assessment through projective storytelling and personality dynamics evaluation"
+  }, {
+    icon: GraduationCap,
+    title: "Research-Based Framework",
+    description: "Grounded in decades of psychological research and validated assessment methodologies"
+  }];
+  const stats = [{
+    label: "Research Foundation",
+    value: "Since 1935",
+    icon: Award
+  }, {
+    label: "Scientific Validity",
+    value: "Harvard Clinic",
+    icon: Users
+  }, {
+    label: "Psychological Depth",
+    value: "Projective Analysis",
+    icon: CheckCircle
+  }];
   const downloadPDF = () => {
     const link = document.createElement('a');
     link.href = '/murray.pdf';
     link.download = 'murray-tat-research.pdf';
     link.click();
   };
-
   const testPhonePeFunction = async () => {
     toast.info("Testing PhonePe token generation...");
     const result = await testPhonePeTokenGeneration();
@@ -59,9 +63,7 @@ const Index = () => {
       console.error("Token error:", result.error);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -76,30 +78,19 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <Button 
-              onClick={() => window.open('https://wa.link/1mj98f', '_blank')} 
-              variant="outline" 
-              size="sm" 
-              className="gap-2"
-            >
+            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />
               Contact Us
             </Button>
-            <Button onClick={testPhonePeFunction} variant="outline" size="sm" className="gap-2">
-              <TestTube className="h-4 w-4" />
-              Test PhonePe
-            </Button>
-            {!isSignedIn ? (
-              <div className="flex items-center gap-2">
+            
+            {!isSignedIn ? <div className="flex items-center gap-2">
                 <Link to="/auth/signin">
                   <Button variant="outline">Sign In</Button>
                 </Link>
                 <Link to="/auth/signup">
                   <Button variant="default">Sign Up</Button>
                 </Link>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
+              </div> : <div className="flex items-center gap-4">
                 <Button onClick={() => navigate("/dashboard")} variant="government">
                   Dashboard
                 </Button>
@@ -124,8 +115,7 @@ const Index = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </header>
@@ -134,10 +124,9 @@ const Index = () => {
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-hero"></div>
-          <div 
-            className="absolute inset-0 opacity-10 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroImage})` }}
-          ></div>
+          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
+          backgroundImage: `url(${heroImage})`
+        }}></div>
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
@@ -156,43 +145,27 @@ const Index = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                {!isSignedIn ? (
-                  <Link to="/auth/signup">
+                {!isSignedIn ? <Link to="/auth/signup">
                     <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link>
-                ) : (
-                  <Button 
-                    size="lg" 
-                    variant="hero" 
-                    className="px-8 py-6 text-lg"
-                    onClick={() => navigate("/dashboard")}
-                  >
+                  </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-                )}
-                <Button 
-                  size="lg" 
-                  variant="government" 
-                  className="px-8 py-6 text-lg"
-                  onClick={() => navigate("/about-tat")}
-                >
+                  </Button>}
+                <Button size="lg" variant="government" className="px-8 py-6 text-lg" onClick={() => navigate("/about-tat")}>
                   Learn More
                 </Button>
               </div>
               
               {/* Stats */}
               <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
+                {stats.map((stat, index) => <div key={index} className="text-center">
                     <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
                     <div className="text-2xl font-bold text-primary">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -240,11 +213,7 @@ const Index = () => {
                 </div>
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-saffron/20 rounded-full blur-3xl"></div>
-                  <img 
-                    src={henryMurrayImage} 
-                    alt="Dr. Henry Murray, founder of the Thematic Apperception Test"
-                    className="w-full max-w-sm mx-auto rounded-full shadow-elegant border-4 border-primary/20"
-                  />
+                  <img src={henryMurrayImage} alt="Dr. Henry Murray, founder of the Thematic Apperception Test" className="w-full max-w-sm mx-auto rounded-full shadow-elegant border-4 border-primary/20" />
                   <div className="mt-6 text-center">
                     <p className="font-semibold text-foreground">Dr. Henry Murray</p>
                     <p className="text-sm text-muted-foreground">Harvard Psychological Clinic</p>
@@ -264,8 +233,7 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {features.map((feature, index) => (
-                <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
+              {features.map((feature, index) => <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
                   <CardHeader className="text-center">
                     <div className="w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4">
                       <feature.icon className="h-8 w-8 text-white" />
@@ -277,8 +245,7 @@ const Index = () => {
                       {feature.description}
                     </CardDescription>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
         </section>
@@ -341,24 +308,15 @@ const Index = () => {
                 Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
               </p>
               
-              {!isSignedIn ? (
-                <Link to="/auth/signup">
+              {!isSignedIn ? <Link to="/auth/signup">
                   <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
                     Get Started Today
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </Link>
-              ) : (
-                <Button 
-                  size="lg" 
-                  variant="hero" 
-                  className="px-8 py-6 text-lg"
-                  onClick={() => navigate("/dashboard")}
-                >
+                </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              )}
+                </Button>}
             </div>
           </div>
         </section>
@@ -418,8 +376,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
