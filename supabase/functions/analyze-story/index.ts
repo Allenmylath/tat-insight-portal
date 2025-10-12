@@ -184,12 +184,48 @@ serve(async (req) => {
       apiKey: openAIApiKey,
     });
 
+    // Fetch the TAT test image URL
+    let imageUrl: string | null = null;
+    try {
+      const { data: testSession, error: testSessionError } = await supabase
+        .from('test_sessions')
+        .select('tattest_id, tattest(image_url)')
+        .eq('id', testSessionId)
+        .single();
+
+      if (testSessionError || !testSession?.tattest?.image_url) {
+        console.warn('Could not retrieve TAT image URL, proceeding with text-only analysis');
+      } else {
+        imageUrl = testSession.tattest.image_url;
+        console.log('TAT test image URL retrieved:', imageUrl);
+      }
+    } catch (error) {
+      console.warn('Error fetching image URL:', error);
+    }
+
     console.log('Calling OpenAI API for comprehensive TAT analysis');
     
     // Comprehensive TAT analysis prompt
-    const analysisPrompt = `You are a professional psychologist specializing in Thematic Apperception Test (TAT) analysis and Murray's personality theory. Analyze the following story and provide a comprehensive psychological assessment.
+    const analysisPrompt = `You are a professional psychologist specializing in Thematic Apperception Test (TAT) analysis and Murray's personality theory.
 
-Story to analyze:
+${imageUrl ? 
+  `You are analyzing a TAT response where the subject was shown an image and asked to write a story about it. Both the TAT image and the subject's story are provided.
+
+IMPORTANT: Analyze both:
+1. What the TAT image actually depicts (visual elements, mood, context)
+2. How the subject interpreted and responded to the image in their story
+3. The psychological significance of any differences between the image and the story
+
+Consider:
+- What elements from the image did the subject emphasize or ignore?
+- What did the subject add that isn't in the image? (projections)
+- How does the subject's interpretation reveal their psychological state, needs, fears, or motivations?
+- Does the story align with or diverge from the typical interpretation of this image?`
+  : 
+  'Note: The TAT image could not be retrieved. Analyzing story content only.'
+}
+
+Story written by the subject:
 "${storyContent}"
 
 Provide a complete Murray TAT analysis including:
@@ -206,6 +242,15 @@ Provide a complete Murray TAT analysis including:
 
 6. **Personality Analysis**: Assess Big Five personality traits with detailed psychological insights.
 
+${imageUrl ? 
+  `7. **Image-Story Analysis**: Provide specific insights about:
+   - How the subject's interpretation differs from the actual image content
+   - What psychological projections are evident in their response
+   - What the subject's unique perspective reveals about their inner world
+   - Any significant omissions or additions in their narrative`
+  : ''
+}
+
 Be thorough, professional, and provide actionable insights based on established psychological principles.`;
 
     try {
@@ -219,7 +264,19 @@ Be thorough, professional, and provide actionable insights based on established 
           },
           {
             role: "user",
-            content: analysisPrompt
+            content: imageUrl ? [
+              {
+                type: "text",
+                text: analysisPrompt
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: imageUrl,
+                  detail: "high"
+                }
+              }
+            ] : analysisPrompt
           }
         ],
         response_format: {
