@@ -132,6 +132,15 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       return;
     }
 
+    if (!wasAutoCompleted && story.length < 250) {
+      toast({
+        title: "Story too short",
+        description: `Please write at least 250 characters for proper analysis. You currently have ${story.length} characters.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!userData?.id) {
       console.error('❌ No user data available');
       toast({
@@ -594,6 +603,16 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
                 <span>{story.length} characters</span>
                 <span>{story.trim().split(/\s+/).filter(word => word.length > 0).length} words</span>
               </div>
+              
+              {story.length > 0 && story.length < 250 && (
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 text-sm bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  <p>
+                    <strong>Minimum 250 characters required</strong> for proper analysis. 
+                    You need {250 - story.length} more characters.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -611,7 +630,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Button>
         <Button
           onClick={() => submitStory()}
-          disabled={isSubmitting || !story.trim() || !isActive}
+          disabled={isSubmitting || !story.trim() || story.length < 250 || !isActive}
           className="flex-1 gap-2"
         >
           {isSubmitting ? (
@@ -627,6 +646,12 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           )}
         </Button>
       </div>
+
+      {story.length > 0 && story.length < 250 && !isSubmitting && (
+        <p className="text-sm text-center text-muted-foreground">
+          Write at least 250 characters to enable submission
+        </p>
+      )}
 
       {/* Connection status indicator */}
       {isConnecting && (
