@@ -180,6 +180,12 @@ export const AnalysisReportDialog = ({
     team_compatibility: militaryAssessment.team_compatibility ?? getScoreValue(militaryAssessment.team_dynamics),
     adaptability: militaryAssessment.adaptability ?? getScoreValue(militaryAssessment.adaptability),
     decision_making: militaryAssessment.decision_making ?? getScoreValue(militaryAssessment.decision_making),
+    effective_intelligence: militaryAssessment.effective_intelligence ?? 0,
+    planning_organizing: militaryAssessment.planning_organizing ?? 0,
+    social_adaptability: militaryAssessment.social_adaptability ?? 0,
+    cooperation: militaryAssessment.cooperation ?? 0,
+    sense_of_responsibility: militaryAssessment.sense_of_responsibility ?? 0,
+    courage_determination: militaryAssessment.courage_determination ?? 0,
     scores: militaryAssessment.scores || Object.entries(militaryAssessment).map(([key, value]: [string, any]) => ({
       category: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
       score: getScoreValue(value),

@@ -37,6 +37,12 @@ export interface MilitaryAssessment {
   team_compatibility: number;
   adaptability: number;
   decision_making: number;
+  effective_intelligence: number;
+  planning_organizing: number;
+  social_adaptability: number;
+  cooperation: number;
+  sense_of_responsibility: number;
+  courage_determination: number;
   notes: string;
 }
 

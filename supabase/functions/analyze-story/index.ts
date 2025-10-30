@@ -47,6 +47,12 @@ const MilitaryAssessmentSchema = z.object({
   team_compatibility: z.number().min(0).max(100),
   adaptability: z.number().min(0).max(100),
   decision_making: z.number().min(0).max(100),
+  effective_intelligence: z.number().min(0).max(100),
+  planning_organizing: z.number().min(0).max(100),
+  social_adaptability: z.number().min(0).max(100),
+  cooperation: z.number().min(0).max(100),
+  sense_of_responsibility: z.number().min(0).max(100),
+  courage_determination: z.number().min(0).max(100),
   notes: z.string()
 });
 
@@ -280,13 +286,21 @@ Provide a complete Murray TAT analysis including:
 
 3. **Inner Psychological States**: Assess current emotional and psychological states with valence (positive/negative/neutral) and intensity ratings.
 
-4. **Military/Leadership Assessment**: Evaluate leadership potential, stress tolerance, team compatibility, adaptability, and decision-making abilities for organizational contexts.
-   **CRITICAL**: ALL top-level metrics (leadership_potential, stress_tolerance, team_compatibility, adaptability, decision_making) MUST use a 0-100 scale:
+4. **Military/Leadership Assessment**: Evaluate the following specific qualities on a 0-100 scale:
+   - **Effective Intelligence**: Cognitive ability, problem-solving, analytical thinking, learning aptitude
+   - **Planning & Organizing Ability**: Strategic thinking, resource management, task prioritization, systematic approach
+   - **Social Adaptability**: Ability to adjust to diverse social contexts, cultural sensitivity, interpersonal flexibility
+   - **Cooperation**: Teamwork, collaboration, willingness to work with others, team player attitude
+   - **Sense of Responsibility**: Accountability, reliability, ownership of tasks, dependability
+   - **Courage & Determination**: Resilience, perseverance, willingness to face challenges, mental toughness
+   
+   Also evaluate: leadership_potential, stress_tolerance, team_compatibility, adaptability, decision_making
+   
+   **CRITICAL**: ALL metrics MUST use a 0-100 scale:
    - 0-40: Needs Improvement/Low
    - 41-60: Satisfactory
    - 61-80: Good
    - 81-100: Excellent
-   Ensure these top-level scores match the scale used in the detailed scores array.
 
 5. **Selection Recommendations**: Provide structured recommendations with role suitability scores and development areas.
 
@@ -463,9 +477,15 @@ Be thorough, professional, and provide actionable insights based on established 
                     team_compatibility: { type: "number", minimum: 0, maximum: 100 },
                     adaptability: { type: "number", minimum: 0, maximum: 100 },
                     decision_making: { type: "number", minimum: 0, maximum: 100 },
+                    effective_intelligence: { type: "number", minimum: 0, maximum: 100 },
+                    planning_organizing: { type: "number", minimum: 0, maximum: 100 },
+                    social_adaptability: { type: "number", minimum: 0, maximum: 100 },
+                    cooperation: { type: "number", minimum: 0, maximum: 100 },
+                    sense_of_responsibility: { type: "number", minimum: 0, maximum: 100 },
+                    courage_determination: { type: "number", minimum: 0, maximum: 100 },
                     notes: { type: "string" }
                   },
-                  required: ["overall_rating", "suitability", "scores", "leadership_potential", "stress_tolerance", "team_compatibility", "adaptability", "decision_making", "notes"]
+                  required: ["overall_rating", "suitability", "scores", "leadership_potential", "stress_tolerance", "team_compatibility", "adaptability", "decision_making", "effective_intelligence", "planning_organizing", "social_adaptability", "cooperation", "sense_of_responsibility", "courage_determination", "notes"]
                 },
                 selection_recommendation: {
                   type: "object",

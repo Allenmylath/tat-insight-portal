@@ -54,34 +54,48 @@ export const MilitaryAssessmentCard = ({ assessment }: MilitaryAssessmentCardPro
           <Progress value={assessment.overall_rating} className="h-3" />
         </div>
 
-        {/* Key Metrics */}
+        {/* 6 Military Qualities */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Leadership Potential</span>
+            <span className="text-sm text-muted-foreground">Effective Intelligence</span>
             <div className="flex items-center gap-2">
-              <Progress value={assessment.leadership_potential} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.leadership_potential}%</span>
+              <Progress value={assessment.effective_intelligence} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.effective_intelligence}%</span>
             </div>
           </div>
           <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Stress Tolerance</span>
+            <span className="text-sm text-muted-foreground">Planning & Organizing</span>
             <div className="flex items-center gap-2">
-              <Progress value={assessment.stress_tolerance} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.stress_tolerance}%</span>
+              <Progress value={assessment.planning_organizing} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.planning_organizing}%</span>
             </div>
           </div>
           <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Team Compatibility</span>
+            <span className="text-sm text-muted-foreground">Social Adaptability</span>
             <div className="flex items-center gap-2">
-              <Progress value={assessment.team_compatibility} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.team_compatibility}%</span>
+              <Progress value={assessment.social_adaptability} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.social_adaptability}%</span>
             </div>
           </div>
           <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Adaptability</span>
+            <span className="text-sm text-muted-foreground">Cooperation</span>
             <div className="flex items-center gap-2">
-              <Progress value={assessment.adaptability} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.adaptability}%</span>
+              <Progress value={assessment.cooperation} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.cooperation}%</span>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <span className="text-sm text-muted-foreground">Sense of Responsibility</span>
+            <div className="flex items-center gap-2">
+              <Progress value={assessment.sense_of_responsibility} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.sense_of_responsibility}%</span>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <span className="text-sm text-muted-foreground">Courage & Determination</span>
+            <div className="flex items-center gap-2">
+              <Progress value={assessment.courage_determination} className="h-2 flex-1" />
+              <span className="text-sm font-medium">{assessment.courage_determination}%</span>
             </div>
           </div>
         </div>
