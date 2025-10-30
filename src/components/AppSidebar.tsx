@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 import {
   Sidebar,
@@ -34,6 +34,11 @@ const navigationItems = [
     title: "Pending Tests", 
     url: "/dashboard/pending", 
     icon: Clock 
+  },
+  { 
+    title: "Abandoned Tests", 
+    url: "/dashboard/abandoned", 
+    icon: XCircle 
   },
   { 
     title: "Results & Analysis", 

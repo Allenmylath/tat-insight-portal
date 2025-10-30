@@ -12,6 +12,7 @@ import StandaloneTestPage from "./pages/StandaloneTestPage";
 import Dashboard from "./pages/Dashboard";
 import AttemptedTests from "./pages/dashboard/AttemptedTests";
 import PendingTests from "./pages/dashboard/PendingTests";
+import AbandonedTests from "./pages/dashboard/AbandonedTests";
 import Results from "./pages/dashboard/Results";
 import Pricing from "./pages/dashboard/Pricing";
 import Settings from "./pages/dashboard/Settings";
@@ -89,6 +90,13 @@ const App = () => (
               <SignedIn>
                 <DashboardLayout>
                   <PendingTests />
+                </DashboardLayout>
+              </SignedIn>
+            } />
+            <Route path="/dashboard/abandoned" element={
+              <SignedIn>
+                <DashboardLayout>
+                  <AbandonedTests />
                 </DashboardLayout>
               </SignedIn>
             } />
