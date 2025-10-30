@@ -62,8 +62,7 @@ const Dashboard = () => {
           }
         }
 
-        // Get user's test sessions for active tests
-        const testIds = allTests.map(test => test.id);
+        // Get ALL user's test sessions (not just for active tests)
         const { data: userSessions, error: sessionsError } = await supabase
           .from('test_sessions')
           .select(`
@@ -74,8 +73,7 @@ const Dashboard = () => {
             started_at,
             analysis_results(confidence_score)
           `)
-          .eq('user_id', userData.id)
-          .in('tattest_id', testIds);
+          .eq('user_id', userData.id);
 
         if (sessionsError) {
           console.error('Error fetching user sessions:', sessionsError);
@@ -87,6 +85,7 @@ const Dashboard = () => {
         const abandonedTestsList = [];
         const pendingTestsList = [];
 
+        // First, process all active tests
         allTests.forEach(test => {
           const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
           const completedSession = testSessions.find(session => session.status === 'completed');
@@ -121,6 +120,22 @@ const Dashboard = () => {
               imageUrl: test.image_url,
               completed: false,
               score: null,
+              isPremium: false
+            });
+          }
+        });
+
+        // Then, add any abandoned sessions that weren't in the active tests list
+        const processedTestIds = new Set(allTests.map(t => t.id));
+        userSessions?.forEach(session => {
+          if (session.status === 'abandoned' && !processedTestIds.has(session.tattest_id)) {
+            abandonedTestsList.push({
+              id: session.tattest_id,
+              title: 'Test No Longer Available',
+              description: '',
+              imageUrl: '',
+              abandoned: true,
+              abandonedAt: session.completed_at,
               isPremium: false
             });
           }
