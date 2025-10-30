@@ -345,19 +345,19 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* Abandoned Tests */}
-          {availableAbandonedTests.length > 0 && (
-            <Card className="shadow-elegant border-destructive/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-destructive" />
-                  Abandoned Tests
-                </CardTitle>
-                <CardDescription>
-                  Tests that were not completed (insufficient story length or time expired)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+          {/* Abandoned Tests - Always visible */}
+          <Card className="shadow-elegant border-destructive/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-destructive" />
+                Abandoned Tests
+              </CardTitle>
+              <CardDescription>
+                Tests that were not completed (insufficient story length or time expired)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {availableAbandonedTests.length > 0 ? (
                 <div className="space-y-4">
                   {availableAbandonedTests.slice(0, 3).map((test) => (
                     <div
@@ -386,9 +386,16 @@ const Dashboard = () => {
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              ) : (
+                <div className="text-center py-6">
+                  <Clock className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
+                  <p className="text-sm text-muted-foreground">
+                    No abandoned tests yet
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* No Tests Available */}
           {!testsLoading && availablePendingTests.length === 0 && availableCompletedTests.length === 0 && (
