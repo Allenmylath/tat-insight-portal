@@ -97,7 +97,7 @@ const AttemptedTests = () => {
             ? Math.round(analysisResult.confidence_score * 100)
             : null,
           analysis: analysisResult?.analysis_data?.summary || 
-                   'Analysis will be available soon. We are working on implementing the analysis feature.',
+                   'Our models are analysing the results.Will soon be available based on server traffic.Remember we run tests globally.',
           fullAnalysis: analysisResult ? {
             ...analysisResult.analysis_data,
             murray_needs: analysisResult.murray_needs,
