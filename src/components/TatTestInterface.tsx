@@ -123,19 +123,52 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       storyLength: story.length 
     });
     
+    // CHECK CHARACTER COUNT FIRST (applies to both manual and auto)
+    if (story.trim().length < 250) {
+      const message = wasAutoCompleted 
+        ? "Time expired but your story is too short for analysis. No credits will be deducted."
+        : "Please write at least 250 characters for proper analysis.";
+      
+      toast({
+        title: "Story too short",
+        description: `${message} You have ${story.length} characters (minimum: 250).`,
+        variant: "destructive"
+      });
+      
+      // For auto-completion with insufficient characters, abandon without credit deduction
+      if (wasAutoCompleted) {
+        // Update session to abandoned status
+        if (currentSessionId) {
+          await supabase
+            .from('test_sessions')
+            .update({
+              story_content: story,
+              status: 'abandoned',
+              completed_at: new Date().toISOString()
+            })
+            .eq('id', currentSessionId);
+        }
+        
+        // Stop timer
+        await completeSession();
+        
+        // Show completion screen with 0 credits deducted
+        setCompletionData({
+          creditsDeducted: 0,
+          remainingCredits: userData?.credit_balance || 0,
+          wasAutoCompleted: true
+        });
+        setShowCompletionScreen(true);
+      }
+      
+      return; // Exit early - no credit deduction
+    }
+    
+    // Rest of validation (only for manual submission)
     if (!wasAutoCompleted && !story.trim()) {
       toast({
         title: "Story required",
         description: "Please write your story before submitting.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!wasAutoCompleted && story.length < 250) {
-      toast({
-        title: "Story too short",
-        description: `Please write at least 250 characters for proper analysis. You currently have ${story.length} characters.`,
         variant: "destructive"
       });
       return;
@@ -163,14 +196,14 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
     setIsSubmitting(true);
     
-    // Always show completion screen, even if errors occur
-    let creditsDeducted = 100;
-    let remainingCredits = userData.credit_balance - 100;
+    // Initialize with 0 credits deducted
+    let creditsDeducted = 0;
+    let remainingCredits = userData.credit_balance;
     
     try {
       console.log('✅ Starting submission process for session:', currentSessionId);
       
-      // Update the test session
+      // Update the test session to COMPLETED (not abandoned)
       const { error: updateError } = await supabase
         .from('test_sessions')
         .update({
@@ -195,17 +228,22 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         console.error('⚠️ Timer completion failed (non-critical):', timerError);
       }
 
-      // Deduct credits
-      try {
-        const result = await deductCreditsAfterCompletion(currentSessionId);
-        if (result.success) {
-          console.log('✅ Credits deducted successfully:', result.newBalance);
-          remainingCredits = result.newBalance;
-        } else {
-          console.error('⚠️ Credit deduction failed:', result.error);
+      // Deduct credits ONLY if story is valid (>=250 characters)
+      if (story.trim().length >= 250) {
+        try {
+          const result = await deductCreditsAfterCompletion(currentSessionId);
+          if (result.success) {
+            console.log('✅ Credits deducted successfully:', result.newBalance);
+            creditsDeducted = 100;
+            remainingCredits = result.newBalance;
+          } else {
+            console.error('⚠️ Credit deduction failed:', result.error);
+          }
+        } catch (creditError) {
+          console.error('⚠️ Credit deduction error (non-critical):', creditError);
         }
-      } catch (creditError) {
-        console.error('⚠️ Credit deduction error (non-critical):', creditError);
+      } else {
+        console.log('⚠️ Skipping credit deduction - story too short');
       }
 
     } catch (error) {
