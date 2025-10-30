@@ -17,6 +17,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [tests, setTests] = useState<any[]>([]);
   const [completedTests, setCompletedTests] = useState<any[]>([]);
+  const [abandonedTests, setAbandonedTests] = useState<any[]>([]);
   const [testsLoading, setTestsLoading] = useState(true);
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
@@ -81,13 +82,15 @@ const Dashboard = () => {
           return;
         }
 
-        // Separate completed and pending tests
+        // Separate completed, abandoned, and pending tests
         const completedTestsList = [];
+        const abandonedTestsList = [];
         const pendingTestsList = [];
 
         allTests.forEach(test => {
           const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
           const completedSession = testSessions.find(session => session.status === 'completed');
+          const abandonedSession = testSessions.find(session => session.status === 'abandoned');
           
           if (completedSession) {
             completedTestsList.push({
@@ -98,6 +101,16 @@ const Dashboard = () => {
               completed: true,
               completedAt: completedSession.completed_at,
               score: completedSession.analysis_results?.[0]?.confidence_score || Math.floor(Math.random() * 30) + 70, // Fallback score
+              isPremium: false
+            });
+          } else if (abandonedSession) {
+            abandonedTestsList.push({
+              id: test.id,
+              title: test.title,
+              description: test.description,
+              imageUrl: test.image_url,
+              abandoned: true,
+              abandonedAt: abandonedSession.completed_at,
               isPremium: false
             });
           } else {
@@ -114,6 +127,7 @@ const Dashboard = () => {
         });
 
         setCompletedTests(completedTestsList);
+        setAbandonedTests(abandonedTestsList);
         setTests(pendingTestsList);
       } catch (error) {
         console.error('Error fetching tests:', error);
@@ -128,6 +142,7 @@ const Dashboard = () => {
   // Filter tests based on membership
   const availablePendingTests = isPro ? tests : tests.filter(test => !test.isPremium);
   const availableCompletedTests = isPro ? completedTests : completedTests.filter(test => !test.isPremium);
+  const availableAbandonedTests = isPro ? abandonedTests : abandonedTests.filter(test => !test.isPremium);
   const totalTests = availablePendingTests.length + availableCompletedTests.length;
   const progressPercentage = totalTests > 0 ? (availableCompletedTests.length / totalTests) * 100 : 0;
 
@@ -330,6 +345,51 @@ const Dashboard = () => {
             </Card>
           )}
 
+          {/* Abandoned Tests */}
+          {availableAbandonedTests.length > 0 && (
+            <Card className="shadow-elegant border-destructive/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-destructive" />
+                  Abandoned Tests
+                </CardTitle>
+                <CardDescription>
+                  Tests that were not completed (insufficient story length or time expired)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {availableAbandonedTests.slice(0, 3).map((test) => (
+                    <div
+                      key={test.id}
+                      className="flex items-center justify-between p-4 rounded-lg border border-destructive/20 bg-destructive/5 hover:border-destructive/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Clock className="h-5 w-5 text-destructive" />
+                        <div>
+                          <h3 className="font-medium text-foreground">{test.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Abandoned {new Date(test.abandonedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="destructive">
+                        Not Completed
+                      </Badge>
+                    </div>
+                  ))}
+                  {availableAbandonedTests.length > 3 && (
+                    <div className="text-center pt-2">
+                      <Button variant="outline" size="sm">
+                        View All Abandoned ({availableAbandonedTests.length})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* No Tests Available */}
           {!testsLoading && availablePendingTests.length === 0 && availableCompletedTests.length === 0 && (
             <Card className="shadow-elegant border-primary/10">
@@ -360,6 +420,10 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Pending Tests</span>
                 <span className="font-bold">{availablePendingTests.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Abandoned Tests</span>
+                <span className="font-bold text-destructive">{availableAbandonedTests.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Total Available</span>
