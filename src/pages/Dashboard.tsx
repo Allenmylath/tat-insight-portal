@@ -198,12 +198,17 @@ const Dashboard = () => {
         </div>
         {loading ? (
           <Skeleton className="h-6 w-24" />
-        ) : (
-          <Badge variant={isPro ? "default" : "secondary"} className="gap-1">
-            {isPro ? <Crown className="h-3 w-3" /> : <Star className="h-3 w-3" />}
-            {isPro ? "Pro Member" : "Free Plan"}
+        ) : isPro ? (
+          <Badge variant="default" className="gap-1">
+            <Crown className="h-3 w-3" />
+            Pro Member
           </Badge>
-        )}
+        ) : (!userData?.credit_balance || userData.credit_balance === 0) ? (
+          <Badge variant="secondary" className="gap-1">
+            <Star className="h-3 w-3" />
+            Free Plan
+          </Badge>
+        ) : null}
       </div>
 
       {/* Membership Alert for Free Users */}
