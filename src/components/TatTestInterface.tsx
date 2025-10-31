@@ -124,41 +124,54 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     });
     
     // CHECK CHARACTER COUNT FIRST (applies to both manual and auto)
-    if (story.trim().length < 250) {
-      const message = wasAutoCompleted 
-        ? "Time expired but your story is too short for analysis. No credits will be deducted."
-        : "Please write at least 250 characters for proper analysis.";
+    const storyLength = story.trim().length;
+    const MIN_CHARS = 500;
+    const MAX_CHARS = 2500;
+    
+    if (storyLength < MIN_CHARS || storyLength > MAX_CHARS) {
+      let message = "";
+      if (storyLength < MIN_CHARS) {
+        message = wasAutoCompleted 
+          ? "Time expired but your story is too short for analysis. Test will be abandoned with no credit deduction."
+          : `Please write at least ${MIN_CHARS} characters for proper analysis. You have ${storyLength} characters.`;
+      } else {
+        message = wasAutoCompleted
+          ? "Time expired but your story exceeds the maximum length. Test will be abandoned with no credit deduction."
+          : `Your story exceeds the maximum length of ${MAX_CHARS} characters. You have ${storyLength} characters.`;
+      }
       
       toast({
-        title: "Story too short",
-        description: `${message} You have ${story.length} characters (minimum: 250).`,
+        title: storyLength < MIN_CHARS ? "Story too short" : "Story too long",
+        description: message,
         variant: "destructive"
       });
       
-      // For auto-completion with insufficient characters, abandon without credit deduction
+      // Abandon test without credit deduction
+      if (currentSessionId) {
+        await supabase
+          .from('test_sessions')
+          .update({
+            story_content: story,
+            status: 'abandoned',
+            completed_at: new Date().toISOString()
+          })
+          .eq('id', currentSessionId);
+      }
+      
+      // Stop timer
+      await completeSession();
+      
+      // Show completion screen with 0 credits deducted
       if (wasAutoCompleted) {
-        // Update session to abandoned status
-        if (currentSessionId) {
-          await supabase
-            .from('test_sessions')
-            .update({
-              story_content: story,
-              status: 'abandoned',
-              completed_at: new Date().toISOString()
-            })
-            .eq('id', currentSessionId);
-        }
-        
-        // Stop timer
-        await completeSession();
-        
-        // Show completion screen with 0 credits deducted
         setCompletionData({
           creditsDeducted: 0,
           remainingCredits: userData?.credit_balance || 0,
           wasAutoCompleted: true
         });
         setShowCompletionScreen(true);
+      } else {
+        // For manual submission outside range, just abandon
+        onAbandon();
       }
       
       return; // Exit early - no credit deduction
@@ -228,8 +241,9 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         console.error('⚠️ Timer completion failed (non-critical):', timerError);
       }
 
-      // Deduct credits ONLY if story is valid (>=250 characters)
-      if (story.trim().length >= 250) {
+      // Deduct credits ONLY if story is valid (500-2500 characters)
+      const storyLength = story.trim().length;
+      if (storyLength >= 500 && storyLength <= 2500) {
         try {
           const result = await deductCreditsAfterCompletion(currentSessionId);
           if (result.success) {
@@ -243,7 +257,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           console.error('⚠️ Credit deduction error (non-critical):', creditError);
         }
       } else {
-        console.log('⚠️ Skipping credit deduction - story too short');
+        console.log('⚠️ Skipping credit deduction - story length outside valid range (500-2500)');
       }
 
     } catch (error) {
