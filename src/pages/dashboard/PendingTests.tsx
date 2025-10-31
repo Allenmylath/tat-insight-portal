@@ -362,61 +362,65 @@ const PendingTests = () => {
           <h2 className="text-lg font-semibold text-foreground">Ready to Take</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {availableTests.map((test) => (
-              <Card key={test.id} className="shadow-elegant hover:shadow-lg transition-shadow">
-                <div className="flex gap-4 p-6">
-                  <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                    {test.imageUrl && !test.imageUrl.startsWith('/src/assets') ? (
-                      <img 
-                        src={test.imageUrl} 
-                        alt={test.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log('Image load error for:', test.imageUrl);
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Image className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-4">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-muted-foreground" />
-                        {test.title}
-                      </CardTitle>
-                      <CardDescription className="mt-2">{test.description}</CardDescription>
+              <Card key={test.id} className="shadow-elegant hover:shadow-lg transition-shadow overflow-hidden">
+                {/* Large image section at top */}
+                <div 
+                  className="relative w-full h-48 bg-muted overflow-hidden cursor-pointer group" 
+                  onClick={() => startTest(test)}
+                >
+                  {test.imageUrl && !test.imageUrl.startsWith('/src/assets') ? (
+                    <img 
+                      src={test.imageUrl} 
+                      alt={test.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        console.log('Image load error for:', test.imageUrl);
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-muted"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Image className="h-12 w-12 text-muted-foreground" />
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
-                        {test.isPaused && (
-                          <Badge variant="outline" className="text-xs">Paused</Badge>
-                        )}
-                        {test.isActive && (
-                          <Badge variant="outline" className="text-xs">In Progress</Badge>
-                        )}
-                      </div>
-                      <Badge className={getDifficultyColor(test.difficulty)}>
-                        {test.difficulty}
-                      </Badge>
-                    </div>
-                    <Button 
-                      variant={!hasEnoughCredits(100) ? "outline" : "hero"}
-                      className="w-full gap-2"
-                      onClick={() => startTest(test)}
-                      disabled={!hasEnoughCredits(100)}
-                    >
-                      <Play className="h-4 w-4" />
-                      {!hasEnoughCredits(100) 
-                        ? 'Insufficient Credits' 
-                        : test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'
-                      }
-                    </Button>
+                  )}
+                </div>
+                
+                {/* Content section below image */}
+                <div className="p-6 space-y-4">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                      {test.title}
+                    </CardTitle>
+                    <CardDescription className="mt-2">{test.description}</CardDescription>
                   </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
+                      {test.isPaused && (
+                        <Badge variant="outline" className="text-xs">Paused</Badge>
+                      )}
+                      {test.isActive && (
+                        <Badge variant="outline" className="text-xs">In Progress</Badge>
+                      )}
+                    </div>
+                    <Badge className={getDifficultyColor(test.difficulty)}>
+                      {test.difficulty}
+                    </Badge>
+                  </div>
+                  <Button 
+                    variant={!hasEnoughCredits(100) ? "outline" : "hero"}
+                    className="w-full gap-2"
+                    onClick={() => startTest(test)}
+                    disabled={!hasEnoughCredits(100)}
+                  >
+                    <Play className="h-4 w-4" />
+                    {!hasEnoughCredits(100) 
+                      ? 'Insufficient Credits' 
+                      : test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'
+                    }
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -436,52 +440,55 @@ const PendingTests = () => {
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             {lockedTests.map((test) => (
-              <Card key={test.id} className="shadow-elegant opacity-75 border-dashed">
-                <div className="flex gap-4 p-6">
-                  <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0 relative">
-                    {test.imageUrl && !test.imageUrl.startsWith('/src/assets') ? (
-                      <img 
-                        src={test.imageUrl} 
-                        alt={test.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log('Image load error for:', test.imageUrl);
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Image className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
-                      <Lock className="h-4 w-4 text-white" />
+              <Card key={test.id} className="shadow-elegant opacity-75 border-dashed overflow-hidden">
+                {/* Large image section at top with lock overlay */}
+                <div className="relative w-full h-48 bg-muted overflow-hidden">
+                  {test.imageUrl && !test.imageUrl.startsWith('/src/assets') ? (
+                    <img 
+                      src={test.imageUrl} 
+                      alt={test.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log('Image load error for:', test.imageUrl);
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-muted"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Image className="h-12 w-12 text-muted-foreground" />
                     </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
+                    <Lock className="h-8 w-8 text-white" />
                   </div>
-                  <div className="flex-1 space-y-4">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 text-muted-foreground">
-                        <Lock className="h-5 w-5" />
-                        {test.title}
-                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                          <Crown className="h-3 w-3 mr-1" />
-                          Pro
-                        </Badge>
-                      </CardTitle>
-                      <CardDescription className="mt-2">{test.description}</CardDescription>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
+                </div>
+                
+                {/* Content section below image */}
+                <div className="p-6 space-y-4">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                      {test.title}
+                    </CardTitle>
+                    <CardDescription className="mt-2">{test.description}</CardDescription>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">Estimated time: {test.estimatedTime}</span>
-                      <Badge className={getDifficultyColor(test.difficulty)}>
-                        {test.difficulty}
-                      </Badge>
                     </div>
-                    <Button variant="outline" className="w-full gap-2" disabled>
-                      <Lock className="h-4 w-4" />
-                      Requires Pro
-                    </Button>
+                    <Badge className={getDifficultyColor(test.difficulty)}>
+                      {test.difficulty}
+                    </Badge>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full gap-2"
+                    disabled
+                  >
+                    <Lock className="h-4 w-4" />
+                    Pro Only
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -512,16 +519,14 @@ const PendingTests = () => {
       {loading && (
         <div className="grid gap-6 md:grid-cols-2">
           {[1, 2].map((i) => (
-            <Card key={i} className="shadow-elegant">
-              <div className="flex gap-4 p-6">
-                <div className="w-16 h-16 bg-muted rounded-lg animate-pulse flex-shrink-0" />
-                <div className="flex-1 space-y-4">
-                  <div>
-                    <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-                    <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-                  </div>
-                  <div className="h-8 bg-muted rounded animate-pulse" />
+            <Card key={i} className="shadow-elegant overflow-hidden">
+              <div className="w-full h-48 bg-muted animate-pulse" />
+              <div className="p-6 space-y-4">
+                <div>
+                  <div className="h-4 bg-muted rounded animate-pulse mb-2" />
+                  <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
                 </div>
+                <div className="h-8 bg-muted rounded animate-pulse" />
               </div>
             </Card>
           ))}
