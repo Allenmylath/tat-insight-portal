@@ -372,7 +372,7 @@ const PendingTests = () => {
                     <img 
                       src={test.imageUrl} 
                       alt={test.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         console.log('Image load error for:', test.imageUrl);
                         e.currentTarget.style.display = 'none';
@@ -447,7 +447,7 @@ const PendingTests = () => {
                     <img 
                       src={test.imageUrl} 
                       alt={test.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
                         console.log('Image load error for:', test.imageUrl);
                         e.currentTarget.style.display = 'none';
