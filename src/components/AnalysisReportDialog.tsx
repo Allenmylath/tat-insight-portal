@@ -3,13 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { MurrayNeedsChart } from "@/components/MurrayNeedsChart";
 import { MilitaryAssessmentCard } from "@/components/MilitaryAssessmentCard";
 import { SelectionRecommendationPanel } from "@/components/SelectionRecommendationPanel";
 import { EnhancedAnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink } from "lucide-react";
+import { Copy, ExternalLink, Menu, X } from "lucide-react";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 // Helper function to format analysis for ChatGPT
 const formatAnalysisForChatGPT = (
@@ -116,6 +119,11 @@ export const AnalysisReportDialog = ({
   score 
 }: AnalysisReportDialogProps) => {
   if (!analysis) return null;
+
+  // Mobile state management
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("traditional");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Debug log to see what data we're getting
   console.log('Analysis data received:', analysis);
@@ -232,186 +240,438 @@ export const AnalysisReportDialog = ({
             </CardContent>
           </Card>
 
-          {/* Enhanced Analysis with Tabs */}
-          <Tabs defaultValue="traditional" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="traditional">Traditional Analysis</TabsTrigger>
-              <TabsTrigger value="murray">Murray TAT</TabsTrigger>
-              <TabsTrigger value="military">Military Assessment</TabsTrigger>
-              <TabsTrigger value="recommendation">Recommendations</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="traditional" className="space-y-6 mt-6">
-              {/* Personality Traits */}
-              {Object.keys(personalityTraits).length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Personality Traits</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {Object.entries(personalityTraits).map(([trait, data]: [string, any]) => (
-                      <div key={trait} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium capitalize">{trait}</h4>
-                          <span className="text-sm font-medium">{data.score}%</span>
-                        </div>
-                        <Progress value={data.score} className="h-2" />
-                        <p className="text-xs text-muted-foreground">{data.description}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Dominant Emotions/Themes */}
-              {dominantEmotions.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Dominant Themes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {dominantEmotions.map((theme: string, index: number) => (
-                        <Badge key={index} variant="default" className="capitalize bg-primary/20 text-primary">
-                          {theme}
-                        </Badge>
-                      ))}
+          {/* Enhanced Analysis with Tabs/Drawer */}
+          {isMobile ? (
+            <div className="space-y-4">
+              <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+                <DrawerTrigger asChild>
+                  <Button variant="outline" className="w-full gap-2 justify-between">
+                    <span className="flex items-center gap-2">
+                      <Menu className="h-4 w-4" />
+                      {activeTab === "traditional" && "Traditional Analysis"}
+                      {activeTab === "murray" && "Murray TAT"}
+                      {activeTab === "military" && "Military Assessment"}
+                      {activeTab === "recommendation" && "Recommendations"}
+                    </span>
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="max-h-[60vh]">
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold">Select Analysis View</h3>
+                      <DrawerClose asChild>
+                        <Button variant="ghost" size="icon">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </DrawerClose>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                    <Button
+                      variant={activeTab === "traditional" ? "default" : "outline"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("traditional");
+                        setDrawerOpen(false);
+                      }}
+                    >
+                      Traditional Analysis
+                    </Button>
+                    <Button
+                      variant={activeTab === "murray" ? "default" : "outline"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("murray");
+                        setDrawerOpen(false);
+                      }}
+                    >
+                      Murray TAT
+                    </Button>
+                    <Button
+                      variant={activeTab === "military" ? "default" : "outline"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("military");
+                        setDrawerOpen(false);
+                      }}
+                    >
+                      Military Assessment
+                    </Button>
+                    <Button
+                      variant={activeTab === "recommendation" ? "default" : "outline"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setActiveTab("recommendation");
+                        setDrawerOpen(false);
+                      }}
+                    >
+                      Recommendations
+                    </Button>
+                  </div>
+                </DrawerContent>
+              </Drawer>
 
-              {/* Psychological Insights */}
-              {psychologicalInsights.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Clinical Insights</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {psychologicalInsights.map((insight: string, index: number) => (
-                        <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-primary mt-1">•</span>
-                          <span>{insight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
+              {/* Render active tab content */}
+              <div className="space-y-6">
+                {activeTab === "traditional" && (
+                  <>
+                    {/* Personality Traits */}
+                    {Object.keys(personalityTraits).length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Personality Traits</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {Object.entries(personalityTraits).map(([trait, data]: [string, any]) => (
+                            <div key={trait} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium capitalize">{trait}</h4>
+                                <span className="text-sm font-medium">{data.score}%</span>
+                              </div>
+                              <Progress value={data.score} className="h-2" />
+                              <p className="text-xs text-muted-foreground">{data.description}</p>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    )}
 
-              {/* Environmental Factors */}
-              {analysis.environmental_factors && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Environmental Factors</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {analysis.environmental_factors.map((factor: string, index: number) => (
-                        <Badge key={index} variant="outline" className="capitalize">
-                          {factor}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            <TabsContent value="murray" className="space-y-6 mt-6">
-              {/* Murray Needs */}
-              {murrayNeeds.length > 0 && <MurrayNeedsChart needs={murrayNeeds} />}
-              
-              {murrayNeeds.length === 0 && (
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No Murray psychological needs data available.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Murray Presses */}
-              {murrayPresses.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Murray Environmental Presses</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {murrayPresses.map((press: any, index: number) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{press.name}</h4>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">
-                              {press.category}
-                            </Badge>
-                            <span className="text-sm font-medium">{press.score}%</span>
+                    {/* Dominant Emotions/Themes */}
+                    {dominantEmotions.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Dominant Themes</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex flex-wrap gap-2">
+                            {dominantEmotions.map((theme: string, index: number) => (
+                              <Badge key={index} variant="default" className="capitalize bg-primary/20 text-primary">
+                                {theme}
+                              </Badge>
+                            ))}
                           </div>
-                        </div>
-                        <Progress value={press.score} className="h-2" />
-                        <p className="text-xs text-muted-foreground">{press.description}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
+                        </CardContent>
+                      </Card>
+                    )}
 
-              {/* Inner States */}
-              {innerStates.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Psychological Inner States</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {innerStates.map((state: any, index: number) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{state.state}</h4>
-                          <div className="flex items-center gap-2">
-                            <Badge variant={state.valence === 'Positive' ? 'default' : state.valence === 'Negative' ? 'destructive' : 'secondary'}>
-                              {state.valence}
-                            </Badge>
-                            <span className="text-sm font-medium">{state.intensity}%</span>
+                    {/* Psychological Insights */}
+                    {psychologicalInsights.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Clinical Insights</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="space-y-2">
+                            {psychologicalInsights.map((insight: string, index: number) => (
+                              <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                                <span className="text-primary mt-1">•</span>
+                                <span>{insight}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Environmental Factors */}
+                    {analysis.environmental_factors && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Environmental Factors</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex flex-wrap gap-2">
+                            {analysis.environmental_factors.map((factor: string, index: number) => (
+                              <Badge key={index} variant="outline" className="capitalize">
+                                {factor}
+                              </Badge>
+                            ))}
                           </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "murray" && (
+                  <>
+                    {/* Murray Needs */}
+                    {murrayNeeds.length > 0 && <MurrayNeedsChart needs={murrayNeeds} />}
+                    
+                    {murrayNeeds.length === 0 && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-center py-8">
+                            <p className="text-muted-foreground">No Murray psychological needs data available.</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Murray Presses */}
+                    {murrayPresses.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Murray Environmental Presses</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {murrayPresses.map((press: any, index: number) => (
+                            <div key={index} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium">{press.name}</h4>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline">
+                                    {press.category}
+                                  </Badge>
+                                  <span className="text-sm font-medium">{press.score}%</span>
+                                </div>
+                              </div>
+                              <Progress value={press.score} className="h-2" />
+                              <p className="text-xs text-muted-foreground">{press.description}</p>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Inner States */}
+                    {innerStates.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Psychological Inner States</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {innerStates.map((state: any, index: number) => (
+                            <div key={index} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium">{state.state}</h4>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={state.valence === 'Positive' ? 'default' : state.valence === 'Negative' ? 'destructive' : 'secondary'}>
+                                    {state.valence}
+                                  </Badge>
+                                  <span className="text-sm font-medium">{state.intensity}%</span>
+                                </div>
+                              </div>
+                              <Progress value={state.intensity} className="h-2" />
+                              <p className="text-xs text-muted-foreground">{state.description}</p>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "military" && (
+                  <>
+                    {formattedMilitaryAssessment && <MilitaryAssessmentCard assessment={formattedMilitaryAssessment} />}
+                    {!formattedMilitaryAssessment && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-center py-8">
+                            <p className="text-muted-foreground">Military assessment data not available for this test.</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "recommendation" && (
+                  <>
+                    {selectionRecommendation && <SelectionRecommendationPanel recommendation={selectionRecommendation} />}
+                    {!selectionRecommendation && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-center py-8">
+                            <p className="text-muted-foreground">Selection recommendation data not available for this test.</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Tabs defaultValue="traditional" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="traditional">Traditional Analysis</TabsTrigger>
+                <TabsTrigger value="murray">Murray TAT</TabsTrigger>
+                <TabsTrigger value="military">Military Assessment</TabsTrigger>
+                <TabsTrigger value="recommendation">Recommendations</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="traditional" className="space-y-6 mt-6">
+                {/* Personality Traits */}
+                {Object.keys(personalityTraits).length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Personality Traits</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {Object.entries(personalityTraits).map(([trait, data]: [string, any]) => (
+                        <div key={trait} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium capitalize">{trait}</h4>
+                            <span className="text-sm font-medium">{data.score}%</span>
+                          </div>
+                          <Progress value={data.score} className="h-2" />
+                          <p className="text-xs text-muted-foreground">{data.description}</p>
                         </div>
-                        <Progress value={state.intensity} className="h-2" />
-                        <p className="text-xs text-muted-foreground">{state.description}</p>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Dominant Emotions/Themes */}
+                {dominantEmotions.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Dominant Themes</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {dominantEmotions.map((theme: string, index: number) => (
+                          <Badge key={index} variant="default" className="capitalize bg-primary/20 text-primary">
+                            {theme}
+                          </Badge>
+                        ))}
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+                    </CardContent>
+                  </Card>
+                )}
 
-            <TabsContent value="military" className="space-y-6 mt-6">
-              {formattedMilitaryAssessment && <MilitaryAssessmentCard assessment={formattedMilitaryAssessment} />}
-              {!formattedMilitaryAssessment && (
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No military assessment data available for this analysis.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+                {/* Psychological Insights */}
+                {psychologicalInsights.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Clinical Insights</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {psychologicalInsights.map((insight: string, index: number) => (
+                          <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary mt-1">•</span>
+                            <span>{insight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
 
-            <TabsContent value="recommendation" className="space-y-6 mt-6">
-              {selectionRecommendation && <SelectionRecommendationPanel recommendation={selectionRecommendation} />}
-              {!selectionRecommendation && (
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No selection recommendations available for this analysis.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
+                {/* Environmental Factors */}
+                {analysis.environmental_factors && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Environmental Factors</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {analysis.environmental_factors.map((factor: string, index: number) => (
+                          <Badge key={index} variant="outline" className="capitalize">
+                            {factor}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+
+              <TabsContent value="murray" className="space-y-6 mt-6">
+                {/* Murray Needs */}
+                {murrayNeeds.length > 0 && <MurrayNeedsChart needs={murrayNeeds} />}
+                
+                {murrayNeeds.length === 0 && (
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">No Murray psychological needs data available.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Murray Presses */}
+                {murrayPresses.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Murray Environmental Presses</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {murrayPresses.map((press: any, index: number) => (
+                        <div key={index} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">{press.name}</h4>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline">
+                                {press.category}
+                              </Badge>
+                              <span className="text-sm font-medium">{press.score}%</span>
+                            </div>
+                          </div>
+                          <Progress value={press.score} className="h-2" />
+                          <p className="text-xs text-muted-foreground">{press.description}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Inner States */}
+                {innerStates.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Psychological Inner States</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {innerStates.map((state: any, index: number) => (
+                        <div key={index} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">{state.state}</h4>
+                            <div className="flex items-center gap-2">
+                              <Badge variant={state.valence === 'Positive' ? 'default' : state.valence === 'Negative' ? 'destructive' : 'secondary'}>
+                                {state.valence}
+                              </Badge>
+                              <span className="text-sm font-medium">{state.intensity}%</span>
+                            </div>
+                          </div>
+                          <Progress value={state.intensity} className="h-2" />
+                          <p className="text-xs text-muted-foreground">{state.description}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+
+              <TabsContent value="military" className="space-y-6 mt-6">
+                {formattedMilitaryAssessment && <MilitaryAssessmentCard assessment={formattedMilitaryAssessment} />}
+                {!formattedMilitaryAssessment && (
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">Military assessment data not available for this test.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+
+              <TabsContent value="recommendation" className="space-y-6 mt-6">
+                {selectionRecommendation && <SelectionRecommendationPanel recommendation={selectionRecommendation} />}
+                {!selectionRecommendation && (
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">Selection recommendation data not available for this test.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </DialogContent>
     </Dialog>
