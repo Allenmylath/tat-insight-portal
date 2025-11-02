@@ -111,7 +111,7 @@ const SSBInterview = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-saffron rounded-lg flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-white" />
+              <BookOpen className="h-6 w-6 text-gradient-foreground" />
             </div>
             
           </div>
@@ -279,7 +279,7 @@ const SSBInterview = () => {
               {features.map((feature, index) => <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
                   <CardHeader className="text-center">
                     <div className="w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-8 w-8 text-white" />
+                      <feature.icon className="h-8 w-8 text-gradient-foreground" />
                     </div>
                     <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                   </CardHeader>
@@ -373,7 +373,7 @@ const SSBInterview = () => {
             <div className="flex flex-col">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-white" />
+                  <BookOpen className="h-5 w-5 text-gradient-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">TAT Pro</p>

@@ -184,7 +184,7 @@ const SSBProcedure = () => {
                   <CardHeader>
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-saffron flex items-center justify-center flex-shrink-0">
-                        <day.icon className="h-6 w-6 text-white" />
+                        <day.icon className="h-6 w-6 text-gradient-foreground" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">

@@ -460,7 +460,7 @@ const PendingTests = () => {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
-                    <Lock className="h-8 w-8 text-white" />
+                    <Lock className="h-8 w-8 text-overlay-foreground" />
                   </div>
                 </div>
                 

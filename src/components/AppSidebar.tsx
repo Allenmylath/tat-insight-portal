@@ -99,7 +99,7 @@ export function AppSidebar() {
           <div className="p-4 border-b">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-4 w-4 text-white" />
+                <BarChart3 className="h-4 w-4 text-gradient-foreground" />
               </div>
               <h2 className="font-semibold text-foreground">TAT Portal</h2>
             </div>

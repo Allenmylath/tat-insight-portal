@@ -72,7 +72,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-saffron rounded-lg flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-white" />
+              <BookOpen className="h-6 w-6 text-gradient-foreground" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">TAT Pro</h1>
@@ -333,7 +333,7 @@ const Index = () => {
             <div className="flex flex-col">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-white" />
+                  <BookOpen className="h-5 w-5 text-gradient-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">TAT Pro</p>

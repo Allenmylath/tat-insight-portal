@@ -57,6 +57,8 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "gradient-foreground": "hsl(var(--gradient-foreground))",
+        "overlay-foreground": "hsl(var(--overlay-foreground))",
       },
       borderRadius: {
         lg: "var(--radius)",

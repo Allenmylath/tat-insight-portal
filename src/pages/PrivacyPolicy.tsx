@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
           </Button>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-              <BookOpen className="h-5 w-5 text-white" />
+              <BookOpen className="h-5 w-5 text-gradient-foreground" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-foreground">TAT Pro</h1>
