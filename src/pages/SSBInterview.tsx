@@ -115,7 +115,7 @@ const SSBInterview = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">TAT Pro</h1>
-              <p className="text-xs text-muted-foreground">SSC Assessment</p>
+              <p className="text-xs text-muted-foreground">SSB Assessment</p>
             </div>
           </div>
           
