@@ -231,7 +231,7 @@ const SSBProcedure = () => {
                   </div>
                   <CardDescription>The cornerstone of SSB psychological assessment</CardDescription>
                 </div>
-                <Link to="/dashboard">
+                <Link to="/auth/signup">
                   <Button size="lg" className="gap-2 shadow-elegant">
                     Practice TAT Now <ArrowRight className="h-4 w-4" />
                   </Button>
