@@ -358,6 +358,7 @@ const Index = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p><a href="/about-us" className="hover:text-foreground transition-colors">About Us</a></p>
                 <p><a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a></p>
+                <p><a href="/5-day-ssb-interview-procedure" className="hover:text-foreground transition-colors">SSB Procedure</a></p>
                 <p><a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a></p>
                 <p><a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a></p>
                 <p><a href="/terms-and-conditions" className="hover:text-foreground transition-colors">Terms & Conditions</a></p>

@@ -399,6 +399,9 @@ const SSBInterview = () => {
                 <Link to="/about-tat" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                   About TAT
                 </Link>
+                <Link to="/5-day-ssb-interview-procedure" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                  SSB Procedure
+                </Link>
                 <Link to="/about-us" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                   About Us
                 </Link>

@@ -9,6 +9,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import Index from "./pages/Index";
 import SSBInterview from "./pages/SSBInterview";
 import TatTestInfo from "./pages/TatTestInfo";
+import SSBProcedure from "./pages/SSBProcedure";
 import StandaloneTestPage from "./pages/StandaloneTestPage";
 import Dashboard from "./pages/Dashboard";
 import AttemptedTests from "./pages/dashboard/AttemptedTests";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/ssb-interview" element={<SSBInterview />} />
             <Route path="/about-tat" element={<TatTestInfo />} />
+            <Route path="/5-day-ssb-interview-procedure" element={<SSBProcedure />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
