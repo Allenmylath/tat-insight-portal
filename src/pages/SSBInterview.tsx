@@ -91,7 +91,7 @@ const SSBInterview = () => {
               <>
                 <Link to="/auth/signup" className="w-full">
                   <Button className="w-full" size="lg" variant="hero">
-                    Start Free Practice
+                    Start Practice
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
