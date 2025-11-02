@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import Index from "./pages/Index";
+import SSBInterview from "./pages/SSBInterview";
 import TatTestInfo from "./pages/TatTestInfo";
 import StandaloneTestPage from "./pages/StandaloneTestPage";
 import Dashboard from "./pages/Dashboard";
@@ -55,6 +56,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/ssb-interview" element={<SSBInterview />} />
             <Route path="/about-tat" element={<TatTestInfo />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
