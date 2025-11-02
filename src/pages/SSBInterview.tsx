@@ -90,7 +90,7 @@ const SSBInterview = () => {
           <div className="flex flex-col gap-3 mt-4">
             {!isSignedIn ? <>
                 <Link to="/auth/signup" className="w-full">
-                  <Button className="w-full" size="lg" variant="hero">
+                  <Button size="lg" variant="hero" className="w-full text-slate-950">
                     Start Practice
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
