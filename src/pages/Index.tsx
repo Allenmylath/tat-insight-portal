@@ -9,6 +9,9 @@ import { LogOut, User } from "lucide-react";
 import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText, TestTube, MessageCircle } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import henryMurrayImage from "@/assets/henry-murray.jpg";
+import tatMethodologyImage from "@/assets/tat-methodology.jpg";
+import psychodynamicAnalysisImage from "@/assets/psychodynamic-analysis.jpg";
+import researchFrameworkImage from "@/assets/research-framework.jpg";
 import { testPhonePeTokenGeneration } from "@/utils/testPhonePeToken";
 import { toast } from "sonner";
 const Index = () => {
@@ -21,15 +24,15 @@ const Index = () => {
     signOut
   } = useClerk();
   const features = [{
-    icon: Microscope,
+    image: tatMethodologyImage,
     title: "Murray's TAT Methodology",
     description: "Based on Henry Murray's original Thematic Apperception Test framework developed at Harvard Psychological Clinic"
   }, {
-    icon: Brain,
+    image: psychodynamicAnalysisImage,
     title: "Psychodynamic Analysis",
     description: "Deep psychological assessment through projective storytelling and personality dynamics evaluation"
   }, {
-    icon: GraduationCap,
+    image: researchFrameworkImage,
     title: "Research-Based Framework",
     description: "Grounded in decades of psychological research and validated assessment methodologies"
   }];
@@ -235,8 +238,8 @@ const Index = () => {
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
                   <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-8 w-8 text-white" />
+                    <div className="w-32 h-32 rounded-lg overflow-hidden mx-auto mb-4 shadow-md">
+                      <img src={feature.image} alt={feature.title} className="w-full h-full object-cover" />
                     </div>
                     <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                   </CardHeader>
