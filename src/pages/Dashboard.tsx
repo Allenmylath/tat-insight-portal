@@ -11,8 +11,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { CreditHeader } from "@/components/CreditHeader";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 const Dashboard = () => {
+  const { isSignedIn, isLoaded } = useUser();
   const { userData, loading, isPro } = useUserData();
   const navigate = useNavigate();
   const [tests, setTests] = useState<any[]>([]);
@@ -21,6 +23,13 @@ const Dashboard = () => {
   const [testsLoading, setTestsLoading] = useState(true);
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      navigate("/auth/signin");
+    }
+  }, [isLoaded, isSignedIn, navigate]);
 
   useEffect(() => {
     const fetchTests = async () => {
