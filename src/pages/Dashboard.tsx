@@ -185,6 +185,7 @@ const Dashboard = () => {
               Cancel
             </Button>
             <Button 
+              variant="saffron"
               onClick={() => {
                 setShowNoTestDialog(false);
                 navigate('/dashboard/pending');
@@ -222,19 +223,21 @@ const Dashboard = () => {
 
       {/* Membership Alert for Free Users */}
       {!loading && !isPro && (
-        <Card className="border-primary bg-gradient-to-r from-primary/5 to-accent/5">
+        <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 shadow-elegant">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <Crown className="h-8 w-8 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-gradient-saffron flex items-center justify-center flex-shrink-0">
+                  <Crown className="h-6 w-6 text-gradient-foreground" />
+                </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Unlock Full Access</h3>
+                  <h3 className="font-semibold text-foreground text-lg">Unlock Full Access</h3>
                   <p className="text-sm text-muted-foreground">
                     Access all {tests.length > 0 ? tests.length : "available"} tests and detailed analysis with Pro membership
                   </p>
                 </div>
               </div>
-              <Button variant="hero" className="gap-2">
+              <Button variant="saffron" size="lg" className="gap-2 shadow-lg whitespace-nowrap">
                 <Crown className="h-4 w-4" />
                 Upgrade to Pro
               </Button>
@@ -514,9 +517,9 @@ const Dashboard = () => {
                         : "You've completed all free tests. Upgrade for more!"
                       }
                     </p>
-                    <Button variant="government" className="w-full">
-                      {isPro ? "View Full Report" : "Upgrade to Pro"}
-                    </Button>
+                     <Button variant="saffron" className="w-full">
+                       {isPro ? "View Full Report" : "Upgrade to Pro"}
+                     </Button>
                   </>
                 )}
                 
