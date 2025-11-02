@@ -44,7 +44,7 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Custom Design Tokens - Military Style */
-    --gradient-military: linear-gradient(135deg, hsl(82 35% 35%), hsl(82 30% 45%)); /* Olive gradient */
+    --gradient-military: linear-gradient(135deg, hsl(82 40% 25%), hsl(82 35% 32%)); /* Darker olive gradient for better contrast */
     --gradient-navy: linear-gradient(135deg, hsl(210 45% 25%), hsl(210 40% 35%)); /* Navy gradient */
     --gradient-saffron: linear-gradient(135deg, hsl(30 90% 55%), hsl(30 85% 65%)); /* Saffron gradient */
     --gradient-hero: linear-gradient(180deg, hsl(210 20% 97%), hsl(0 0% 98%)); /* Light gradient */
