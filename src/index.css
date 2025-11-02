@@ -8,64 +8,60 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* 1950s Murray Era Theme - Academic Red & Black */
-    --background: 45 20% 97%; /* Cream paper */
-    --foreground: 0 0% 5%; /* Deep black */
+    /* Military/SSB Theme - Olive Green, Navy Blue, Saffron */
+    --background: 0 0% 98%; /* Clean white */
+    --foreground: 210 15% 15%; /* Navy dark */
 
     --card: 0 0% 100%; /* Pure white */
-    --card-foreground: 0 0% 5%;
+    --card-foreground: 210 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --popover-foreground: 210 15% 15%;
 
-    /* Academic Crimson Primary Colors */
-    --primary: 0 70% 45%; /* Deep academic red */
-    --primary-foreground: 45 20% 97%;
-    --primary-glow: 0 65% 55%; /* Lighter red for highlights */
+    /* Olive Green Primary (Military) */
+    --primary: 82 35% 35%; /* Olive green */
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 82 30% 45%; /* Lighter olive */
 
-    /* Professional Secondary */
-    --secondary: 0 0% 15%; /* Charcoal black */
-    --secondary-foreground: 45 20% 97%;
+    /* Navy Blue Secondary (Defense) */
+    --secondary: 210 45% 25%; /* Navy blue */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 45 15% 92%; /* Warm light gray */
-    --muted-foreground: 0 0% 35%; /* Medium gray */
+    --muted: 210 15% 95%; /* Light blue-gray */
+    --muted-foreground: 210 10% 40%; /* Medium gray */
 
-    --accent: 0 50% 92%; /* Light red tint */
-    --accent-foreground: 0 70% 25%; /* Dark red */
+    /* Saffron Accent (Indian flag) */
+    --accent: 30 95% 90%; /* Light orange tint */
+    --accent-foreground: 30 90% 35%; /* Dark orange */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 45 20% 97%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 85%; /* Light gray borders */
-    --input: 0 0% 90%; /* Input backgrounds */
-    --ring: 0 70% 45%; /* Focus ring matches primary */
+    --border: 210 15% 88%; /* Light border */
+    --input: 210 15% 92%; /* Input backgrounds */
+    --ring: 82 35% 35%; /* Focus ring matches primary */
 
-    --radius: 0.5rem; /* More conservative radius for 1950s feel */
+    --radius: 0.5rem;
 
-    /* Custom Design Tokens - 1950s Academic Style */
-    --gradient-saffron: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 65% 55%)); /* Red gradient */
-    --gradient-hero: linear-gradient(180deg, hsl(45 25% 95%), hsl(45 20% 97%)); /* Warm cream gradient */
-    --shadow-saffron: 0 10px 30px -10px hsl(0 70% 45% / 0.3); /* Red shadow */
-    --shadow-elegant: 0 4px 20px -2px hsl(0 0% 5% / 0.15); /* Black shadow */
+    /* Custom Design Tokens - Military Style */
+    --gradient-military: linear-gradient(135deg, hsl(82 35% 35%), hsl(82 30% 45%)); /* Olive gradient */
+    --gradient-navy: linear-gradient(135deg, hsl(210 45% 25%), hsl(210 40% 35%)); /* Navy gradient */
+    --gradient-saffron: linear-gradient(135deg, hsl(30 90% 55%), hsl(30 85% 65%)); /* Saffron gradient */
+    --gradient-hero: linear-gradient(180deg, hsl(210 20% 97%), hsl(0 0% 98%)); /* Light gradient */
+    --shadow-military: 0 10px 30px -10px hsl(82 35% 35% / 0.3); /* Olive shadow */
+    --shadow-elegant: 0 4px 20px -2px hsl(210 15% 15% / 0.15); /* Navy shadow */
     
     /* Professional spacing */
     --section-padding: 4rem 1rem;
 
-    --sidebar-background: 45 20% 97%; /* Cream background */
-
-    --sidebar-foreground: 0 0% 25%; /* Dark gray text */
-
-    --sidebar-primary: 0 70% 45%; /* Academic red */
-
-    --sidebar-primary-foreground: 45 20% 97%;
-
-    --sidebar-accent: 45 15% 92%; /* Light warm gray */
-
-    --sidebar-accent-foreground: 0 0% 15%; /* Charcoal */
-
-    --sidebar-border: 0 0% 85%; /* Light gray borders */
-
-    --sidebar-ring: 0 70% 45%; /* Red focus ring */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 210 15% 25%;
+    --sidebar-primary: 82 35% 35%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 15% 95%;
+    --sidebar-accent-foreground: 210 15% 25%;
+    --sidebar-border: 210 15% 88%;
+    --sidebar-ring: 82 35% 35%;
   }
 
   .dark {
