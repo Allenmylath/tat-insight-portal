@@ -220,19 +220,49 @@ const SSBProcedure = () => {
             <p className="text-muted-foreground">Understanding the most critical assessments</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="shadow-elegant">
-              <CardHeader>
-                <CardTitle>Thematic Apperception Test (TAT)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-muted-foreground">
-                <p><strong className="text-foreground">Format:</strong> 12 pictures (11 hazy + 1 blank slide)</p>
-                <p><strong className="text-foreground">Time:</strong> 30 seconds viewing, 4 minutes writing per picture</p>
-                <p><strong className="text-foreground">Tests:</strong> Imaginative and creative skills, situational perception</p>
-                <p className="pt-2 text-sm"><em>Most significant round showing true representation of candidate's thoughts</em></p>
-              </CardContent>
-            </Card>
+          {/* Featured TAT Test - Full Width */}
+          <Card className="shadow-elegant border-primary/40 bg-gradient-to-br from-primary/5 to-primary/10 md:col-span-2">
+            <CardHeader>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-2xl">Thematic Apperception Test (TAT)</CardTitle>
+                    <Badge variant="default" className="bg-gradient-saffron">Most Critical</Badge>
+                  </div>
+                  <CardDescription>The cornerstone of SSB psychological assessment</CardDescription>
+                </div>
+                <Link to="/dashboard">
+                  <Button size="lg" className="gap-2 shadow-elegant">
+                    Practice TAT Now <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-3 gap-4 text-muted-foreground">
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Format</p>
+                  <p>12 pictures (11 hazy + 1 blank slide)</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Time Allocation</p>
+                  <p>30 seconds viewing, 4 minutes writing per picture</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Assessment Focus</p>
+                  <p>Imaginative and creative skills, situational perception</p>
+                </div>
+              </div>
+              <div className="bg-background/60 backdrop-blur-sm rounded-lg p-4 border border-primary/20">
+                <p className="text-sm text-muted-foreground italic">
+                  <strong className="text-foreground">Why TAT matters:</strong> This is the most significant round showing the true representation of a candidate's thoughts, personality, and officer-like qualities. Practice is essential for success.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* Other Psychological Tests */}
+          <div className="grid md:grid-cols-3 gap-6">
             <Card className="shadow-elegant">
               <CardHeader>
                 <CardTitle>Word Association Test (WAT)</CardTitle>
