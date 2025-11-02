@@ -227,8 +227,8 @@ const Dashboard = () => {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-saffron flex items-center justify-center flex-shrink-0">
-                  <Crown className="h-6 w-6 text-gradient-foreground" />
+                <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                  <Crown className="h-8 w-8 text-accent-foreground" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground text-lg">Unlock Full Access</h3>
@@ -238,7 +238,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <Button variant="saffron" size="lg" className="gap-2 shadow-lg whitespace-nowrap">
-                <Crown className="h-4 w-4" />
+                <Crown className="h-5 w-5" />
                 Upgrade to Pro
               </Button>
             </div>

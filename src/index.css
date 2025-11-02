@@ -33,6 +33,7 @@ All colors MUST be HSL.
     /* Saffron Accent (Indian flag) */
     --accent: 30 95% 90%; /* Light orange tint */
     --accent-foreground: 30 90% 35%; /* Dark orange */
+    --saffron-foreground: 30 40% 20%; /* Dark brown/orange for text on saffron buttons */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
