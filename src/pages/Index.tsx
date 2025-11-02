@@ -146,7 +146,7 @@ const Index = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
+                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg text-slate-950">
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
