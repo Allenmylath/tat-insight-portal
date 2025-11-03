@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import SSBInterview from "./pages/SSBInterview";
 import TatTestInfo from "./pages/TatTestInfo";
@@ -71,73 +71,73 @@ const App = () => (
             
             {/* Standalone test route - no dashboard layout */}
             <Route path="/test/:testId" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <StandaloneTestPage />
-              </SignedIn>
+              </ProtectedRoute>
             } />
             
             <Route path="/dashboard" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <Dashboard />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/attempted" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <AttemptedTests />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/pending" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <PendingTests />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/abandoned" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <AbandonedTests />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/results" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <Results />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/pricing" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <Pricing />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/settings" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <Settings />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/transactions" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <Transactions />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             <Route path="/dashboard/reconciliation" element={
-              <SignedIn>
+              <ProtectedRoute>
                 <DashboardLayout>
                   <PaymentReconciliation />
                 </DashboardLayout>
-              </SignedIn>
+              </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
