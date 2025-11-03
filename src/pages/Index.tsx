@@ -81,14 +81,14 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-2 md:gap-4">
-            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
+            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="default" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Contact Us</span>
             </Button>
             
             {!isSignedIn ? <div className="flex items-center gap-2">
                 <Link to="/auth/signin">
-                  <Button variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign In</Button>
+                  <Button variant="default" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign In</Button>
                 </Link>
                 <Link to="/auth/signup">
                   <Button variant="default" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign Up</Button>
