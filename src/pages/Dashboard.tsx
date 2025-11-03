@@ -185,7 +185,7 @@ const Dashboard = () => {
               Cancel
             </Button>
             <Button 
-              variant="saffron"
+              variant="default"
               onClick={() => {
                 setShowNoTestDialog(false);
                 navigate('/dashboard/pending');
@@ -237,7 +237,7 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <Button variant="saffron" size="lg" className="gap-2 shadow-lg whitespace-nowrap">
+              <Button variant="default" size="lg" className="gap-2 shadow-lg whitespace-nowrap">
                 <Crown className="h-5 w-5" />
                 Upgrade to Pro
               </Button>
@@ -517,7 +517,7 @@ const Dashboard = () => {
                         : "You've completed all free tests. Upgrade for more!"
                       }
                     </p>
-                     <Button variant="saffron" className="w-full">
+                     <Button variant="default" className="w-full">
                        {isPro ? "View Full Report" : "Upgrade to Pro"}
                      </Button>
                   </>
