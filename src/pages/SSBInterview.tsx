@@ -352,7 +352,7 @@ const SSBInterview = () => {
               </p>
               
               {!isSignedIn ? <Link to="/auth/signup">
-                  <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
+                  <Button size="lg" variant="default" className="px-8 py-6 text-lg">
                     Get Started Today
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
