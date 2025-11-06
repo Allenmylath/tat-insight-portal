@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { StatsigProvider, useClientAsyncInit } from '@statsig/react-bindings';
+import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
+import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
+import { useUser } from '@clerk/clerk-react';
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import SSBInterview from "./pages/SSBInterview";
@@ -48,104 +52,126 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
   </SidebarProvider>
 );
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TestProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/ssb-interview" element={<SSBInterview />} />
-            <Route path="/about-tat" element={<TatTestInfo />} />
-            <Route path="/5-day-ssb-interview-procedure" element={<SSBProcedure />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-          <Route path="/about-us" element={<AboutUs />} />
-            
-            {/* Auth routes */}
-            <Route path="/auth/signin" element={<SignIn />} />
-            <Route path="/auth/signup" element={<SignUp />} />
-            
-            {/* Standalone test route - no dashboard layout */}
-            <Route path="/test/:testId" element={
-              <ProtectedRoute>
-                <StandaloneTestPage />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Dashboard />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/attempted" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <AttemptedTests />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/pending" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <PendingTests />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/abandoned" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <AbandonedTests />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/results" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Results />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/pricing" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Pricing />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/settings" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Settings />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/transactions" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Transactions />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/reconciliation" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <PaymentReconciliation />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </TestProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const { user, isLoaded: isClerkLoaded } = useUser();
+  const statsigUserId = user?.id || 'anonymous-user';
+  
+  const { client } = useClientAsyncInit(
+    'client-jWfkRbiQnmqOOEYXKRM4mKmlZ46dwv4EKEDvukfvcEN',
+    { userID: statsigUserId },
+    { 
+      plugins: [
+        new StatsigAutoCapturePlugin(), 
+        new StatsigSessionReplayPlugin()
+      ] 
+    }
+  );
+
+  if (!isClerkLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <StatsigProvider client={client} loadingComponent={<div>Loading...</div>}>
+      <QueryClientProvider client={queryClient}>
+        <TestProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/ssb-interview" element={<SSBInterview />} />
+                <Route path="/about-tat" element={<TatTestInfo />} />
+                <Route path="/5-day-ssb-interview-procedure" element={<SSBProcedure />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+              <Route path="/about-us" element={<AboutUs />} />
+                
+                {/* Auth routes */}
+                <Route path="/auth/signin" element={<SignIn />} />
+                <Route path="/auth/signup" element={<SignUp />} />
+                
+                {/* Standalone test route - no dashboard layout */}
+                <Route path="/test/:testId" element={
+                  <ProtectedRoute>
+                    <StandaloneTestPage />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Dashboard />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/attempted" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <AttemptedTests />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/pending" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <PendingTests />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/abandoned" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <AbandonedTests />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/results" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Results />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/pricing" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Pricing />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/settings" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Settings />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/transactions" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Transactions />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/reconciliation" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <PaymentReconciliation />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </TestProvider>
+      </QueryClientProvider>
+    </StatsigProvider>
+  );
+};
 
 export default App;
