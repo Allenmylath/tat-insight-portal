@@ -221,6 +221,64 @@ const Dashboard = () => {
         ) : null}
       </div>
 
+      {/* Earn Free Credits Section - Only show when credits = 0 */}
+      {!loading && userData && userData.credit_balance === 0 && (
+        <Card className="border-yellow-500/50 bg-gradient-to-r from-yellow-50 via-orange-50 to-yellow-50 dark:from-yellow-950/20 dark:via-orange-950/20 dark:to-yellow-950/20 shadow-xl animate-in fade-in-50 duration-700">
+          <CardContent className="pt-6 pb-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              {/* Left side - Icon & Message */}
+              <div className="flex items-start gap-4 flex-1">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
+                    <Star className="h-8 w-8 text-white fill-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-xs font-bold text-white">₹</span>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-foreground text-xl mb-1 flex items-center gap-2">
+                    Get ₹100 Free Credits! 
+                    <Badge variant="secondary" className="bg-green-500 text-white hover:bg-green-600">
+                      Limited Time
+                    </Badge>
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Share tattests.me on social media and claim your free credits instantly
+                  </p>
+                  <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 border border-yellow-500/30">
+                    <p className="text-xs font-semibold text-foreground mb-2">📱 Quick Steps:</p>
+                    <ol className="text-xs text-muted-foreground space-y-1 ml-4 list-decimal">
+                      <li>Post about <span className="font-bold text-foreground">tattests.me</span> on Instagram/Facebook</li>
+                      <li>Send the link to <span className="font-bold text-primary">+91 8921635144</span> on WhatsApp</li>
+                      <li>Include your email: <span className="font-bold text-primary">{userData?.email}</span></li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right side - CTA Button */}
+              <div className="flex flex-col gap-2 min-w-[200px]">
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg gap-2 font-semibold"
+                  onClick={() => {
+                    const message = `Hi! I want to earn ₹100 credits by sharing tattests.me.\n\nMy email: ${userData?.email}\n\nPost link: `;
+                    window.open(`https://wa.me/918921635144?text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                >
+                  <Zap className="h-5 w-5" />
+                  Send WhatsApp Message
+                </Button>
+                <p className="text-xs text-center text-muted-foreground">
+                  Credits added within 24 hours
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Membership Alert for Free Users */}
       {!loading && !isPro && (
         <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 shadow-elegant">

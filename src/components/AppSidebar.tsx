@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt, Star, Zap } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -73,7 +74,7 @@ const settingsItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { isPro, loading } = useUserData();
+  const { isPro, loading, userData } = useUserData();
   const { activeTest, isTestActive } = useTestContext();
   const { signOut } = useClerk();
   const currentPath = location.pathname;
@@ -187,6 +188,39 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Earn Free Credits CTA - Show when credits = 0 */}
+        {!isCollapsed && !loading && userData && userData.credit_balance === 0 && (
+          <div className="mt-auto p-4 border-t">
+            <div className="bg-gradient-to-br from-yellow-400/10 via-orange-400/10 to-yellow-400/10 border-2 border-yellow-500/40 rounded-lg p-3 relative overflow-hidden">
+              {/* Animated background effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/10 to-transparent animate-shimmer"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center animate-pulse">
+                    <Star className="h-4 w-4 text-white fill-white" />
+                  </div>
+                  <span className="text-sm font-bold text-foreground">Earn ₹100 Free!</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  Share tattests.me on social media & get instant credits
+                </p>
+                <Button
+                  size="sm"
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white gap-1 font-semibold shadow-md"
+                  onClick={() => {
+                    const message = `Hi! I want to earn ₹100 credits.\n\nEmail: ${userData?.email}`;
+                    window.open(`https://wa.me/918921635144?text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                >
+                  <Zap className="h-3 w-3" />
+                  Claim Now
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Upgrade CTA for Free Users */}
         {!isCollapsed && !isPro && !loading && (
