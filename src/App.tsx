@@ -57,7 +57,7 @@ const App = () => {
   const statsigUserId = user?.id || 'anonymous-user';
   
   const { client } = useClientAsyncInit(
-    'client-jWfkRbiQnmqOOEYXKRM4mKmlZ46dwv4EKEDvukfvcEN',
+    import.meta.env.VITE_STATSIG_CLIENT_KEY,
     { userID: statsigUserId },
     { 
       plugins: [
