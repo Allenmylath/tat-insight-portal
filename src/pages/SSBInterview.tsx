@@ -6,61 +6,108 @@ import { useNavigate, Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
-import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Download, Microscope, GraduationCap, FileText, TestTube, MessageCircle } from "lucide-react";
+import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Microscope, GraduationCap, FileText, MessageCircle, Clock, Image, BarChart3, Lightbulb, Shield, Zap, ThumbsUp, ThumbsDown, Calendar, CheckSquare } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
-import henryMurrayImage from "@/assets/henry-murray.jpg";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
+
 const SSBInterview = () => {
   const navigate = useNavigate();
-  const {
-    isSignedIn,
-    user
-  } = useUser();
-  const {
-    signOut
-  } = useClerk();
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+  
   const [showSSBDialog, setShowSSBDialog] = useState(false);
+
   useEffect(() => {
-    // Show popup after 2 seconds on page load
     const timer = setTimeout(() => {
       setShowSSBDialog(true);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
-  const features = [{
-    icon: Microscope,
-    title: "Murray's TAT Methodology",
-    description: "Based on Henry Murray's original Thematic Apperception Test framework developed at Harvard Psychological Clinic"
-  }, {
-    icon: Brain,
-    title: "Psychodynamic Analysis",
-    description: "Deep psychological assessment through projective storytelling and personality dynamics evaluation"
-  }, {
-    icon: GraduationCap,
-    title: "Research-Based Framework",
-    description: "Grounded in decades of psychological research and validated assessment methodologies"
-  }];
-  const stats = [{
-    label: "Research Foundation",
-    value: "Since 1935",
-    icon: Award
-  }, {
-    label: "Scientific Validity",
-    value: "Harvard Clinic",
-    icon: Users
-  }, {
-    label: "Psychological Depth",
-    value: "Projective Analysis",
-    icon: CheckCircle
-  }];
-  const downloadPDF = () => {
-    const link = document.createElement('a');
-    link.href = '/murray.pdf';
-    link.download = 'murray-tat-research.pdf';
-    link.click();
-  };
-  return <div className="min-h-screen bg-background">
+
+  const ssbProcess = [
+    { day: "Day 1", title: "Screening", content: "OIR & PPDT" },
+    { day: "Day 2", title: "Psychology Tests", content: "TAT, WAT, SRT, SD", highlight: true },
+    { day: "Day 3", title: "GTO Tasks", content: "Group Testing" },
+    { day: "Day 4", title: "Interview", content: "Personal Interview" },
+    { day: "Day 5", title: "Conference", content: "Final Assessment" }
+  ];
+
+  const olqs = [
+    "Effective Intelligence", "Reasoning Ability", "Organizing Ability",
+    "Power of Expression", "Social Adjustment", "Cooperation",
+    "Sense of Responsibility", "Initiative", "Self Confidence",
+    "Speed of Decision", "Influence Group", "Liveliness",
+    "Determination", "Courage", "Stamina"
+  ];
+
+  const platformFeatures = [
+    {
+      icon: Image,
+      title: "Authentic TAT Practice",
+      description: "Military-themed images similar to actual SSB. Practice with 30-second viewing and 4-minute writing time limits.",
+      color: "text-orange-500"
+    },
+    {
+      icon: Brain,
+      title: "AI-Powered Analysis",
+      description: "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions.",
+      color: "text-blue-500"
+    },
+    {
+      icon: TrendingUp,
+      title: "Track Your Progress",
+      description: "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB.",
+      color: "text-green-500"
+    }
+  ];
+
+  const dos = [
+    { icon: CheckCircle, text: "Start with clear setting and characters" },
+    { icon: CheckCircle, text: "Show proactive decision-making" },
+    { icon: CheckCircle, text: "Include positive resolution" },
+    { icon: CheckCircle, text: "Demonstrate leadership and teamwork" },
+    { icon: CheckCircle, text: "Keep it realistic and relatable" },
+    { icon: CheckCircle, text: "Complete story within time" }
+  ];
+
+  const donts = [
+    { icon: CheckSquare, text: "Avoid negative/tragic endings" },
+    { icon: CheckSquare, text: "Don't leave stories incomplete" },
+    { icon: CheckSquare, text: "Avoid passive characters" },
+    { icon: CheckSquare, text: "Don't make unrealistic stories" },
+    { icon: CheckSquare, text: "Avoid violence or crime themes" },
+    { icon: CheckSquare, text: "Don't copy common templates" }
+  ];
+
+  const prepStrategy = [
+    { week: "Week 1-2", focus: "Understand TAT Basics", icon: BookOpen },
+    { week: "Week 3-4", focus: "Daily Practice (2-3 stories/day)", icon: Target },
+    { week: "Week 5-6", focus: "Analyze Feedback & Improve", icon: BarChart3 },
+    { week: "Week 7-8", focus: "Timed Practice (Exam Conditions)", icon: Clock },
+    { week: "Final Week", focus: "Build Confidence with Mock Tests", icon: Award }
+  ];
+
+  const stats = [
+    {
+      label: "SSB Day",
+      value: "Day 2",
+      icon: Calendar
+    },
+    {
+      label: "Time Per Image",
+      value: "30 Seconds",
+      icon: Clock
+    },
+    {
+      label: "Total Images",
+      value: "11-12 TAT",
+      icon: Image
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
       {/* SSB Dialog */}
       <Dialog open={showSSBDialog} onOpenChange={setShowSSBDialog}>
         <DialogContent className="sm:max-w-md">
@@ -88,7 +135,8 @@ const SSBInterview = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
-            {!isSignedIn ? <>
+            {!isSignedIn ? (
+              <>
                 <Link to="/auth/signup" className="w-full">
                   <Button size="lg" variant="default" className="w-full">
                     Start Practice
@@ -96,12 +144,17 @@ const SSBInterview = () => {
                   </Button>
                 </Link>
                 <Link to="/auth/signin" className="w-full">
-                  
+                  <Button size="lg" variant="outline" className="w-full">
+                    Sign In
+                  </Button>
                 </Link>
-              </> : <Button className="w-full" size="lg" variant="hero" onClick={() => navigate("/dashboard")}>
+              </>
+            ) : (
+              <Button className="w-full" size="lg" variant="hero" onClick={() => navigate("/dashboard")}>
                 Go to Dashboard
                 <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -113,16 +166,24 @@ const SSBInterview = () => {
             <div className="w-10 h-10 bg-gradient-saffron rounded-lg flex items-center justify-center">
               <BookOpen className="h-6 w-6 text-gradient-foreground" />
             </div>
-            
+            <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
+              TAT Assessment
+            </Link>
           </div>
           
           <div className="flex items-center gap-2 md:gap-4">
-            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
+            <Button 
+              onClick={() => window.open('https://wa.link/1mj98f', '_blank')} 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+            >
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Contact Us</span>
             </Button>
             
-            {!isSignedIn ? <div className="flex items-center gap-2">
+            {!isSignedIn ? (
+              <div className="flex items-center gap-2">
                 <Link to="/auth/signin">
                   <Button variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">
                     Sign In
@@ -133,7 +194,9 @@ const SSBInterview = () => {
                     Sign Up
                   </Button>
                 </Link>
-              </div> : <div className="flex items-center gap-2 md:gap-4">
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 md:gap-4">
                 <Button onClick={() => navigate("/dashboard")} variant="government">
                   Dashboard
                 </Button>
@@ -158,7 +221,8 @@ const SSBInterview = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>}
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -167,119 +231,243 @@ const SSBInterview = () => {
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-hero"></div>
-          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
-          backgroundImage: `url(${heroImage})`
-        }}></div>
+          <div 
+            className="absolute inset-0 opacity-10 bg-cover bg-center" 
+            style={{ backgroundImage: `url(${heroImage})` }}
+          ></div>
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-8 px-6 py-3 text-lg bg-primary/20 text-primary border-primary/30 hover:bg-primary/30 shadow-lg font-semibold" variant="outline">
-                Scientific TAT Assessment • Founded on Murray's Research
+                Master SSB Day 2 TAT • Join 10,000+ SSB Aspirants
               </Badge>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Scientific 
-                <span className="text-primary block">Thematic Apperception Analysis</span>
+                Ace Your SSB Interview
+                <span className="text-primary block">Master the Thematic Apperception Test</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                Advanced psychological assessment platform based on Henry Murray's original TAT methodology. 
-                Experience evidence-based personality evaluation through projective storytelling techniques.
+                TAT is Part of Day 2 Psychology Tests in SSB. Practice with AI-Powered Feedback & Build Confidence for Army, Navy, and Air Force Selection.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                {!isSignedIn ? <Link to="/auth/signup">
+                {!isSignedIn ? (
+                  <Link to="/auth/signup">
                     <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
-                      Start your TAT test
+                      Start TAT Practice
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
-                    Continue Assessment
+                  </Link>
+                ) : (
+                  <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                    Go to Dashboard
                     <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>}
-                <Button size="lg" variant="government" className="px-8 py-6 text-lg" onClick={() => navigate("/about-tat")}>
-                  Learn More
+                  </Button>
+                )}
+                <Button 
+                  size="lg" 
+                  variant="government" 
+                  className="px-8 py-6 text-lg" 
+                  onClick={() => navigate("/ssb-procedure")}
+                >
+                  Learn About SSB
                 </Button>
               </div>
               
               {/* Stats */}
               <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-                {stats.map((stat, index) => <div key={index} className="text-center">
+                {stats.map((stat, index) => (
+                  <div key={index} className="text-center">
                     <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
                     <div className="text-2xl font-bold text-primary">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>)}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Murray Foundation Section */}
+        {/* What is SSB Section */}
         <section className="py-20 bg-card/30">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-                <div>
-                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" variant="outline">
-                    Founded by Dr. Henry Murray • Harvard Psychological Clinic
-                  </Badge>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                    Rooted in Scientific Excellence
-                  </h2>
-                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                    The Thematic Apperception Test was developed by Dr. Henry Murray at Harvard University's 
-                    Psychological Clinic in 1935. This groundbreaking projective technique revolutionized 
-                    personality assessment by revealing unconscious drives, emotions, and thought patterns 
-                    through narrative storytelling.
-                  </p>
-                  <div className="bg-accent/30 p-6 rounded-lg mb-6 border-l-4 border-primary">
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      Military Applications Since WWII
-                    </h4>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Since World War II, TAT has been extensively used by military organizations worldwide 
-                      for personnel selection and psychological evaluation. Its proven effectiveness in 
-                      assessing leadership potential, emotional stability, and decision-making capabilities 
-                      under pressure has made it a cornerstone of military recruitment processes.
-                    </p>
+              <div className="text-center mb-16">
+                <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" variant="outline">
+                  Service Selection Board
+                </Badge>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                  Understanding the SSB Interview Process
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  The 5-day Service Selection Board interview is your gateway to becoming an officer in the Indian Armed Forces. 
+                  TAT is a crucial component of Day 2 Psychology Tests.
+                </p>
+              </div>
+
+              {/* SSB 5-Day Process */}
+              <div className="grid md:grid-cols-5 gap-4 mb-20">
+                {ssbProcess.map((day, index) => (
+                  <Card 
+                    key={index} 
+                    className={`text-center transition-all duration-300 ${
+                      day.highlight 
+                        ? 'border-primary border-2 shadow-saffron bg-primary/5' 
+                        : 'border-primary/10'
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                        {day.day}
+                      </Badge>
+                      <CardTitle className="text-lg">{day.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">{day.content}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* TAT in SSB */}
+              <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 md:p-12 mb-16">
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                      <Brain className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                      TAT in SSB: What You Need to Know
+                    </h3>
                   </div>
-                  <blockquote className="border-l-4 border-primary pl-6 mb-6 italic text-muted-foreground">
-                    "The TAT is based on the well-recognized fact that when a person interprets an ambiguous 
-                    social situation he is apt to expose his own personality as much as the phenomenon to which he is attending."
-                    <cite className="block mt-2 text-sm font-semibold text-primary">— Dr. Henry Murray</cite>
-                  </blockquote>
-                  <Button onClick={downloadPDF} variant="government" className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Download Murray's Research (PDF)
-                  </Button>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-saffron/20 rounded-full blur-3xl"></div>
-                  <img src={henryMurrayImage} alt="Dr. Henry Murray, founder of the Thematic Apperception Test" className="w-full max-w-sm mx-auto rounded-full shadow-elegant border-4 border-primary/20" />
-                  <div className="mt-6 text-center">
-                    <p className="font-semibold text-foreground">Dr. Henry Murray</p>
-                    <p className="text-sm text-muted-foreground">Harvard Psychological Clinic</p>
-                    <p className="text-sm text-muted-foreground">TAT Creator • 1893-1988</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-primary" />
+                        When & Format
+                      </h4>
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Conducted on <strong>Day 2</strong> of SSB (Psychology Tests)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span><strong>11-12 ambiguous images</strong> shown sequentially</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span><strong>30 seconds</strong> to view each image</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span><strong>4 minutes</strong> to write your story</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        What Assessors Look For
+                      </h4>
+                      <ul className="space-y-2 text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Positive themes and constructive endings</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Decision-making ability in stories</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Leadership qualities and problem-solving</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Social responsibility and teamwork</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Emotional stability and maturity</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 p-6 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-destructive" />
+                      Common Challenges Candidates Face
+                    </h4>
+                    <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-start gap-2">
+                        <Clock className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                        <span>Time pressure (only 4 minutes per story)</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Image className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                        <span>Interpreting ambiguous military-themed images</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <BarChart3 className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                        <span>Maintaining consistency in character traits</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Shield className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                        <span>Avoiding negative or passive stories</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* OLQs Section */}
+              <div className="text-center mb-12">
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
+                  15 Officer Like Qualities (OLQs) Assessed
+                </h3>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  TAT reveals these personality traits through your story themes. Understanding OLQs helps you craft better narratives.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-16">
+                {olqs.map((olq, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-card border border-primary/10 rounded-lg p-4 text-center hover:border-primary/30 hover:shadow-saffron transition-all duration-300"
+                  >
+                    <Award className="h-6 w-6 text-primary mx-auto mb-2" />
+                    <p className="text-sm font-medium text-foreground">{olq}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                Scientific Assessment Framework
+          </div>
+        </section>
+
+        {/* How This Platform Helps */}
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+                How This Platform Helps You Prepare
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Experience Murray's revolutionary approach to personality assessment through validated psychological methodologies
+              <p className="text-lg text-muted-foreground mb-8">
+                Everything you need to master TAT and ace your SSB Day 2 Psychology Tests
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {features.map((feature, index) => <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
+            <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
+              {platformFeatures.map((feature, index) => (
+                <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
                   <CardHeader className="text-center">
                     <div className="w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-8 w-8 text-gradient-foreground" />
+                      <feature.icon className={`h-8 w-8 ${feature.color}`} />
                     </div>
                     <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                   </CardHeader>
@@ -288,141 +476,211 @@ const SSBInterview = () => {
                       {feature.description}
                     </CardDescription>
                   </CardContent>
-                </Card>)}
+                </Card>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Research Methodology Section */}
+        {/* What Makes a Good TAT Story */}
+        <section className="py-20 bg-card/30">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                  What Makes a Good TAT Story for SSB?
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  Practical guidelines to help you write compelling stories that showcase positive OLQs
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8 mb-16">
+                {/* DO's */}
+                <Card className="border-green-500/20 bg-green-500/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-green-600">
+                      <ThumbsUp className="h-6 w-6" />
+                      DO's - Follow These
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {dos.map((item, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <item.icon className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">{item.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* DON'Ts */}
+                <Card className="border-red-500/20 bg-red-500/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-red-600">
+                      <ThumbsDown className="h-6 w-6" />
+                      DON'Ts - Avoid These
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {donts.map((item, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <item.icon className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">{item.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Preparation Strategy */}
         <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                Evidence-Based Psychological Assessment
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Experience the scientific rigor of Murray's projective methodology, refined through decades of psychological research
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-              <Card className="shadow-elegant border-primary/10">
-                <CardHeader className="text-center">
-                  <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Projective Analysis</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Reveal unconscious personality traits through ambiguous stimulus interpretation and narrative construction
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                  Your SSB TAT Preparation Strategy
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  Follow this proven 8-week preparation plan to build confidence and master TAT
+                </p>
+              </div>
+
+              <div className="space-y-4 mb-12">
+                {prepStrategy.map((step, index) => (
+                  <Card key={index} className="shadow-elegant border-primary/10 hover:border-primary/30 transition-all duration-300">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-saffron rounded-full flex items-center justify-center flex-shrink-0">
+                          <step.icon className="h-6 w-6 text-gradient-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <Badge className="mb-2">{step.week}</Badge>
+                          <CardTitle className="text-lg">{step.focus}</CardTitle>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <div className="bg-card border border-primary/20 rounded-2xl p-8 mb-8">
+                  <h3 className="text-2xl font-bold mb-4 text-foreground">
+                    Ready to Start Your SSB TAT Preparation?
+                  </h3>
+                  <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+                    Join thousands of SSB aspirants who are mastering TAT with AI-powered feedback and comprehensive practice
                   </p>
-                </CardContent>
-              </Card>
-              
-              <Card className="shadow-elegant border-primary/10">
-                <CardHeader className="text-center">
-                  <Brain className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Psychodynamic Insight</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Explore underlying motivations, conflicts, and personality dynamics through thematic analysis
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card className="shadow-elegant border-primary/10">
-                <CardHeader className="text-center">
-                  <Award className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Clinical Validation</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Backed by extensive clinical research and validated against established psychological assessment standards
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="text-center">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">
-                Begin Your Scientific Assessment Journey
-              </h3>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
-              </p>
-              
-              {!isSignedIn ? <Link to="/auth/signup">
-                  <Button size="lg" variant="default" className="px-8 py-6 text-lg">
-                    Get Started Today
-                    <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-                </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
-                  Go to Dashboard
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>}
+                  
+                  {!isSignedIn ? (
+                    <Link to="/auth/signup">
+                      <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
+                        Start Free Practice Today
+                        <ArrowRight className="h-5 w-5 ml-2" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                      Go to Dashboard
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-card/30 py-12">
+      <footer className="bg-card/50 border-t mt-20 py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {/* Company Info */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
                   <BookOpen className="h-5 w-5 text-gradient-foreground" />
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">TAT Pro</p>
-                  <p className="text-xs text-muted-foreground">SSC Assessment Platform</p>
-                </div>
+                <span className="font-bold text-lg text-foreground">TAT Assessment</span>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Your trusted platform for SSB TAT preparation with AI-powered analysis.
+              </p>
             </div>
-
-            {/* Contact Details */}
+            
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Contact Information</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p><strong className="text-foreground">Company:</strong> MYLATH HOLDINGS</p>
-                <p><strong className="text-foreground">Email:</strong> support@tatpro.com</p>
-                <p><strong className="text-foreground">Phone:</strong> +91 9605214280</p>
-              </div>
+              <h4 className="font-semibold mb-4 text-foreground">Quick Links</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link to="/about-tat" className="hover:text-primary transition-colors">
+                    About TAT
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/ssb-procedure" className="hover:text-primary transition-colors">
+                    SSB Procedure
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/pricing" className="hover:text-primary transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
             </div>
-
-            {/* Quick Links */}
+            
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
-              <div className="space-y-2">
-                <Link to="/about-tat" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  About TAT
-                </Link>
-                <Link to="/5-day-ssb-interview-procedure" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  SSB Procedure
-                </Link>
-                <Link to="/about-us" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  About Us
-                </Link>
-                <Link to="/privacy-policy" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
-                </Link>
-                <Link to="/refund-policy" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Refund Policy
-                </Link>
-                <Link to="/terms-and-conditions" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Terms & Conditions
-                </Link>
-              </div>
+              <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms-and-conditions" className="hover:text-primary transition-colors">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/refund-policy" className="hover:text-primary transition-colors">
+                    Refund Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4 text-foreground">Contact</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  <button 
+                    onClick={() => window.open('https://wa.link/1mj98f', '_blank')}
+                    className="hover:text-primary transition-colors"
+                  >
+                    WhatsApp Support
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
-
+          
           <div className="border-t pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 MYLATH HOLDINGS. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} TAT Assessment. All rights reserved.</p>
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default SSBInterview;
