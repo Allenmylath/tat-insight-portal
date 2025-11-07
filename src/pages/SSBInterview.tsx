@@ -337,7 +337,7 @@ const SSBInterview = () => {
                     style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
                   >
                   <CardHeader className="pb-3">
-                      <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground border border-border'}`}>
+                      <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-card border-2 border-primary/40 text-primary'}`}>
                         {day.day}
                       </Badge>
                       <CardTitle className="text-lg">{day.title}</CardTitle>
