@@ -610,15 +610,15 @@ const SSBInterview = () => {
                   
                   {!isSignedIn ? (
                     <Link to="/auth/signup">
-                      <Button size="lg" variant="hero" className="px-8 py-6 text-lg hover:scale-110 transition-transform duration-300 animate-glow">
+                      <Button size="lg" variant="hero" className="hover:scale-105 transition-transform duration-300">
                         Start Free Practice Today
-                        <ArrowRight className="h-5 w-5 ml-2" />
+                        <ArrowRight className="h-5 w-5" />
                       </Button>
                     </Link>
                   ) : (
-                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg hover:scale-110 transition-transform duration-300 animate-glow" onClick={() => navigate("/dashboard")}>
+                    <Button size="lg" variant="hero" className="hover:scale-105 transition-transform duration-300" onClick={() => navigate("/dashboard")}>
                       Go to Dashboard
-                      <ArrowRight className="h-5 w-5 ml-2" />
+                      <ArrowRight className="h-5 w-5" />
                     </Button>
                   )}
                 </div>
