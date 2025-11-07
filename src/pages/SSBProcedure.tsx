@@ -125,7 +125,7 @@ const SSBProcedure = () => {
             <Home className="h-5 w-5" />
             <span className="font-semibold">Back to Home</span>
           </Link>
-          <Link to="/dashboard">
+          <Link to="/dashboard/pending">
             <Button variant="default">Start Practice</Button>
           </Link>
         </div>
@@ -410,7 +410,7 @@ const SSBProcedure = () => {
             Practice with our TAT methodology and prepare for your SSB interview with confidence
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link to="/dashboard">
+            <Link to="/dashboard/pending">
               <Button size="lg" className="gap-2">
                 Start Practice <ArrowRight className="h-4 w-4" />
               </Button>

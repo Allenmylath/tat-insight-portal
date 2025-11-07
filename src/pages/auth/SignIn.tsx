@@ -22,7 +22,7 @@ const SignIn = () => {
   // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      navigate("/dashboard");
+      navigate("/dashboard/pending");
     }
   }, [isSignedIn, navigate]);
 
@@ -36,8 +36,8 @@ const SignIn = () => {
     try {
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: "/dashboard",
-        redirectUrlComplete: "/dashboard",
+        redirectUrl: "/dashboard/pending",
+        redirectUrlComplete: "/dashboard/pending",
       });
     } catch (err: any) {
       console.error("Google sign in error:", err);
@@ -63,7 +63,7 @@ const SignIn = () => {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        navigate("/dashboard");
+        navigate("/dashboard/pending");
       }
     } catch (err: any) {
       console.error("Sign in error:", err);

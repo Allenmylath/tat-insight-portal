@@ -94,7 +94,7 @@ const Index = () => {
                   <Button variant="default" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign Up</Button>
                 </Link>
               </div> : <div className="flex items-center gap-2 md:gap-4">
-                <Button onClick={() => navigate("/dashboard")} variant="government">
+                <Button onClick={() => navigate("/dashboard/pending")} variant="government">
                   Dashboard
                 </Button>
                 <DropdownMenu>
@@ -153,7 +153,7 @@ const Index = () => {
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                  </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
@@ -314,7 +314,7 @@ const Index = () => {
                     Get Started Today
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>}

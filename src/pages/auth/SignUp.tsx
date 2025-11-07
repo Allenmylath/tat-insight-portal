@@ -26,7 +26,7 @@ const SignUp = () => {
   // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      navigate("/dashboard");
+      navigate("/dashboard/pending");
     }
   }, [isSignedIn, navigate]);
 
@@ -40,8 +40,8 @@ const SignUp = () => {
     try {
       await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: "/dashboard",
-        redirectUrlComplete: "/dashboard",
+        redirectUrl: "/dashboard/pending",
+        redirectUrlComplete: "/dashboard/pending",
       });
     } catch (err: any) {
       console.error("Google sign up error:", err);
@@ -100,7 +100,7 @@ const SignUp = () => {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        navigate("/dashboard");
+        navigate("/dashboard/pending");
       }
     } catch (err: any) {
       console.error("Verification error:", err);

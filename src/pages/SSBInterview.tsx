@@ -54,7 +54,7 @@ const SSBInterview = () => {
   const handlePrivacyNoticeClose = () => {
     localStorage.setItem('ssb-privacy-notice-seen', 'true');
     setShowPrivacyNotice(false);
-    navigate('/dashboard');
+    navigate('/dashboard/pending');
   };
   const ssbProcess = [{
     day: "Day 1",
@@ -197,7 +197,7 @@ const SSBInterview = () => {
                 <Link to="/auth/signin" className="w-full">
                   <Button size="lg" variant="outline" className="w-full">Sign In</Button>
                 </Link>
-              </> : <Button className="w-full" size="lg" onClick={() => navigate("/dashboard")}>
+              </> : <Button className="w-full" size="lg" onClick={() => navigate("/dashboard/pending")}>
                 Go to Dashboard <ArrowRight className="h-4 w-4 ml-2" />
               </Button>}
           </div>
@@ -230,7 +230,7 @@ const SSBInterview = () => {
                   <Button size="sm">Sign Up</Button>
                 </Link>
               </div> : <div className="flex items-center gap-2 md:gap-4">
-                <Button onClick={() => navigate("/dashboard")} variant="default">Dashboard</Button>
+                <Button onClick={() => navigate("/dashboard/pending")} variant="default">Dashboard</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -285,7 +285,7 @@ const SSBInterview = () => {
                     <Button size="lg" className="px-8 py-6 text-lg">
                       Start TAT Practice <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="lg" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                  </Link> : <Button size="lg" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                     Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
                 
