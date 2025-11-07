@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useState, useEffect } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -17,6 +18,7 @@ const SSBInterview = () => {
   const { signOut } = useClerk();
   
   const [showSSBDialog, setShowSSBDialog] = useState(false);
+  const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
 
   const ssbSection = useScrollAnimation({ threshold: 0.2 });
   const tatSection = useScrollAnimation({ threshold: 0.2 });
@@ -29,6 +31,19 @@ const SSBInterview = () => {
     const timer = setTimeout(() => setShowSSBDialog(true), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const hasSeenNotice = localStorage.getItem('ssb-privacy-notice-seen');
+    if (!hasSeenNotice) {
+      const timer = setTimeout(() => setShowPrivacyNotice(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handlePrivacyNoticeClose = () => {
+    localStorage.setItem('ssb-privacy-notice-seen', 'true');
+    setShowPrivacyNotice(false);
+  };
 
   const ssbProcess = [
     { day: "Day 1", title: "Screening", content: "OIR & PPDT", icon: Shield },
@@ -92,6 +107,27 @@ const SSBInterview = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Privacy Notice */}
+      <AlertDialog open={showPrivacyNotice} onOpenChange={setShowPrivacyNotice}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="h-6 w-6 text-primary" />
+              <AlertDialogTitle>Your Privacy Matters</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-base space-y-3">
+              <p className="font-semibold text-foreground text-lg">We don't share your data.</p>
+              <p>All your test responses and personal information remain completely private and secure. We never sell, share, or distribute your data to third parties.</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handlePrivacyNoticeClose}>
+              I Understand
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Dialog */}
       <Dialog open={showSSBDialog} onOpenChange={setShowSSBDialog}>
         <DialogContent className="sm:max-w-md">
