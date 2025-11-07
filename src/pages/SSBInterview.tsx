@@ -507,7 +507,7 @@ const SSBInterview = () => {
         </section>
 
         {/* What Makes a Good TAT Story */}
-        <section className="py-20 bg-card/30" ref={guidelinesSection.ref}>
+        <section className="py-12 bg-card/30" ref={guidelinesSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
@@ -565,7 +565,7 @@ const SSBInterview = () => {
         </section>
 
         {/* Preparation Strategy */}
-        <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5" ref={strategySection.ref}>
+        <section className="py-12 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5" ref={strategySection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
@@ -629,7 +629,7 @@ const SSBInterview = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card/50 border-t mt-20 py-12" ref={footerSection.ref}>
+      <footer className="bg-card/50 border-t mt-12 py-12" ref={footerSection.ref}>
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className={`${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.1s" }}>
