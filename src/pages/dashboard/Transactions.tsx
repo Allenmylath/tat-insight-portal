@@ -13,6 +13,8 @@ import { ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon, Download, Sea
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { useUser } from "@clerk/clerk-react";
 
 interface CreditTransaction {
   id: string;
@@ -28,6 +30,7 @@ interface CreditTransaction {
 
 export default function Transactions() {
   const { userData } = useUserData();
+  const { isSignedIn } = useUser();
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -125,6 +128,7 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
+      {!isSignedIn && <PreviewBanner />}
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Transaction History</h1>

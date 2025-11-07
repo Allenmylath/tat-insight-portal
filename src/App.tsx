@@ -106,53 +106,39 @@ const App = () => {
                   </DashboardLayout>
                 } />
                 <Route path="/dashboard/attempted" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <AttemptedTests />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <AttemptedTests />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/pending" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <PendingTests />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <PendingTests />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/abandoned" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <AbandonedTests />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <AbandonedTests />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/results" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <Results />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <Results />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/pricing" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <Pricing />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <Pricing />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/settings" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <Settings />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <Settings />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/transactions" element={
-                  <ProtectedRoute>
-                    <DashboardLayout>
-                      <Transactions />
-                    </DashboardLayout>
-                  </ProtectedRoute>
+                  <DashboardLayout>
+                    <Transactions />
+                  </DashboardLayout>
                 } />
                 <Route path="/dashboard/reconciliation" element={
                   <ProtectedRoute>

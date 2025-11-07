@@ -6,9 +6,12 @@ import { Trophy, BarChart3, TrendingUp, Download, Brain, Heart, Users, Zap, Load
 import { useUserData } from "@/hooks/useUserData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { useUser } from "@clerk/clerk-react";
 
 const Results = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
+  const { isSignedIn } = useUser();
 
   const { data: analysisResults, isLoading } = useQuery({
     queryKey: ['analysis-results', userData?.id],
@@ -63,6 +66,7 @@ const Results = () => {
 
   return (
     <div className="space-y-6">
+      {!isSignedIn && <PreviewBanner />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Results & Analysis</h1>

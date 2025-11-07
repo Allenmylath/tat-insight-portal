@@ -5,9 +5,12 @@ import { XCircle, Calendar, Loader2, FileText } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { useUser } from "@clerk/clerk-react";
 
 const AbandonedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
+  const { isSignedIn } = useUser();
 
   const { data: abandonedTests, isLoading } = useQuery({
     queryKey: ['abandoned-tests', userData?.id],
@@ -60,6 +63,7 @@ const AbandonedTests = () => {
 
   return (
     <div className="space-y-6">
+      {!isSignedIn && <PreviewBanner />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Abandoned Tests</h1>

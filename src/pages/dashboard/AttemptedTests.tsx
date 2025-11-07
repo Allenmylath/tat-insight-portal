@@ -10,9 +10,12 @@ import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
 import { useState } from "react";
 import { Button as LinkButton } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { useUser } from "@clerk/clerk-react";
 
 const AttemptedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
+  const { isSignedIn } = useUser();
   const [selectedAnalysis, setSelectedAnalysis] = useState<{
     analysis: any;
     title: string;
@@ -121,6 +124,7 @@ const AttemptedTests = () => {
   return (
     <TooltipProvider>
       <div className="space-y-6">
+      {!isSignedIn && <PreviewBanner />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Attempted Tests</h1>

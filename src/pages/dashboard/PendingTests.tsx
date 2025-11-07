@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PreviewBanner } from "@/components/PreviewBanner";
 import { Clock, Play, Lock, Crown, Image, AlertTriangle, Monitor, Smartphone } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
@@ -352,6 +353,7 @@ const PendingTests = () => {
 
   return (
     <div className="space-y-6">
+      {!isSignedIn && <PreviewBanner />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Pending Tests</h1>

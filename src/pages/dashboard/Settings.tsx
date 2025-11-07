@@ -15,10 +15,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { LoginRequiredButton } from "@/components/LoginRequiredButton";
 
 const Settings = () => {
   const { userData, isPro } = useUserData();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -63,6 +65,188 @@ const Settings = () => {
       setIsDeleting(false);
     }
   };
+
+  // Preview mode for unauthenticated users
+  if (!isSignedIn) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your profile, preferences, and account settings
+          </p>
+        </div>
+
+        <PreviewBanner />
+
+        {/* Profile Information - Preview */}
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" />
+              Profile Information
+            </CardTitle>
+            <CardDescription>
+              Update your personal information and profile settings
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" placeholder="John" disabled />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" placeholder="Doe" disabled />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input id="email" type="email" placeholder="user@example.com" disabled />
+              <p className="text-xs text-muted-foreground">
+                Email address is managed by your authentication provider
+              </p>
+            </div>
+
+            <LoginRequiredButton variant="government" returnUrl="/dashboard/settings">
+              Update Profile
+            </LoginRequiredButton>
+          </CardContent>
+        </Card>
+
+        {/* Membership Status - Preview */}
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-primary" />
+              Membership Status
+            </CardTitle>
+            <CardDescription>
+              Your current subscription and membership details
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Calendar className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="font-medium text-foreground">Free Plan</p>
+                  <p className="text-sm text-muted-foreground">
+                    Limited access to basic features
+                  </p>
+                </div>
+              </div>
+              <Badge variant="secondary">Free</Badge>
+            </div>
+            
+            <LoginRequiredButton variant="hero" className="gap-2" returnUrl="/dashboard/settings">
+              <Crown className="h-4 w-4" />
+              Upgrade to Pro
+            </LoginRequiredButton>
+          </CardContent>
+        </Card>
+
+        {/* Notification Preferences - Preview */}
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5 text-primary" />
+              Notification Preferences
+            </CardTitle>
+            <CardDescription>
+              Manage how you receive updates and notifications
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between opacity-50">
+                <div className="space-y-1">
+                  <Label>Email Notifications</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive email updates about your test results and progress
+                  </p>
+                </div>
+                <Switch disabled />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between opacity-50">
+                <div className="space-y-1">
+                  <Label>Marketing Emails</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive promotional emails and special offers
+                  </p>
+                </div>
+                <Switch disabled />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between opacity-50">
+                <div className="space-y-1">
+                  <Label>Test Reminders</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Get reminders to complete pending assessments
+                  </p>
+                </div>
+                <Switch disabled />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Privacy & Security - Preview */}
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Privacy & Security
+            </CardTitle>
+            <CardDescription>
+              Manage your privacy settings and account security
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between opacity-50">
+                <div className="space-y-1">
+                  <Label>Profile Visibility</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Make your profile and results visible to others
+                  </p>
+                </div>
+                <Switch disabled />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between opacity-50">
+                <div className="space-y-1">
+                  <Label>Anonymous Analytics</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Help improve our service with anonymous usage data
+                  </p>
+                </div>
+                <Switch disabled />
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <LoginRequiredButton variant="outline" className="w-full" returnUrl="/dashboard/settings">
+                Download My Data
+              </LoginRequiredButton>
+              <LoginRequiredButton variant="outline" className="w-full" returnUrl="/dashboard/settings">
+                Change Password
+              </LoginRequiredButton>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
