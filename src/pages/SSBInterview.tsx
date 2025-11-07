@@ -308,7 +308,7 @@ const SSBInterview = () => {
         </section>
 
         {/* What is SSB Section */}
-        <section className="py-20 bg-card/30" ref={ssbSection.ref}>
+        <section className="py-12 bg-card/30" ref={ssbSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
