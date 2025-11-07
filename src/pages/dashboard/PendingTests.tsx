@@ -39,24 +39,17 @@ const PendingTests = () => {
 
   useEffect(() => {
     console.log('PendingTests - useEffect triggered', { 
-      hasUserId: !!userData?.id, 
-      userId: userData?.id 
+      isSignedIn,
+      hasUserId: !!userData?.id
     });
-    if (userData?.id) {
-      fetchTests();
-    }
-  }, [userData?.id]);
+    fetchTests(); // Always fetch tests, regardless of authentication
+  }, [userData?.id, isSignedIn]);
 
   const fetchTests = async () => {
-    if (!userData?.id) {
-      console.log('PendingTests - fetchTests blocked: no user ID');
-      return;
-    }
-    
-    console.log('PendingTests - Starting fetchTests for user:', userData.id);
+    console.log('PendingTests - Starting fetchTests. User ID:', userData?.id || 'none (unauthenticated)');
     
     try {
-      // First, get all active tests
+      // 1. Fetch all active tests (works for everyone - no auth required)
       const { data: allTests, error: testsError } = await supabase
         .from('tattest')
         .select('*')
@@ -65,46 +58,70 @@ const PendingTests = () => {
 
       if (testsError) {
         console.error('PendingTests - Error fetching tests:', testsError);
-        return;
-      }
-
-      console.log('PendingTests - Fetched all tests:', allTests?.length || 0, allTests);
-
-      if (!allTests || allTests.length === 0) {
-        console.log('PendingTests - No tests found, setting empty array');
         setTests([]);
         return;
       }
 
-      // Then, get user's test sessions for these tests
-      const testIds = allTests.map(test => test.id);
-      const { data: userSessions, error: sessionsError } = await supabase
-        .from('test_sessions')
-        .select('tattest_id, status, completed_at, time_remaining, started_at, story_content')
-        .eq('user_id', userData.id)
-        .in('tattest_id', testIds);
-
-      if (sessionsError) {
-        console.error('PendingTests - Error fetching user sessions:', sessionsError);
+      if (!allTests || allTests.length === 0) {
+        console.log('PendingTests - No tests found');
+        setTests([]);
         return;
       }
 
-      console.log('PendingTests - Fetched user sessions:', userSessions?.length || 0, userSessions);
+      console.log('PendingTests - Fetched all tests:', allTests.length);
 
-      // Filter to only show pending tests (never completed)
-      const pendingTests = allTests
+      // 2. For authenticated users, fetch their session data
+      let userSessions: any[] = [];
+      if (userData?.id) {
+        const testIds = allTests.map(test => test.id);
+        const { data: sessions, error: sessionsError } = await supabase
+          .from('test_sessions')
+          .select('tattest_id, status, completed_at, time_remaining, started_at, story_content')
+          .eq('user_id', userData.id)
+          .in('tattest_id', testIds);
+
+        if (!sessionsError && sessions) {
+          userSessions = sessions;
+          console.log('PendingTests - Fetched user sessions:', userSessions.length);
+        }
+      }
+
+      // 3. Process tests based on whether user is authenticated
+      const processedTests = allTests
         .filter(test => {
-          const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
+          // For unauthenticated users, show all tests
+          if (!userData?.id) return true;
           
-          // If any session is completed, don't show it as pending
+          // For authenticated users, filter out completed tests
+          const testSessions = userSessions.filter(session => session.tattest_id === test.id);
           const hasCompletedSession = testSessions.some(session => 
             session.status === 'completed' || 
-            (session.status === 'abandoned' && session.story_content && session.story_content.trim().length > 0)
+            (session.status === 'abandoned' && session.story_content?.trim().length > 0)
           );
           return !hasCompletedSession;
         })
-        .map((test) => {
-          const testSessions = userSessions?.filter(session => session.tattest_id === test.id) || [];
+        .map(test => {
+          // For unauthenticated users, return basic test info
+          if (!userData?.id) {
+            return {
+              id: test.id,
+              title: test.title,
+              description: test.description || `Complete this TAT assessment: ${test.prompt_text?.substring(0, 100)}...`,
+              estimatedTime: "10-15 minutes",
+              difficulty: "Intermediate",
+              isPremium: false,
+              imageUrl: test.image_url,
+              sessionStatus: null,
+              timeRemaining: null,
+              hasSession: false,
+              isPaused: false,
+              isActive: false,
+              hasActiveSession: false
+            };
+          }
+          
+          // For authenticated users, include session info
+          const testSessions = userSessions.filter(session => session.tattest_id === test.id);
           const latestSession = testSessions.sort((a, b) => 
             new Date(b.started_at).getTime() - new Date(a.started_at).getTime()
           )[0];
@@ -130,10 +147,11 @@ const PendingTests = () => {
           };
         });
 
-      console.log('PendingTests - Final pending tests:', pendingTests.length, pendingTests);
-      setTests(pendingTests);
+      console.log('PendingTests - Processed tests:', processedTests.length);
+      setTests(processedTests);
     } catch (error) {
       console.error('Error fetching tests:', error);
+      setTests([]);
     } finally {
       setLoading(false);
     }
