@@ -331,13 +331,13 @@ const SSBInterview = () => {
                     key={index} 
                     className={`text-center transition-all duration-300 hover:scale-105 hover:shadow-lg ${
                       day.highlight 
-                        ? 'border-primary border-2 shadow-saffron bg-primary/5 animate-pulse' 
+                        ? 'border-primary border-2 shadow-saffron bg-primary/5' 
                         : 'border-primary/10'
                     } ${ssbSection.isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}
                     style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
                   >
                   <CardHeader className="pb-3">
-                      <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                      <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>
                         {day.day}
                       </Badge>
                       <CardTitle className="text-lg">{day.title}</CardTitle>
