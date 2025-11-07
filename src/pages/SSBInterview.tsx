@@ -281,33 +281,64 @@ const SSBInterview = () => {
                 </p>
               </div>
 
-              {/* 5-Day Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {ssbProcess.map((day, index) => (
-                  <Card 
-                    key={index} 
-                    className={`text-center transition-all duration-300 hover:scale-105 hover:shadow-lg ${
-                      day.highlight ? 'border-2 border-primary bg-primary/5' : 'border border-border'
-                    }`}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="mx-auto mb-3">
-                        <day.icon className={`h-10 w-10 mx-auto mb-2 ${day.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
-                      </div>
-                      <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 ${
+              {/* 5-Day Timeline */}
+              <div className="relative">
+                {/* Progress Line - Desktop */}
+                <div className="hidden md:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto" style={{ width: 'calc(100% - 120px)', marginLeft: '60px' }}>
+                  <div className="h-full bg-gradient-to-r from-primary via-primary to-primary w-[40%] animate-pulse"></div>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-4 relative">
+                  {ssbProcess.map((day, index) => (
+                    <div key={index} className="relative">
+                      {/* Connector Dot */}
+                      <div className={`hidden md:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 z-10 transition-all duration-500 ${
                         day.highlight 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-secondary-foreground'
+                          ? 'bg-primary border-primary shadow-lg shadow-primary/50 scale-110 animate-pulse' 
+                          : 'bg-background border-border'
                       }`}>
-                        {day.day}
+                        {day.highlight && (
+                          <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+                        )}
                       </div>
-                      <CardTitle className="text-base">{day.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{day.content}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+                      
+                      <Card 
+                        className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${
+                          day.highlight 
+                            ? 'border-2 border-primary bg-primary/5 shadow-lg' 
+                            : 'border border-border hover:border-primary/50'
+                        } ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}
+                        style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
+                      >
+                        <CardHeader className="pb-3">
+                          <div className={`mx-auto mb-3 transition-transform duration-300 ${day.highlight ? 'scale-110' : ''}`}>
+                            <day.icon className={`h-10 w-10 mx-auto mb-2 transition-colors duration-300 ${
+                              day.highlight ? 'text-primary animate-bounce' : 'text-muted-foreground'
+                            }`} style={{ animationDuration: '2s' }} />
+                          </div>
+                          <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 transition-all duration-300 ${
+                            day.highlight 
+                              ? 'bg-primary text-primary-foreground shadow-md' 
+                              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                          }`}>
+                            {day.day}
+                          </div>
+                          <CardTitle className="text-base">{day.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-muted-foreground">{day.content}</p>
+                        </CardContent>
+                      </Card>
+                      
+                      {/* Mobile connector arrow */}
+                      {index < ssbProcess.length - 1 && (
+                        <div className="md:hidden flex justify-center py-2">
+                          <ArrowRight className={`h-6 w-6 ${day.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
