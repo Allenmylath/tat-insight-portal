@@ -10,6 +10,7 @@ import { BookOpen, Users, Award, CheckCircle, ArrowRight, Brain, Target, Trendin
 import heroImage from "@/assets/army-hero.jpeg";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const SSBInterview = () => {
   const navigate = useNavigate();
@@ -17,6 +18,15 @@ const SSBInterview = () => {
   const { signOut } = useClerk();
   
   const [showSSBDialog, setShowSSBDialog] = useState(false);
+
+  // Scroll animations
+  const ssbSection = useScrollAnimation({ threshold: 0.2 });
+  const tatSection = useScrollAnimation({ threshold: 0.2 });
+  const olqsSection = useScrollAnimation({ threshold: 0.2 });
+  const featuresSection = useScrollAnimation({ threshold: 0.2 });
+  const guidelinesSection = useScrollAnimation({ threshold: 0.2 });
+  const strategySection = useScrollAnimation({ threshold: 0.2 });
+  const footerSection = useScrollAnimation({ threshold: 0.2 });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -238,20 +248,24 @@ const SSBInterview = () => {
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              <Badge className="mb-8 px-6 py-3 text-lg bg-primary/20 text-primary border-primary/30 hover:bg-primary/30 shadow-lg font-semibold" variant="outline">
+              <Badge className="mb-8 px-6 py-3 text-lg bg-primary/20 text-primary border-primary/30 hover:bg-primary/30 shadow-lg font-semibold animate-bounce-in" variant="outline">
                 Master SSB Day 2 TAT • Join 10,000+ SSB Aspirants
               </Badge>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Ace Your SSB Interview
-                <span className="text-primary block">Master the Thematic Apperception Test</span>
+                <span className="block animate-fade-in" style={{ animationDelay: "0.2s", animationFillMode: "both" }}>
+                  Ace Your SSB Interview
+                </span>
+                <span className="text-primary block animate-fade-in" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>
+                  Master the Thematic Apperception Test
+                </span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: "0.6s", animationFillMode: "both" }}>
                 TAT is Part of Day 2 Psychology Tests in SSB. Practice with AI-Powered Feedback & Build Confidence for Army, Navy, and Air Force Selection.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-in-up" style={{ animationDelay: "0.8s", animationFillMode: "both" }}>
                 {!isSignedIn ? (
                   <Link to="/auth/signup">
                     <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
@@ -278,8 +292,12 @@ const SSBInterview = () => {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
+                  <div 
+                    key={index} 
+                    className="text-center animate-scale-in hover:scale-110 transition-transform duration-300" 
+                    style={{ animationDelay: `${1 + index * 0.1}s`, animationFillMode: "both" }}
+                  >
+                    <stat.icon className="h-8 w-8 text-primary mx-auto mb-2 animate-float" style={{ animationDelay: `${index * 0.3}s` }} />
                     <div className="text-2xl font-bold text-primary">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">{stat.label}</div>
                   </div>
@@ -290,7 +308,7 @@ const SSBInterview = () => {
         </section>
 
         {/* What is SSB Section */}
-        <section className="py-20 bg-card/30">
+        <section className="py-20 bg-card/30" ref={ssbSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
@@ -311,11 +329,12 @@ const SSBInterview = () => {
                 {ssbProcess.map((day, index) => (
                   <Card 
                     key={index} 
-                    className={`text-center transition-all duration-300 ${
+                    className={`text-center transition-all duration-300 hover:scale-105 hover:shadow-lg ${
                       day.highlight 
-                        ? 'border-primary border-2 shadow-saffron bg-primary/5' 
+                        ? 'border-primary border-2 shadow-saffron bg-primary/5 animate-pulse' 
                         : 'border-primary/10'
-                    }`}
+                    } ${ssbSection.isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}
+                    style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
                   >
                     <CardHeader className="pb-3">
                       <Badge className={`mx-auto mb-2 ${day.highlight ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
@@ -331,10 +350,10 @@ const SSBInterview = () => {
               </div>
 
               {/* TAT in SSB */}
-              <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 md:p-12 mb-16">
+              <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 md:p-12 mb-16" ref={tatSection.ref}>
                 <div className="max-w-4xl mx-auto">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                  <div className={`flex items-center gap-3 mb-6 ${tatSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                    <div className={`w-12 h-12 bg-primary rounded-full flex items-center justify-center ${tatSection.isVisible ? 'animate-bounce-in' : ''}`} style={{ animationDelay: "0.2s" }}>
                       <Brain className="h-6 w-6 text-primary-foreground" />
                     </div>
                     <h3 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -343,7 +362,7 @@ const SSBInterview = () => {
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-8">
-                    <div>
+                    <div className={`${tatSection.isVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: "0.4s" }}>
                       <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-primary" />
                         When & Format
@@ -368,7 +387,7 @@ const SSBInterview = () => {
                       </ul>
                     </div>
                     
-                    <div>
+                    <div className={`${tatSection.isVisible ? 'animate-slide-in-right' : 'opacity-0'}`} style={{ animationDelay: "0.4s" }}>
                       <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                         <Target className="h-5 w-5 text-primary" />
                         What Assessors Look For
@@ -426,11 +445,11 @@ const SSBInterview = () => {
               </div>
 
               {/* OLQs Section */}
-              <div className="text-center mb-12">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
+              <div className="text-center mb-12" ref={olqsSection.ref}>
+                <h3 className={`text-2xl md:text-3xl font-bold mb-4 text-foreground ${olqsSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                   15 Officer Like Qualities (OLQs) Assessed
                 </h3>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${olqsSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.2s" }}>
                   TAT reveals these personality traits through your story themes. Understanding OLQs helps you craft better narratives.
                 </p>
               </div>
@@ -439,9 +458,10 @@ const SSBInterview = () => {
                 {olqs.map((olq, index) => (
                   <div 
                     key={index} 
-                    className="bg-card border border-primary/10 rounded-lg p-4 text-center hover:border-primary/30 hover:shadow-saffron transition-all duration-300"
+                    className={`bg-card border border-primary/10 rounded-lg p-4 text-center hover:border-primary/30 hover:shadow-saffron hover:scale-105 transition-all duration-300 ${olqsSection.isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}
+                    style={{ animationDelay: `${0.3 + (index * 0.05)}s`, animationFillMode: "both" }}
                   >
-                    <Award className="h-6 w-6 text-primary mx-auto mb-2" />
+                    <Award className="h-6 w-6 text-primary mx-auto mb-2 animate-float" style={{ animationDelay: `${index * 0.1}s` }} />
                     <p className="text-sm font-medium text-foreground">{olq}</p>
                   </div>
                 ))}
@@ -451,22 +471,26 @@ const SSBInterview = () => {
         </section>
 
         {/* How This Platform Helps */}
-        <section className="py-20 bg-background">
+        <section className="py-20 bg-background" ref={featuresSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 text-foreground ${featuresSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                 How This Platform Helps You Prepare
               </h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className={`text-lg text-muted-foreground mb-8 ${featuresSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.2s" }}>
                 Everything you need to master TAT and ace your SSB Day 2 Psychology Tests
               </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
               {platformFeatures.map((feature, index) => (
-                <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
+                <Card 
+                  key={index} 
+                  className={`shadow-elegant border-primary/10 hover:shadow-saffron hover:scale-105 transition-all duration-300 hover:border-primary/30 ${featuresSection.isVisible ? 'animate-slide-in-up' : 'opacity-0'}`}
+                  style={{ animationDelay: `${0.3 + index * 0.2}s`, animationFillMode: "both" }}
+                >
                   <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className={`w-16 h-16 bg-gradient-saffron rounded-full flex items-center justify-center mx-auto mb-4 ${featuresSection.isVisible ? 'animate-bounce-in' : ''}`} style={{ animationDelay: `${0.4 + index * 0.2}s` }}>
                       <feature.icon className={`h-8 w-8 ${feature.color}`} />
                     </div>
                     <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
@@ -483,21 +507,21 @@ const SSBInterview = () => {
         </section>
 
         {/* What Makes a Good TAT Story */}
-        <section className="py-20 bg-card/30">
+        <section className="py-20 bg-card/30" ref={guidelinesSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-foreground ${guidelinesSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                   What Makes a Good TAT Story for SSB?
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${guidelinesSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.2s" }}>
                   Practical guidelines to help you write compelling stories that showcase positive OLQs
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-8 mb-16">
                 {/* DO's */}
-                <Card className="border-green-500/20 bg-green-500/5">
+                <Card className={`border-green-500/20 bg-green-500/5 hover:scale-105 transition-transform duration-300 ${guidelinesSection.isVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: "0.3s" }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-green-600">
                       <ThumbsUp className="h-6 w-6" />
@@ -507,7 +531,7 @@ const SSBInterview = () => {
                   <CardContent>
                     <ul className="space-y-3">
                       {dos.map((item, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                        <li key={index} className={`flex items-start gap-3 ${guidelinesSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: `${0.4 + index * 0.1}s`, animationFillMode: "both" }}>
                           <item.icon className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{item.text}</span>
                         </li>
@@ -517,7 +541,7 @@ const SSBInterview = () => {
                 </Card>
 
                 {/* DON'Ts */}
-                <Card className="border-red-500/20 bg-red-500/5">
+                <Card className={`border-red-500/20 bg-red-500/5 hover:scale-105 transition-transform duration-300 ${guidelinesSection.isVisible ? 'animate-slide-in-right' : 'opacity-0'}`} style={{ animationDelay: "0.3s" }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-red-600">
                       <ThumbsDown className="h-6 w-6" />
@@ -527,7 +551,7 @@ const SSBInterview = () => {
                   <CardContent>
                     <ul className="space-y-3">
                       {donts.map((item, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                        <li key={index} className={`flex items-start gap-3 ${guidelinesSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: `${0.4 + index * 0.1}s`, animationFillMode: "both" }}>
                           <item.icon className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{item.text}</span>
                         </li>
@@ -541,28 +565,32 @@ const SSBInterview = () => {
         </section>
 
         {/* Preparation Strategy */}
-        <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
+        <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5" ref={strategySection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-foreground ${strategySection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                   Your SSB TAT Preparation Strategy
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${strategySection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.2s" }}>
                   Follow this proven 8-week preparation plan to build confidence and master TAT
                 </p>
               </div>
 
               <div className="space-y-4 mb-12">
                 {prepStrategy.map((step, index) => (
-                  <Card key={index} className="shadow-elegant border-primary/10 hover:border-primary/30 transition-all duration-300">
+                  <Card 
+                    key={index} 
+                    className={`shadow-elegant border-primary/10 hover:border-primary/30 hover:scale-105 transition-all duration-300 ${strategySection.isVisible ? 'animate-slide-in-right' : 'opacity-0'}`}
+                    style={{ animationDelay: `${0.3 + index * 0.15}s`, animationFillMode: "both" }}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-saffron rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className={`w-12 h-12 bg-gradient-saffron rounded-full flex items-center justify-center flex-shrink-0 ${strategySection.isVisible ? 'animate-bounce-in' : ''}`} style={{ animationDelay: `${0.4 + index * 0.15}s` }}>
                           <step.icon className="h-6 w-6 text-gradient-foreground" />
                         </div>
                         <div className="flex-1">
-                          <Badge className="mb-2">{step.week}</Badge>
+                          <Badge className={`mb-2 ${strategySection.isVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: `${0.4 + index * 0.15}s`, animationFillMode: "both" }}>{step.week}</Badge>
                           <CardTitle className="text-lg">{step.focus}</CardTitle>
                         </div>
                       </div>
@@ -572,7 +600,7 @@ const SSBInterview = () => {
               </div>
 
               <div className="text-center">
-                <div className="bg-card border border-primary/20 rounded-2xl p-8 mb-8">
+                <div className={`bg-card border border-primary/20 rounded-2xl p-8 mb-8 ${strategySection.isVisible ? 'animate-scale-in' : 'opacity-0'}`} style={{ animationDelay: "1s" }}>
                   <h3 className="text-2xl font-bold mb-4 text-foreground">
                     Ready to Start Your SSB TAT Preparation?
                   </h3>
@@ -582,13 +610,13 @@ const SSBInterview = () => {
                   
                   {!isSignedIn ? (
                     <Link to="/auth/signup">
-                      <Button size="lg" variant="hero" className="px-8 py-6 text-lg">
+                      <Button size="lg" variant="hero" className="px-8 py-6 text-lg hover:scale-110 transition-transform duration-300 animate-glow">
                         Start Free Practice Today
                         <ArrowRight className="h-5 w-5 ml-2" />
                       </Button>
                     </Link>
                   ) : (
-                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg hover:scale-110 transition-transform duration-300 animate-glow" onClick={() => navigate("/dashboard")}>
                       Go to Dashboard
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
@@ -601,10 +629,10 @@ const SSBInterview = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card/50 border-t mt-20 py-12">
+      <footer className="bg-card/50 border-t mt-20 py-12" ref={footerSection.ref}>
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
+            <div className={`${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.1s" }}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
                   <BookOpen className="h-5 w-5 text-gradient-foreground" />
@@ -616,49 +644,49 @@ const SSBInterview = () => {
               </p>
             </div>
             
-            <div>
+            <div className={`${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.2s" }}>
               <h4 className="font-semibold mb-4 text-foreground">Quick Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link to="/about-tat" className="hover:text-primary transition-colors">
+                  <Link to="/about-tat" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     About TAT
                   </Link>
                 </li>
                 <li>
-                  <Link to="/ssb-procedure" className="hover:text-primary transition-colors">
+                  <Link to="/ssb-procedure" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     SSB Procedure
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dashboard/pricing" className="hover:text-primary transition-colors">
+                  <Link to="/dashboard/pricing" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     Pricing
                   </Link>
                 </li>
               </ul>
             </div>
             
-            <div>
+            <div className={`${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.3s" }}>
               <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+                  <Link to="/privacy-policy" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms-and-conditions" className="hover:text-primary transition-colors">
+                  <Link to="/terms-and-conditions" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     Terms & Conditions
                   </Link>
                 </li>
                 <li>
-                  <Link to="/refund-policy" className="hover:text-primary transition-colors">
+                  <Link to="/refund-policy" className="hover:text-primary hover:translate-x-1 transition-all duration-300">
                     Refund Policy
                   </Link>
                 </li>
               </ul>
             </div>
             
-            <div>
+            <div className={`${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.4s" }}>
               <h4 className="font-semibold mb-4 text-foreground">Contact</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
@@ -674,7 +702,7 @@ const SSBInterview = () => {
             </div>
           </div>
           
-          <div className="border-t pt-8 text-center text-sm text-muted-foreground">
+          <div className={`border-t pt-8 text-center text-sm text-muted-foreground ${footerSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: "0.6s" }}>
             <p>&copy; {new Date().getFullYear()} TAT Assessment. All rights reserved.</p>
           </div>
         </div>
