@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-[var(--gradient-military)] text-gradient-foreground hover:opacity-90 shadow-lg font-semibold [text-shadow:_0_1px_3px_rgb(0_0_0_/_40%)]",
+        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg font-bold border-2 border-primary/20",
         government: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-2 border-primary/30",
         saffron: "bg-[var(--gradient-saffron)] text-[hsl(var(--saffron-foreground))] hover:opacity-90 shadow-lg font-semibold",
       },
