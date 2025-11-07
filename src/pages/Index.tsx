@@ -157,9 +157,7 @@ const Index = () => {
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
-                <Button size="lg" variant="government" className="px-8 py-6 text-lg" onClick={() => navigate("/about-tat")}>
-                  Learn More
-                </Button>
+                
               </div>
               
               {/* Stats */}
