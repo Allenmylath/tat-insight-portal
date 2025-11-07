@@ -7,9 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useState, useEffect } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const SSBInterview = () => {
   const navigate = useNavigate();
@@ -20,8 +17,6 @@ const SSBInterview = () => {
   const {
     signOut
   } = useClerk();
-  const [showSSBDialog, setShowSSBDialog] = useState(false);
-  const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const ssbSection = useScrollAnimation({
     threshold: 0.2
   });
@@ -40,22 +35,6 @@ const SSBInterview = () => {
   const strategySection = useScrollAnimation({
     threshold: 0.2
   });
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSSBDialog(true), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-  useEffect(() => {
-    const hasSeenNotice = localStorage.getItem('ssb-privacy-notice-seen');
-    if (!hasSeenNotice) {
-      const timer = setTimeout(() => setShowPrivacyNotice(true), 500);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-  const handlePrivacyNoticeClose = () => {
-    localStorage.setItem('ssb-privacy-notice-seen', 'true');
-    setShowPrivacyNotice(false);
-    navigate('/dashboard/pending');
-  };
   const ssbProcess = [{
     day: "Day 1",
     title: "Screening",
@@ -145,65 +124,6 @@ const SSBInterview = () => {
     icon: Award
   }];
   return <div className="min-h-screen bg-background">
-      {/* Privacy Notice */}
-    <AlertDialog open={showPrivacyNotice} onOpenChange={setShowPrivacyNotice}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <div className="flex items-center gap-2 mb-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <AlertDialogTitle>Your Privacy Matters</AlertDialogTitle>
-          </div>
-          <AlertDialogDescription className="text-base space-y-3">
-            <p className="font-semibold text-foreground text-lg">We don't share your data.</p>
-            <p>All your test responses and personal information remain completely private and secure. We never sell, share, or distribute your data to third parties.</p>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={handlePrivacyNoticeClose}>
-            Let's Practice
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-
-      {/* Dialog */}
-      <Dialog open={showSSBDialog} onOpenChange={setShowSSBDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
-              <Award className="h-6 w-6 text-primary" />
-              SSB Interview Preparation
-            </DialogTitle>
-            <DialogDescription className="text-base pt-4 space-y-4">
-              <p className="font-semibold text-foreground">Preparing for your SSB Interview?</p>
-              <p>TAT (Thematic Apperception Test) is a crucial component of the SSB psychological assessment. Master it with our scientifically-designed practice platform!</p>
-              <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-                <p className="text-sm text-foreground">
-                  ✓ Practice with authentic TAT images<br />
-                  ✓ Get AI-powered analysis and feedback<br />
-                  ✓ Understand scoring patterns<br />
-                  ✓ Build confidence before your actual SSB
-                </p>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 mt-4">
-            {!isSignedIn ? <>
-                <Link to="/auth/signup" className="w-full">
-                  <Button size="lg" className="w-full">
-                    Start Practice <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-                <Link to="/auth/signin" className="w-full">
-                  <Button size="lg" variant="outline" className="w-full">Sign In</Button>
-                </Link>
-              </> : <Button className="w-full" size="lg" onClick={() => navigate("/dashboard/pending")}>
-                Go to Dashboard <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>}
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
