@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import { CreditHeader } from "@/components/CreditHeader";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
+import { PreviewBanner } from "@/components/PreviewBanner";
+import { LoginRequiredButton } from "@/components/LoginRequiredButton";
 
 const Dashboard = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -24,16 +26,43 @@ const Dashboard = () => {
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      navigate("/auth/signin");
+  // Demo data for unauthenticated users
+  const demoTests = [
+    {
+      id: 'demo-1',
+      title: 'Officer Intelligence Rating Test',
+      description: 'Evaluate your cognitive abilities and problem-solving skills',
+      imageUrl: '/placeholder.svg',
+      completed: false,
+      score: null,
+      isPremium: false
+    },
+    {
+      id: 'demo-2',
+      title: 'Picture Perception & Description Test',
+      description: 'Assess your observation and interpretation capabilities',
+      imageUrl: '/placeholder.svg',
+      completed: false,
+      score: null,
+      isPremium: false
+    },
+    {
+      id: 'demo-3',
+      title: 'Situation Reaction Test',
+      description: 'Test your decision-making under pressure',
+      imageUrl: '/placeholder.svg',
+      completed: false,
+      score: null,
+      isPremium: true
     }
-  }, [isLoaded, isSignedIn, navigate]);
+  ];
 
   useEffect(() => {
     const fetchTests = async () => {
-      if (!userData?.id) return;
+      if (!isSignedIn || !userData?.id) {
+        setTestsLoading(false);
+        return;
+      }
       
       try {
         // First, get all active tests
@@ -161,12 +190,17 @@ const Dashboard = () => {
     };
 
     fetchTests();
-  }, [userData?.id]);
+  }, [userData?.id, isSignedIn]);
+
+  // Use demo data if not signed in
+  const displayTests = isSignedIn ? tests : demoTests;
+  const displayCompletedTests = isSignedIn ? completedTests : [];
+  const displayAbandonedTests = isSignedIn ? abandonedTests : [];
 
   // Filter tests based on membership
-  const availablePendingTests = isPro ? tests : tests.filter(test => !test.isPremium);
-  const availableCompletedTests = isPro ? completedTests : completedTests.filter(test => !test.isPremium);
-  const availableAbandonedTests = isPro ? abandonedTests : abandonedTests.filter(test => !test.isPremium);
+  const availablePendingTests = isPro ? displayTests : displayTests.filter(test => !test.isPremium);
+  const availableCompletedTests = isPro ? displayCompletedTests : displayCompletedTests.filter(test => !test.isPremium);
+  const availableAbandonedTests = isPro ? displayAbandonedTests : displayAbandonedTests.filter(test => !test.isPremium);
   const totalTests = availablePendingTests.length + availableCompletedTests.length;
   const progressPercentage = totalTests > 0 ? (availableCompletedTests.length / totalTests) * 100 : 0;
 
@@ -198,6 +232,9 @@ const Dashboard = () => {
       </Dialog>
 
       <div className="space-y-6">
+      {/* Preview Banner for unauthenticated users */}
+      {!isSignedIn && <PreviewBanner />}
+      
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -222,7 +259,7 @@ const Dashboard = () => {
       </div>
 
       {/* Earn Free Credits Section - Only show when credits = 0 */}
-      {!loading && userData && userData.credit_balance === 0 && (
+      {isSignedIn && !loading && userData && userData.credit_balance === 0 && (
         <Card className="border-yellow-500/50 bg-gradient-to-r from-yellow-50 via-orange-50 to-yellow-50 dark:from-yellow-950/20 dark:via-orange-950/20 dark:to-yellow-950/20 shadow-xl animate-in fade-in-50 duration-700">
           <CardContent className="pt-6 pb-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -280,7 +317,7 @@ const Dashboard = () => {
       )}
 
       {/* Membership Alert for Free Users */}
-      {!loading && !isPro && (
+      {isSignedIn && !loading && !isPro && (
         <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 shadow-elegant">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -331,22 +368,24 @@ const Dashboard = () => {
               ) : (
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{userData?.credit_balance || 0}</div>
+                    <div className="text-2xl font-bold text-primary">{isSignedIn ? (userData?.credit_balance || 0) : 10}</div>
                     <div className="text-sm text-muted-foreground">Available Credits</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{userData?.total_credits_purchased || 0}</div>
+                    <div className="text-2xl font-bold text-green-600">{isSignedIn ? (userData?.total_credits_purchased || 0) : 0}</div>
                     <div className="text-sm text-muted-foreground">Total Purchased</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{userData?.total_credits_spent || 0}</div>
+                    <div className="text-2xl font-bold text-blue-600">{isSignedIn ? (userData?.total_credits_spent || 0) : 0}</div>
                     <div className="text-sm text-muted-foreground">Total Spent</div>
                   </div>
                 </div>
               )}
-              <div className="flex justify-center mt-4">
-                <CreditHeader />
-              </div>
+              {isSignedIn && (
+                <div className="flex justify-center mt-4">
+                  <CreditHeader />
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -417,17 +456,21 @@ const Dashboard = () => {
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
                           {test.score >= 80 ? 'Excellent' : test.score >= 60 ? 'Good' : 'Fair'}
                         </Badge>
-                        <Button size="sm" variant="government" className="ml-2">
+                        <LoginRequiredButton size="sm" variant="government" className="ml-2">
                           Review
-                        </Button>
+                        </LoginRequiredButton>
                       </div>
                     </div>
                   ))}
                   {availableCompletedTests.length > 3 && (
                     <div className="text-center pt-2">
-                      <Button variant="outline" size="sm">
+                      <LoginRequiredButton 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => isSignedIn && navigate('/dashboard/attempted')}
+                      >
                         View All Completed ({availableCompletedTests.length})
-                      </Button>
+                      </LoginRequiredButton>
                     </div>
                   )}
                 </div>
@@ -470,13 +513,13 @@ const Dashboard = () => {
                   ))}
                   {availableAbandonedTests.length > 3 && (
                     <div className="text-center pt-2">
-                      <Button 
+                      <LoginRequiredButton 
                         variant="outline" 
                         size="sm"
-                        onClick={() => window.location.href = '/dashboard/abandoned'}
+                        onClick={() => isSignedIn && navigate('/dashboard/abandoned')}
                       >
                         View All Abandoned ({availableAbandonedTests.length})
-                      </Button>
+                      </LoginRequiredButton>
                     </div>
                   )}
                 </div>
@@ -559,13 +602,13 @@ const Dashboard = () => {
                     <p className="text-sm text-muted-foreground">
                       Continue with your assessment to receive comprehensive feedback.
                     </p>
-                    <Button 
+                    <LoginRequiredButton 
                       variant="hero" 
                       className="w-full"
-                      onClick={() => navigate('/dashboard/pending')}
+                      onClick={() => isSignedIn && navigate('/dashboard/pending')}
                     >
                       Continue Assessment
-                    </Button>
+                    </LoginRequiredButton>
                   </>
                 ) : (
                   <>
@@ -575,9 +618,13 @@ const Dashboard = () => {
                         : "You've completed all free tests. Upgrade for more!"
                       }
                     </p>
-                     <Button variant="default" className="w-full">
+                     <LoginRequiredButton 
+                       variant="default" 
+                       className="w-full"
+                       onClick={() => isSignedIn && navigate(isPro ? '/dashboard/results' : '/dashboard/pricing')}
+                     >
                        {isPro ? "View Full Report" : "Upgrade to Pro"}
-                     </Button>
+                     </LoginRequiredButton>
                   </>
                 )}
                 
@@ -586,10 +633,15 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground text-center mb-2">
                       Want deeper insights?
                     </p>
-                    <Button variant="outline" size="sm" className="w-full gap-2">
+                    <LoginRequiredButton 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => isSignedIn && navigate('/dashboard/pricing')}
+                    >
                       <Crown className="h-4 w-4" />
                       See Pro Benefits
-                    </Button>
+                    </LoginRequiredButton>
                   </div>
                 )}
               </div>

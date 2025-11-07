@@ -54,6 +54,7 @@ const SSBInterview = () => {
   const handlePrivacyNoticeClose = () => {
     localStorage.setItem('ssb-privacy-notice-seen', 'true');
     setShowPrivacyNotice(false);
+    navigate('/dashboard');
   };
   const ssbProcess = [{
     day: "Day 1",
@@ -145,25 +146,25 @@ const SSBInterview = () => {
   }];
   return <div className="min-h-screen bg-background">
       {/* Privacy Notice */}
-      <AlertDialog open={showPrivacyNotice} onOpenChange={setShowPrivacyNotice}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="h-6 w-6 text-primary" />
-              <AlertDialogTitle>Your Privacy Matters</AlertDialogTitle>
-            </div>
-            <AlertDialogDescription className="text-base space-y-3">
-              <p className="font-semibold text-foreground text-lg">We don't share your data.</p>
-              <p>All your test responses and personal information remain completely private and secure. We never sell, share, or distribute your data to third parties.</p>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handlePrivacyNoticeClose}>
-              I Understand
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <AlertDialog open={showPrivacyNotice} onOpenChange={setShowPrivacyNotice}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <AlertDialogTitle>Your Privacy Matters</AlertDialogTitle>
+          </div>
+          <AlertDialogDescription className="text-base space-y-3">
+            <p className="font-semibold text-foreground text-lg">We don't share your data.</p>
+            <p>All your test responses and personal information remain completely private and secure. We never sell, share, or distribute your data to third parties.</p>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={handlePrivacyNoticeClose}>
+            Let's Practice
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
 
       {/* Dialog */}
       <Dialog open={showSSBDialog} onOpenChange={setShowSSBDialog}>
