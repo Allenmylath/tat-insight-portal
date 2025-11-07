@@ -11,27 +11,39 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useState, useEffect } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
 const SSBInterview = () => {
   const navigate = useNavigate();
-  const { isSignedIn, user } = useUser();
-  const { signOut } = useClerk();
-  
+  const {
+    isSignedIn,
+    user
+  } = useUser();
+  const {
+    signOut
+  } = useClerk();
   const [showSSBDialog, setShowSSBDialog] = useState(false);
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
-
-  const ssbSection = useScrollAnimation({ threshold: 0.2 });
-  const tatSection = useScrollAnimation({ threshold: 0.2 });
-  const olqsSection = useScrollAnimation({ threshold: 0.2 });
-  const featuresSection = useScrollAnimation({ threshold: 0.2 });
-  const guidelinesSection = useScrollAnimation({ threshold: 0.2 });
-  const strategySection = useScrollAnimation({ threshold: 0.2 });
-
+  const ssbSection = useScrollAnimation({
+    threshold: 0.2
+  });
+  const tatSection = useScrollAnimation({
+    threshold: 0.2
+  });
+  const olqsSection = useScrollAnimation({
+    threshold: 0.2
+  });
+  const featuresSection = useScrollAnimation({
+    threshold: 0.2
+  });
+  const guidelinesSection = useScrollAnimation({
+    threshold: 0.2
+  });
+  const strategySection = useScrollAnimation({
+    threshold: 0.2
+  });
   useEffect(() => {
     const timer = setTimeout(() => setShowSSBDialog(true), 2000);
     return () => clearTimeout(timer);
   }, []);
-
   useEffect(() => {
     const hasSeenNotice = localStorage.getItem('ssb-privacy-notice-seen');
     if (!hasSeenNotice) {
@@ -39,74 +51,99 @@ const SSBInterview = () => {
       return () => clearTimeout(timer);
     }
   }, []);
-
   const handlePrivacyNoticeClose = () => {
     localStorage.setItem('ssb-privacy-notice-seen', 'true');
     setShowPrivacyNotice(false);
   };
-
-  const ssbProcess = [
-    { day: "Day 1", title: "Screening", content: "OIR & PPDT", icon: Shield },
-    { day: "Day 2", title: "Psychology Tests", content: "TAT, WAT, SRT, SD", highlight: true, icon: Brain },
-    { day: "Day 3", title: "GTO Tasks", content: "Group Testing", icon: Target },
-    { day: "Day 4", title: "Interview", content: "Personal Interview", icon: MessageCircle },
-    { day: "Day 5", title: "Conference", content: "Final Assessment", icon: Award }
-  ];
-
-  const olqs = [
-    "Effective Intelligence", "Reasoning Ability", "Organizing Ability",
-    "Power of Expression", "Social Adjustment", "Cooperation",
-    "Sense of Responsibility", "Initiative", "Self Confidence",
-    "Speed of Decision", "Influence Group", "Liveliness",
-    "Determination", "Courage", "Stamina"
-  ];
-
-  const platformFeatures = [
-    {
-      icon: Image,
-      title: "Authentic TAT Practice",
-      description: "Military-themed images similar to actual SSB. Practice with 30-second viewing and 4-minute writing time limits."
-    },
-    {
-      icon: Brain,
-      title: "AI-Powered Analysis",
-      description: "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions."
-    },
-    {
-      icon: TrendingUp,
-      title: "Track Your Progress",
-      description: "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB."
-    }
-  ];
-
-  const dos = [
-    { text: "Start with clear setting and characters" },
-    { text: "Show proactive decision-making" },
-    { text: "Include positive resolution" },
-    { text: "Demonstrate leadership and teamwork" },
-    { text: "Keep it realistic and relatable" },
-    { text: "Complete story within time" }
-  ];
-
-  const donts = [
-    { text: "Avoid negative/tragic endings" },
-    { text: "Don't leave stories incomplete" },
-    { text: "Avoid passive characters" },
-    { text: "Don't make unrealistic stories" },
-    { text: "Avoid violence or crime themes" },
-    { text: "Don't copy common templates" }
-  ];
-
-  const prepStrategy = [
-    { week: "Week 1-2", focus: "Understand TAT Basics", icon: BookOpen },
-    { week: "Week 3-4", focus: "Daily Practice (2-3 stories/day)", icon: Target },
-    { week: "Week 5-6", focus: "Analyze Feedback & Improve", icon: BarChart3 },
-    { week: "Week 7-8", focus: "Timed Practice (Exam Conditions)", icon: Clock },
-    { week: "Final Week", focus: "Build Confidence with Mock Tests", icon: Award }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const ssbProcess = [{
+    day: "Day 1",
+    title: "Screening",
+    content: "OIR & PPDT",
+    icon: Shield
+  }, {
+    day: "Day 2",
+    title: "Psychology Tests",
+    content: "TAT, WAT, SRT, SD",
+    highlight: true,
+    icon: Brain
+  }, {
+    day: "Day 3",
+    title: "GTO Tasks",
+    content: "Group Testing",
+    icon: Target
+  }, {
+    day: "Day 4",
+    title: "Interview",
+    content: "Personal Interview",
+    icon: MessageCircle
+  }, {
+    day: "Day 5",
+    title: "Conference",
+    content: "Final Assessment",
+    icon: Award
+  }];
+  const olqs = ["Effective Intelligence", "Reasoning Ability", "Organizing Ability", "Power of Expression", "Social Adjustment", "Cooperation", "Sense of Responsibility", "Initiative", "Self Confidence", "Speed of Decision", "Influence Group", "Liveliness", "Determination", "Courage", "Stamina"];
+  const platformFeatures = [{
+    icon: Image,
+    title: "Authentic TAT Practice",
+    description: "Military-themed images similar to actual SSB. Practice with 30-second viewing and 4-minute writing time limits."
+  }, {
+    icon: Brain,
+    title: "AI-Powered Analysis",
+    description: "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions."
+  }, {
+    icon: TrendingUp,
+    title: "Track Your Progress",
+    description: "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB."
+  }];
+  const dos = [{
+    text: "Start with clear setting and characters"
+  }, {
+    text: "Show proactive decision-making"
+  }, {
+    text: "Include positive resolution"
+  }, {
+    text: "Demonstrate leadership and teamwork"
+  }, {
+    text: "Keep it realistic and relatable"
+  }, {
+    text: "Complete story within time"
+  }];
+  const donts = [{
+    text: "Avoid negative/tragic endings"
+  }, {
+    text: "Don't leave stories incomplete"
+  }, {
+    text: "Avoid passive characters"
+  }, {
+    text: "Don't make unrealistic stories"
+  }, {
+    text: "Avoid violence or crime themes"
+  }, {
+    text: "Don't copy common templates"
+  }];
+  const prepStrategy = [{
+    week: "Week 1-2",
+    focus: "Understand TAT Basics",
+    icon: BookOpen
+  }, {
+    week: "Week 3-4",
+    focus: "Daily Practice (2-3 stories/day)",
+    icon: Target
+  }, {
+    week: "Week 5-6",
+    focus: "Analyze Feedback & Improve",
+    icon: BarChart3
+  }, {
+    week: "Week 7-8",
+    focus: "Timed Practice (Exam Conditions)",
+    icon: Clock
+  }, {
+    week: "Final Week",
+    focus: "Build Confidence with Mock Tests",
+    icon: Award
+  }];
+  return <div className="min-h-screen bg-background">
       {/* Privacy Notice */}
       <AlertDialog open={showPrivacyNotice} onOpenChange={setShowPrivacyNotice}>
         <AlertDialogContent>
@@ -150,8 +187,7 @@ const SSBInterview = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
-            {!isSignedIn ? (
-              <>
+            {!isSignedIn ? <>
                 <Link to="/auth/signup" className="w-full">
                   <Button size="lg" className="w-full">
                     Start Practice <ArrowRight className="h-4 w-4 ml-2" />
@@ -160,12 +196,9 @@ const SSBInterview = () => {
                 <Link to="/auth/signin" className="w-full">
                   <Button size="lg" variant="outline" className="w-full">Sign In</Button>
                 </Link>
-              </>
-            ) : (
-              <Button className="w-full" size="lg" onClick={() => navigate("/dashboard")}>
+              </> : <Button className="w-full" size="lg" onClick={() => navigate("/dashboard")}>
                 Go to Dashboard <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
+              </Button>}
           </div>
         </DialogContent>
       </Dialog>
@@ -183,27 +216,19 @@ const SSBInterview = () => {
           </div>
           
           <div className="flex items-center gap-2 md:gap-4">
-            <Button 
-              onClick={() => window.open('https://wa.link/1mj98f', '_blank')} 
-              variant="outline" 
-              size="sm" 
-              className="gap-2"
-            >
+            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Contact Us</span>
             </Button>
             
-            {!isSignedIn ? (
-              <div className="flex items-center gap-2">
+            {!isSignedIn ? <div className="flex items-center gap-2">
                 <Link to="/auth/signin">
                   <Button variant="outline" size="sm">Sign In</Button>
                 </Link>
                 <Link to="/auth/signup">
                   <Button size="sm">Sign Up</Button>
                 </Link>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 md:gap-4">
+              </div> : <div className="flex items-center gap-2 md:gap-4">
                 <Button onClick={() => navigate("/dashboard")} variant="default">Dashboard</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -226,8 +251,7 @@ const SSBInterview = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </header>
@@ -236,10 +260,9 @@ const SSBInterview = () => {
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5"></div>
-          <div 
-            className="absolute inset-0 opacity-10 bg-cover bg-center" 
-            style={{ backgroundImage: `url(${heroImage})` }}
-          ></div>
+          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
+          backgroundImage: `url(${heroImage})`
+        }}></div>
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
@@ -257,25 +280,14 @@ const SSBInterview = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-                {!isSignedIn ? (
-                  <Link to="/auth/signup">
+                {!isSignedIn ? <Link to="/auth/signup">
                     <Button size="lg" className="px-8 py-6 text-lg">
                       Start TAT Practice <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link>
-                ) : (
-                  <Button size="lg" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
+                  </Link> : <Button size="lg" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard")}>
                     Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-                )}
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="px-8 py-6 text-lg" 
-                  onClick={() => navigate("/ssb-procedure")}
-                >
-                  Learn About SSB
-                </Button>
+                  </Button>}
+                
               </div>
               
               {/* Stats */}
@@ -320,43 +332,31 @@ const SSBInterview = () => {
               {/* 5-Day Timeline */}
               <div className="relative">
                 {/* Progress Line - Desktop */}
-                <div className="hidden md:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto" style={{ width: 'calc(100% - 120px)', marginLeft: '60px' }}>
+                <div className="hidden md:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto" style={{
+                width: 'calc(100% - 120px)',
+                marginLeft: '60px'
+              }}>
                   <div className="h-full bg-gradient-to-r from-primary via-primary to-primary w-[40%] animate-pulse"></div>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-4 relative">
-                  {ssbProcess.map((day, index) => (
-                    <div key={index} className="relative">
+                  {ssbProcess.map((day, index) => <div key={index} className="relative">
                       {/* Connector Dot */}
-                      <div className={`hidden md:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 z-10 transition-all duration-500 ${
-                        day.highlight 
-                          ? 'bg-primary border-primary shadow-lg shadow-primary/50 scale-110 animate-pulse' 
-                          : 'bg-background border-border'
-                      }`}>
-                        {day.highlight && (
-                          <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
-                        )}
+                      <div className={`hidden md:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 z-10 transition-all duration-500 ${day.highlight ? 'bg-primary border-primary shadow-lg shadow-primary/50 scale-110 animate-pulse' : 'bg-background border-border'}`}>
+                        {day.highlight && <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>}
                       </div>
                       
-                      <Card 
-                        className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${
-                          day.highlight 
-                            ? 'border-2 border-primary bg-primary/5 shadow-lg' 
-                            : 'border border-border hover:border-primary/50'
-                        } ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`}
-                        style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "both" }}
-                      >
+                      <Card className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${day.highlight ? 'border-2 border-primary bg-primary/5 shadow-lg' : 'border border-border hover:border-primary/50'} ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{
+                    animationDelay: `${index * 0.1}s`,
+                    animationFillMode: "both"
+                  }}>
                         <CardHeader className="pb-3">
                           <div className={`mx-auto mb-3 transition-transform duration-300 ${day.highlight ? 'scale-110' : ''}`}>
-                            <day.icon className={`h-10 w-10 mx-auto mb-2 transition-colors duration-300 ${
-                              day.highlight ? 'text-primary animate-bounce' : 'text-muted-foreground'
-                            }`} style={{ animationDuration: '2s' }} />
+                            <day.icon className={`h-10 w-10 mx-auto mb-2 transition-colors duration-300 ${day.highlight ? 'text-primary animate-bounce' : 'text-muted-foreground'}`} style={{
+                          animationDuration: '2s'
+                        }} />
                           </div>
-                          <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 transition-all duration-300 ${
-                            day.highlight 
-                              ? 'bg-primary text-primary-foreground shadow-md' 
-                              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                          }`}>
+                          <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 transition-all duration-300 ${day.highlight ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>
                             {day.day}
                           </div>
                           <CardTitle className="text-base">{day.title}</CardTitle>
@@ -367,13 +367,10 @@ const SSBInterview = () => {
                       </Card>
                       
                       {/* Mobile connector arrow */}
-                      {index < ssbProcess.length - 1 && (
-                        <div className="md:hidden flex justify-center py-2">
+                      {index < ssbProcess.length - 1 && <div className="md:hidden flex justify-center py-2">
                           <ArrowRight className={`h-6 w-6 ${day.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        </div>}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -493,15 +490,10 @@ const SSBInterview = () => {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {olqs.map((olq, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-card border border-primary/20 rounded-lg p-4 text-center hover:border-primary hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  >
+                {olqs.map((olq, index) => <div key={index} className="bg-card border border-primary/20 rounded-lg p-4 text-center hover:border-primary hover:shadow-lg hover:scale-105 transition-all duration-300">
                     <Award className="h-6 w-6 text-primary mx-auto mb-2" />
                     <p className="text-sm font-medium text-foreground">{olq}</p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -520,11 +512,7 @@ const SSBInterview = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {platformFeatures.map((feature, index) => (
-                <Card 
-                  key={index} 
-                  className="border-primary/20 hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300"
-                >
+              {platformFeatures.map((feature, index) => <Card key={index} className="border-primary/20 hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <CardHeader className="text-center">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                       <feature.icon className="h-8 w-8 text-primary" />
@@ -536,8 +524,7 @@ const SSBInterview = () => {
                       {feature.description}
                     </CardDescription>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
         </section>
@@ -566,12 +553,10 @@ const SSBInterview = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3">
-                      {dos.map((item, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                      {dos.map((item, index) => <li key={index} className="flex items-start gap-3">
                           <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{item.text}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </CardContent>
                 </Card>
@@ -586,12 +571,10 @@ const SSBInterview = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3">
-                      {donts.map((item, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                      {donts.map((item, index) => <li key={index} className="flex items-start gap-3">
                           <CheckSquare className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{item.text}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </CardContent>
                 </Card>
@@ -614,11 +597,7 @@ const SSBInterview = () => {
               </div>
 
               <div className="space-y-4 mb-12">
-                {prepStrategy.map((step, index) => (
-                  <Card 
-                    key={index} 
-                    className="border-primary/20 hover:border-primary hover:scale-105 transition-all duration-300"
-                  >
+                {prepStrategy.map((step, index) => <Card key={index} className="border-primary/20 hover:border-primary hover:scale-105 transition-all duration-300">
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
@@ -630,8 +609,7 @@ const SSBInterview = () => {
                         </div>
                       </div>
                     </CardHeader>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
 
               <div className="text-center">
@@ -643,17 +621,13 @@ const SSBInterview = () => {
                     Join thousands of SSB aspirants who are mastering TAT with AI-powered feedback and comprehensive practice
                   </p>
                   
-                  {!isSignedIn ? (
-                    <Link to="/auth/signup">
+                  {!isSignedIn ? <Link to="/auth/signup">
                       <Button size="lg" className="px-8">
                         Start Free Practice Today <ArrowRight className="h-5 w-5 ml-2" />
                       </Button>
-                    </Link>
-                  ) : (
-                    <Button size="lg" className="px-8" onClick={() => navigate("/dashboard")}>
+                    </Link> : <Button size="lg" className="px-8" onClick={() => navigate("/dashboard")}>
                       Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
-                    </Button>
-                  )}
+                    </Button>}
                 </div>
               </div>
             </div>
@@ -700,10 +674,7 @@ const SSBInterview = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <MessageCircle className="h-4 w-4" />
-                  <button 
-                    onClick={() => window.open('https://wa.link/1mj98f', '_blank')}
-                    className="hover:text-primary transition-colors"
-                  >
+                  <button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} className="hover:text-primary transition-colors">
                     WhatsApp Support
                   </button>
                 </li>
@@ -716,8 +687,6 @@ const SSBInterview = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default SSBInterview;
