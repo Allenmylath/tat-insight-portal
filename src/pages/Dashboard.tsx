@@ -26,43 +26,8 @@ const Dashboard = () => {
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
 
-  // Demo data for unauthenticated users
-  const demoTests = [
-    {
-      id: 'demo-1',
-      title: 'Officer Intelligence Rating Test',
-      description: 'Evaluate your cognitive abilities and problem-solving skills',
-      imageUrl: '/placeholder.svg',
-      completed: false,
-      score: null,
-      isPremium: false
-    },
-    {
-      id: 'demo-2',
-      title: 'Picture Perception & Description Test',
-      description: 'Assess your observation and interpretation capabilities',
-      imageUrl: '/placeholder.svg',
-      completed: false,
-      score: null,
-      isPremium: false
-    },
-    {
-      id: 'demo-3',
-      title: 'Situation Reaction Test',
-      description: 'Test your decision-making under pressure',
-      imageUrl: '/placeholder.svg',
-      completed: false,
-      score: null,
-      isPremium: true
-    }
-  ];
-
   useEffect(() => {
     const fetchTests = async () => {
-      if (!isSignedIn || !userData?.id) {
-        setTestsLoading(false);
-        return;
-      }
       
       try {
         // First, get all active tests
@@ -80,42 +45,48 @@ const Dashboard = () => {
         if (!allTests || allTests.length === 0) {
           setTests([]);
           setCompletedTests([]);
+          setTestsLoading(false);
           return;
         }
 
-        // Check if user has any test sessions at all
-        const { data: allUserSessions, error: allSessionsError } = await supabase
-          .from('test_sessions')
-          .select('id')
-          .eq('user_id', userData.id)
-          .limit(1);
+        // For authenticated users, get their sessions
+        let userSessions = null;
+        if (isSignedIn && userData?.id) {
+          // Check if user has any test sessions at all
+          const { data: allUserSessions, error: allSessionsError } = await supabase
+            .from('test_sessions')
+            .select('id')
+            .eq('user_id', userData.id)
+            .limit(1);
 
-        if (allSessionsError) {
-          console.error('Error checking user sessions:', allSessionsError);
-        } else {
-          const hasAnySessions = allUserSessions && allUserSessions.length > 0;
-          setHasAnyTestSessions(hasAnySessions);
-          if (!hasAnySessions) {
-            setShowNoTestDialog(true);
+          if (allSessionsError) {
+            console.error('Error checking user sessions:', allSessionsError);
+          } else {
+            const hasAnySessions = allUserSessions && allUserSessions.length > 0;
+            setHasAnyTestSessions(hasAnySessions);
+            if (!hasAnySessions) {
+              setShowNoTestDialog(true);
+            }
           }
-        }
 
-        // Get ALL user's test sessions (not just for active tests)
-        const { data: userSessions, error: sessionsError } = await supabase
-          .from('test_sessions')
-          .select(`
-            tattest_id, 
-            status, 
-            completed_at, 
-            time_remaining, 
-            started_at,
-            analysis_results(confidence_score)
-          `)
-          .eq('user_id', userData.id);
+          // Get ALL user's test sessions (not just for active tests)
+          const { data: sessions, error: sessionsError } = await supabase
+            .from('test_sessions')
+            .select(`
+              tattest_id, 
+              status, 
+              completed_at, 
+              time_remaining, 
+              started_at,
+              analysis_results(confidence_score)
+            `)
+            .eq('user_id', userData.id);
 
-        if (sessionsError) {
-          console.error('Error fetching user sessions:', sessionsError);
-          return;
+          if (sessionsError) {
+            console.error('Error fetching user sessions:', sessionsError);
+          } else {
+            userSessions = sessions;
+          }
         }
 
         // Separate completed, abandoned, and pending tests
@@ -192,10 +163,10 @@ const Dashboard = () => {
     fetchTests();
   }, [userData?.id, isSignedIn]);
 
-  // Use demo data if not signed in
-  const displayTests = isSignedIn ? tests : demoTests;
-  const displayCompletedTests = isSignedIn ? completedTests : [];
-  const displayAbandonedTests = isSignedIn ? abandonedTests : [];
+  // Always use real data (tests from database)
+  const displayTests = tests;
+  const displayCompletedTests = completedTests;
+  const displayAbandonedTests = abandonedTests;
 
   // Filter tests based on membership
   const availablePendingTests = isPro ? displayTests : displayTests.filter(test => !test.isPremium);

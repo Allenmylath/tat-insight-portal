@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DeviceSwitchInstructions } from "@/components/DeviceSwitchInstructions";
 import { CreditHeader } from "@/components/CreditHeader";
+import { useUser } from "@clerk/clerk-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,7 @@ import {
 
 const PendingTests = () => {
   const { isPro, userData, hasEnoughCredits } = useUserData();
+  const { isSignedIn } = useUser();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [tests, setTests] = useState<any[]>([]);
@@ -172,7 +174,17 @@ const PendingTests = () => {
   };
 
   const startTest = async (test: any) => {
-    // Check if user has enough credits before starting test
+    // Check authentication first
+    if (!isSignedIn) {
+      toast({
+        title: "Login Required",
+        description: "Please login to start a test.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Then check if user has enough credits
     if (!hasEnoughCredits(100)) {
       toast({
         title: "Insufficient Credits",
@@ -410,16 +422,27 @@ const PendingTests = () => {
                     </Badge>
                   </div>
                   <Button 
-                    variant={!hasEnoughCredits(100) ? "outline" : "hero"}
+                    variant={(!isSignedIn || !hasEnoughCredits(100)) ? "outline" : "hero"}
                     className="w-full gap-2"
                     onClick={() => startTest(test)}
-                    disabled={!hasEnoughCredits(100)}
+                    disabled={isSignedIn && !hasEnoughCredits(100)}
                   >
-                    <Play className="h-4 w-4" />
-                    {!hasEnoughCredits(100) 
-                      ? 'Insufficient Credits' 
-                      : test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'
-                    }
+                    {!isSignedIn ? (
+                      <>
+                        <Lock className="h-4 w-4" />
+                        Login to Continue
+                      </>
+                    ) : !hasEnoughCredits(100) ? (
+                      <>
+                        <Lock className="h-4 w-4" />
+                        Insufficient Credits
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4" />
+                        {test.isPaused ? 'Resume Test' : test.isActive ? 'Continue Test' : 'Start Test'}
+                      </>
+                    )}
                   </Button>
                 </div>
               </Card>
