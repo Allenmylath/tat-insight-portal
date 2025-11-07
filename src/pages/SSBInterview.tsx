@@ -626,7 +626,7 @@ const SSBInterview = () => {
                       <Button size="lg" className="px-8">
                         Start Free Practice Today <ArrowRight className="h-5 w-5 ml-2" />
                       </Button>
-                    </Link> : <Button size="lg" className="px-8" onClick={() => navigate("/dashboard")}>
+                    </Link> : <Button size="lg" className="px-8" onClick={() => navigate("/dashboard/pending")}>
                       Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>}
                 </div>
