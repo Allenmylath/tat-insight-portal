@@ -126,7 +126,8 @@ const Index = () => {
       <main>
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-hero"></div>
+          <div className="absolute inset-0 bg-[length:200%_200%] animate-tricolor-shift" 
+               style={{backgroundImage: 'var(--gradient-tricolor)'}}></div>
           <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
           backgroundImage: `url(${heroImage})`
         }}></div>
@@ -149,11 +150,11 @@ const Index = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="lg" variant="hero" className="px-8 py-6 text-lg text-slate-950">
+                    <Button size="xl" variant="action" className="px-8 py-6 text-lg">
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
+                  </Link> : <Button size="xl" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
@@ -310,11 +311,11 @@ const Index = () => {
               </p>
               
               {!isSignedIn ? <Link to="/auth/signup">
-                  <Button size="lg" variant="default" className="px-8 py-6 text-lg">
+                  <Button size="lg" variant="action" className="px-8 py-6 text-lg">
                     Get Started Today
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </Link> : <Button size="lg" variant="hero" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
+                </Link> : <Button size="lg" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>}

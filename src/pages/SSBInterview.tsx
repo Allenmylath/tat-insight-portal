@@ -193,7 +193,8 @@ const SSBInterview = () => {
       <main>
         {/* Hero Section */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5"></div>
+          <div className="absolute inset-0 bg-[length:200%_200%] animate-tricolor-shift opacity-30"
+               style={{backgroundImage: 'var(--gradient-tricolor)'}}></div>
           <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
           backgroundImage: `url(${heroImage})`
         }}></div>
@@ -215,10 +216,10 @@ const SSBInterview = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
                 {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="lg" className="px-8 py-6 text-lg">
+                    <Button size="xl" variant="action" className="px-8 py-6 text-lg">
                       Start TAT Practice <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="lg" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
+                  </Link> : <Button size="xl" variant="military-green" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                     Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
                 

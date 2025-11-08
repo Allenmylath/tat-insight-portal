@@ -190,7 +190,7 @@ const Dashboard = () => {
               Cancel
             </Button>
             <Button 
-              variant="default"
+              variant="action"
               onClick={() => {
                 setShowNoTestDialog(false);
                 navigate('/dashboard/pending');
@@ -303,7 +303,7 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <Button variant="default" size="lg" className="gap-2 shadow-lg whitespace-nowrap">
+              <Button variant="champion" size="lg" className="gap-2 shadow-lg whitespace-nowrap animate-pulse-glow">
                 <Crown className="h-5 w-5" />
                 Upgrade to Pro
               </Button>
