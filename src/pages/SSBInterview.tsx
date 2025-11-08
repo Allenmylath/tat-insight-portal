@@ -281,10 +281,14 @@ const SSBInterview = () => {
                         {day.highlight && <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>}
                       </div>
                       
-                      <Card className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${day.highlight ? 'border-2 border-primary bg-primary/5 shadow-lg' : 'border border-border hover:border-primary/50'} ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{
-                    animationDelay: `${index * 0.1}s`,
-                    animationFillMode: "both"
-                  }}>
+                      <Card 
+                        onClick={() => navigate("/dashboard/pending")}
+                        className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl cursor-pointer ${day.highlight ? 'border-2 border-primary bg-primary/5 shadow-lg' : 'border border-border hover:border-primary/50'} ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} 
+                        style={{
+                          animationDelay: `${index * 0.1}s`,
+                          animationFillMode: "both"
+                        }}
+                      >
                         <CardHeader className="pb-3">
                           <div className={`mx-auto mb-3 transition-transform duration-300 ${day.highlight ? 'scale-110' : ''}`}>
                             <day.icon className={`h-10 w-10 mx-auto mb-2 transition-colors duration-300 ${day.highlight ? 'text-primary animate-bounce' : 'text-muted-foreground'}`} style={{
