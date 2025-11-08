@@ -2,7 +2,7 @@ project_id = "ianqebxtpviuekwfhjtq"
 
 [auth.third_party.clerk]
 enabled = true
-domain = "adapted-yak-99.clerk.accounts.dev"
+domain = "clerk.tattests.me"
 
 [functions.clerk-webhook]
 verify_jwt = false
