@@ -657,7 +657,7 @@ const SSBInterview = () => {
                   navigate("/dashboard/pending");
                 }}
               >
-                Go to Tests <ArrowRight className="h-4 w-4 ml-2" />
+                Make me a TAT expert <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
         </DialogContent>
