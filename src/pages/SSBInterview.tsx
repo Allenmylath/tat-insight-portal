@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate, Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useState, useEffect } from "react";
 const SSBInterview = () => {
   const navigate = useNavigate();
   const {
@@ -17,6 +19,17 @@ const SSBInterview = () => {
   const {
     signOut
   } = useClerk();
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+  
+  useEffect(() => {
+    // Show welcome dialog after 2 seconds
+    const timer = setTimeout(() => {
+      setShowWelcomeDialog(true);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   const ssbSection = useScrollAnimation({
     threshold: 0.2
   });
@@ -608,6 +621,66 @@ const SSBInterview = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Welcome Dialog */}
+      <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Brain className="h-6 w-6 text-primary" />
+              Start Your SSB TAT Practice
+            </DialogTitle>
+            <DialogDescription className="text-base pt-4 space-y-3">
+              <p>
+                Master the Thematic Apperception Test with AI-powered feedback and join thousands of successful SSB candidates.
+              </p>
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+                <p className="font-semibold text-foreground mb-2">
+                  ✓ Pending Tests Available
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Get started with your TAT practice tests now. Complete your assessment and receive instant AI analysis.
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-4">
+            {!isSignedIn ? (
+              <>
+                <Button 
+                  size="lg" 
+                  onClick={() => {
+                    setShowWelcomeDialog(false);
+                    navigate("/auth/signup");
+                  }}
+                >
+                  Sign Up to Start
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => {
+                    setShowWelcomeDialog(false);
+                    navigate("/auth/signin");
+                  }}
+                >
+                  Already have an account? Sign In
+                </Button>
+              </>
+            ) : (
+              <Button 
+                size="lg" 
+                onClick={() => {
+                  setShowWelcomeDialog(false);
+                  navigate("/dashboard/pending");
+                }}
+              >
+                Go to Pending Tests <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default SSBInterview;

@@ -29,6 +29,7 @@ export const LoginRequiredButton = ({
   const handleClick = (e: React.MouseEvent) => {
     if (!isSignedIn) {
       e.preventDefault();
+      // Direct redirect to signup instead of showing toast
       navigate(`/auth/signup?returnUrl=${encodeURIComponent(returnUrl)}`);
     } else if (hasInsufficientCredits) {
       e.preventDefault();
