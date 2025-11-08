@@ -11,6 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { DeviceSwitchInstructions } from "@/components/DeviceSwitchInstructions";
 import { CreditHeader } from "@/components/CreditHeader";
 import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,7 @@ const PendingTests = () => {
   const { isPro, userData, hasEnoughCredits } = useUserData();
   const { isSignedIn } = useUser();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -195,11 +197,7 @@ const PendingTests = () => {
   const startTest = async (test: any) => {
     // Check authentication first
     if (!isSignedIn) {
-      toast({
-        title: "Login Required",
-        description: "Please login to start a test.",
-        variant: "destructive"
-      });
+      navigate('/auth/signup?returnUrl=/dashboard/pending');
       return;
     }
 
