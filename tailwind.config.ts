@@ -57,6 +57,15 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // NEW - Action and Champion colors for youth appeal
+        "action-red": {
+          DEFAULT: "hsl(var(--action-red))",
+          foreground: "hsl(var(--action-red-foreground))",
+        },
+        "champion-gold": {
+          DEFAULT: "hsl(var(--champion-gold))",
+          foreground: "hsl(var(--champion-gold-foreground))",
+        },
         "gradient-foreground": "hsl(var(--gradient-foreground))",
         "overlay-foreground": "hsl(var(--overlay-foreground))",
       },
@@ -115,6 +124,27 @@ export default {
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" }
+        },
+        // NEW - Youth-focused animations
+        "pulse-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 10px hsl(var(--action-red) / 0.3)",
+            transform: "scale(1)"
+          },
+          "50%": { 
+            boxShadow: "0 0 25px hsl(var(--action-red) / 0.6)",
+            transform: "scale(1.02)"
+          }
+        },
+        "tricolor-shift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" }
+        },
+        "victory-bounce": {
+          "0%, 100%": { transform: "scale(1) rotate(0deg)" },
+          "25%": { transform: "scale(1.1) rotate(-5deg)" },
+          "75%": { transform: "scale(1.1) rotate(5deg)" }
         }
       },
       animation: {
@@ -127,7 +157,11 @@ export default {
         "bounce-in": "bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "scale-in": "scale-in 0.4s ease-out",
         "glow": "glow 2s ease-in-out infinite",
-        "float": "float 3s ease-in-out infinite"
+        "float": "float 3s ease-in-out infinite",
+        // NEW - Youth appeal animations
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "tricolor-shift": "tricolor-shift 8s ease infinite",
+        "victory-bounce": "victory-bounce 0.6s ease-in-out",
       },
     },
   },

@@ -9,21 +9,26 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md",
+        outline: "border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-md",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg font-bold border-2 border-primary/20",
-        government: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-2 border-primary/30",
-        saffron: "bg-[var(--gradient-saffron)] text-[hsl(var(--saffron-foreground))] hover:opacity-90 shadow-lg font-semibold",
+        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl font-bold border-2 border-primary/20 hover:scale-[1.02] active:scale-[0.98]",
+        government: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-2 border-primary/30 shadow-md hover:shadow-lg",
+        saffron: "bg-[var(--gradient-saffron)] text-[hsl(var(--saffron-foreground))] hover:opacity-90 shadow-lg hover:shadow-xl font-semibold hover:scale-[1.02] active:scale-[0.98]",
+        // NEW - Youth-focused variants for 18-24 males
+        action: "bg-[var(--gradient-action-red)] text-[hsl(var(--action-red-foreground))] hover:opacity-90 shadow-[var(--shadow-action)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
+        "military-green": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-military)] hover:shadow-xl font-bold border-2 border-primary-foreground/10 hover:scale-[1.02] active:scale-[0.98]",
+        champion: "bg-[var(--gradient-champion)] text-[hsl(var(--champion-gold-foreground))] hover:opacity-90 shadow-[var(--shadow-champion)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
       },
       size: {
-        default: "h-10 px-4 py-2",
+        default: "h-11 px-5 py-2.5", // Increased from h-10 for better mobile touch
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        lg: "h-12 rounded-md px-10 text-base", // Increased from h-11 for better mobile
+        xl: "h-14 rounded-lg px-12 text-lg font-bold", // NEW - Extra large for CTAs
+        icon: "h-11 w-11", // Increased from h-10 for better touch targets
       },
     },
     defaultVariants: {

@@ -35,6 +35,16 @@ All colors MUST be HSL.
     --accent-foreground: 30 90% 35%; /* Dark orange */
     --saffron-foreground: 30 40% 20%; /* Dark brown/orange for text on saffron buttons */
 
+    /* Action Red (Bold CTA) - NEW for 18-24 males */
+    --action-red: 0 85% 60%; /* Bold red for action buttons */
+    --action-red-foreground: 0 0% 98%;
+    --victory-red: 0 72% 50%; /* Darker red for hover states */
+    --red-glow: 0 85% 70%; /* For animations/effects */
+
+    /* Champion Gold (Achievement) - NEW */
+    --champion-gold: 45 100% 50%; /* Gold for achievements */
+    --champion-gold-foreground: 45 40% 15%; /* Dark text on gold */
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
@@ -49,8 +59,16 @@ All colors MUST be HSL.
     --gradient-navy: linear-gradient(135deg, hsl(210 45% 25%), hsl(210 40% 35%)); /* Navy gradient */
     --gradient-saffron: linear-gradient(135deg, hsl(30 90% 55%), hsl(30 85% 65%)); /* Saffron gradient */
     --gradient-hero: linear-gradient(180deg, hsl(210 20% 97%), hsl(0 0% 98%)); /* Light gradient */
+    
+    /* NEW - Patriotic Animated Gradient (Saffron-White-Green) */
+    --gradient-tricolor: linear-gradient(135deg, hsl(30 90% 55%) 0%, hsl(0 0% 98%) 50%, hsl(120 35% 45%) 100%);
+    --gradient-action-red: linear-gradient(135deg, hsl(0 85% 60%), hsl(0 72% 50%)); /* Action red gradient */
+    --gradient-champion: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 90% 60%)); /* Gold gradient */
+    
     --shadow-military: 0 10px 30px -10px hsl(82 35% 35% / 0.3); /* Olive shadow */
     --shadow-elegant: 0 4px 20px -2px hsl(210 15% 15% / 0.15); /* Navy shadow */
+    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.4); /* Bold red shadow */
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 50% / 0.3); /* Gold shadow */
     
     /* Text colors for gradients and overlays */
     --gradient-foreground: 0 0% 98%; /* Light text for dark gradients */
@@ -70,35 +88,45 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode - 1950s academic style with deep blacks and warm reds */
-    --background: 0 0% 8%; /* Deep black */
-    --foreground: 45 15% 90%; /* Warm white */
+    /* Dark mode - Youth-optimized with vibrant colors and true blacks */
+    --background: 0 0% 5%; /* True black for AMOLED */
+    --foreground: 45 15% 95%; /* Bright warm white */
 
-    --card: 0 0% 12%; /* Dark charcoal */
-    --card-foreground: 45 15% 90%;
+    --card: 0 0% 10%; /* Dark charcoal */
+    --card-foreground: 45 15% 95%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 45 15% 90%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 45 15% 95%;
 
-    --primary: 0 75% 55%; /* Brighter red for dark mode */
-    --primary-foreground: 0 0% 8%;
-    --primary-glow: 0 70% 65%;
+    --primary: 0 85% 60%; /* Vibrant red for dark mode */
+    --primary-foreground: 0 0% 5%;
+    --primary-glow: 0 85% 70%;
 
-    --secondary: 0 0% 18%; /* Dark gray */
-    --secondary-foreground: 45 15% 90%;
+    --secondary: 0 0% 15%; /* Dark gray */
+    --secondary-foreground: 45 15% 95%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 45 10% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 45 10% 70%;
 
-    --accent: 0 0% 18%;
-    --accent-foreground: 45 15% 90%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 45 15% 95%;
+    
+    /* Action Red in dark mode */
+    --action-red: 0 85% 65%; /* Brighter for dark backgrounds */
+    --action-red-foreground: 0 0% 5%;
+    --victory-red: 0 75% 55%;
+    --red-glow: 0 85% 75%;
+    
+    /* Champion Gold in dark mode */
+    --champion-gold: 45 100% 55%; /* Brighter gold */
+    --champion-gold-foreground: 45 40% 10%;
 
-    --destructive: 0 75% 50%;
-    --destructive-foreground: 45 15% 90%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 45 15% 95%;
 
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 0 75% 55%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 85% 60%;
     
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 45 15% 85%;
