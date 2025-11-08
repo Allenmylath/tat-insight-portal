@@ -644,24 +644,17 @@ const SSBInterview = () => {
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 mt-4">
-            <Button 
-              size="lg" 
-              onClick={() => {
-                setShowWelcomeDialog(false);
-                navigate("/dashboard/pending");
-              }}
-            >
-              Go to Tests <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowWelcomeDialog(false)}
-            >
-              Continue Browsing
-            </Button>
-          </div>
+            <div className="flex flex-col gap-3 mt-4">
+              <Button
+                size="lg"
+                onClick={() => {
+                  setShowWelcomeDialog(false);
+                  navigate("/dashboard/pending");
+                }}
+              >
+                Go to Tests <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
         </DialogContent>
       </Dialog>
     </div>;
