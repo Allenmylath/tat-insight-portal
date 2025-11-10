@@ -67,10 +67,6 @@ const App = () => {
     }
   );
 
-  if (!isClerkLoaded) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <StatsigProvider client={client} loadingComponent={<div>Loading...</div>}>
       <QueryClientProvider client={queryClient}>
@@ -131,9 +127,11 @@ const App = () => {
                   </DashboardLayout>
                 } />
                 <Route path="/dashboard/settings" element={
-                  <DashboardLayout>
-                    <Settings />
-                  </DashboardLayout>
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Settings />
+                    </DashboardLayout>
+                  </ProtectedRoute>
                 } />
                 <Route path="/dashboard/transactions" element={
                   <DashboardLayout>
