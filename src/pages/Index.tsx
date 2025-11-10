@@ -151,11 +151,11 @@ const Index = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="xl" variant="action" className="px-8 py-6 text-lg">
+                    <Button size="xl" variant="default" className="px-8 py-6 text-lg">
                       Start your TAT test
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="xl" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
+                  </Link> : <Button size="xl" variant="default" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
                     Continue Assessment
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
