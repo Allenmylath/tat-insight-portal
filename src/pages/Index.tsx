@@ -270,6 +270,118 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Testimonials Section */}
+        <section className="py-16 md:py-24 bg-gradient-to-br from-background via-primary/5 to-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12 md:mb-16">
+              <Badge className="mb-4 bg-accent/10 text-accent-foreground border-accent/20 font-semibold px-4 py-2" variant="outline">
+                ⭐ 12,000+ Future Officers Trust Us
+              </Badge>
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-4 text-foreground leading-tight">
+                Real Stories, Real Results 💪
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                See what other SSB aspirants are saying about their journey to excellence
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+              {/* Testimonial 1 */}
+              <Card className="glass-effect border-primary/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
+                      R
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Rahul Sharma</h4>
+                      <p className="text-sm text-muted-foreground">NDA Recommended 🎖️</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "This platform is a game-changer! Got recommended in my first attempt. The AI analysis helped me understand exactly what assessors look for. 10/10 would recommend! 🔥"
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 2 */}
+              <Card className="glass-effect border-accent/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-white font-bold text-lg">
+                      P
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Priya Kaur</h4>
+                      <p className="text-sm text-muted-foreground">AFCAT Selected ✈️</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "Improved my TAT scores by 40% in just 2 weeks! The instant feedback is insane. Best investment in my SSB prep journey. Absolutely crushing it now! 💯"
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 3 */}
+              <Card className="glass-effect border-secondary/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
+                      V
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Vikram Singh</h4>
+                      <p className="text-sm text-muted-foreground">CDS Cleared 🏆</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "From confused to confident in 30 days! The scientific approach with Murray's needs framework gave me real insights. Worth every minute! 🚀"
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="mt-12 md:mt-16 text-center">
+              <div className="flex flex-wrap justify-center items-center gap-6 md:gap-12">
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-extrabold text-primary">12,000+</p>
+                  <p className="text-sm text-muted-foreground">Happy Users</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-extrabold text-accent">96%</p>
+                  <p className="text-sm text-muted-foreground">Success Rate</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-extrabold text-secondary">4.9/5</p>
+                  <p className="text-sm text-muted-foreground">Rating ⭐</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Research Methodology Section */}
         <section className="py-16 md:py-20 relative overflow-hidden">
           {/* Gradient background */}
