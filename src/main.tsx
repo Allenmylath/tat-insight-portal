@@ -18,8 +18,13 @@ createRoot(document.getElementById("root")!).render(
         card: "shadow-lg"
       }
     }}
-    afterSignInUrl="/dashboard/pending"
-    afterSignUpUrl="/dashboard/pending"
+    signInForceRedirectUrl="/dashboard/pending"
+    signUpForceRedirectUrl="/dashboard/pending"
+    allowedRedirectOrigins={[
+      "https://tattests.me",
+      "https://*.tattests.me",
+      "https://*.lovable.app"
+    ]}
   >
     <App />
   </ClerkProvider>
