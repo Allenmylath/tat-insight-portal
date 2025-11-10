@@ -18,6 +18,7 @@ const Index = () => {
   const navigate = useNavigate();
   const {
     isSignedIn,
+    isLoaded,
     user
   } = useUser();
   const {
@@ -310,15 +311,21 @@ const Index = () => {
                 Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
               </p>
               
-              {!isSignedIn ? <Link to="/auth/signup">
-                  <Button size="lg" variant="action" className="px-8 py-6 text-lg">
-                    Get Started Today
+              {isLoaded && (
+                !isSignedIn ? (
+                  <Link to="/auth/signup">
+                    <Button size="lg" variant="action" className="px-8 py-6 text-lg">
+                      Get Started Today
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button size="lg" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
+                    Go to Dashboard
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
-                </Link> : <Button size="lg" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
-                  Go to Dashboard
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>}
+                )
+              )}
             </div>
           </div>
         </section>
