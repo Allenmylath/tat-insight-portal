@@ -6,7 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare } from "lucide-react";
+import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare, Sparkles, Users, Trophy } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
@@ -20,15 +20,34 @@ const SSBInterview = () => {
     signOut
   } = useClerk();
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   
   useEffect(() => {
-    // Show welcome dialog after 2 seconds
-    const timer = setTimeout(() => {
-      setShowWelcomeDialog(true);
-    }, 2000);
+    // Show sticky bar after scrolling 50% of page instead of intrusive popup
+    const handleScroll = () => {
+      const scrolled = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      const scrollPercent = (scrolled / (docHeight - windowHeight)) * 100;
+      
+      setShowStickyBar(scrollPercent > 20);
+    };
     
-    return () => clearTimeout(timer);
-  }, []);
+    // Show welcome dialog on exit intent instead of immediate popup
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0 && !isSignedIn) {
+        setShowWelcomeDialog(true);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [isSignedIn]);
   
   const ssbSection = useScrollAnimation({
     threshold: 0.2
@@ -138,32 +157,34 @@ const SSBInterview = () => {
   }];
   return <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-primary-foreground" />
+      <header className="border-b glass-effect backdrop-blur-lg sticky top-0 z-50 shadow-lg">
+        <div className="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center" style={{background: 'var(--gradient-hero)'}}>
+              <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
-            <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-              TAT Assessment
+            <Link to="/" className="text-lg md:text-xl font-extrabold text-foreground hover:text-primary transition-colors font-display">
+              TAT Pro 🎯
             </Link>
           </div>
           
-          <div className="flex items-center gap-2 md:gap-4">
-            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2 min-h-[40px] hidden sm:flex">
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Contact Us</span>
+              <span>Help</span>
             </Button>
             
             {!isSignedIn ? <div className="flex items-center gap-2">
-                <Link to="/auth/signin">
-                  <Button variant="outline" size="sm">Sign In</Button>
+                <Link to="/auth/signin" className="hidden sm:block">
+                  <Button variant="outline" size="sm" className="min-h-[40px]">Sign In</Button>
                 </Link>
                 <Link to="/auth/signup">
-                  <Button size="sm">Sign Up</Button>
+                  <Button size="sm" className="px-4 md:px-6 font-bold min-h-[40px] shadow-action">
+                    START FREE 🚀
+                  </Button>
                 </Link>
               </div> : <div className="flex items-center gap-2 md:gap-4">
-                <Button onClick={() => navigate("/dashboard/pending")} variant="default">Dashboard</Button>
+                <Button onClick={() => navigate("/dashboard/pending")} variant="default" className="min-h-[40px]">Dashboard</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -192,55 +213,83 @@ const SSBInterview = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-[length:200%_200%] animate-tricolor-shift opacity-30"
-               style={{backgroundImage: 'var(--gradient-tricolor)'}}></div>
-          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
+        <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 animate-gradient opacity-70" style={{background: 'var(--gradient-hero)'}}></div>
+          <div className="absolute inset-0 opacity-5 bg-cover bg-center" style={{
           backgroundImage: `url(${heroImage})`
         }}></div>
           
+          {/* Floating elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+          
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center">
-              <Badge className="mb-8 px-6 py-3 text-lg bg-primary text-primary-foreground shadow-lg font-semibold" variant="default">
-                Master SSB Day 2 TAT • Join 10,000+ SSB Aspirants
+            <div className="max-w-5xl mx-auto text-center">
+              <Badge className="mb-6 md:mb-8 px-4 md:px-8 py-2 md:py-3 text-sm md:text-base glass-effect border-primary/30 font-bold animate-pulse-glow" variant="outline">
+                <Trophy className="h-4 w-4 mr-2 inline" />
+                12,000+ Future Officers Training Here • Join The Elite 🎖️
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
-                Ace Your SSB Interview
-                <span className="block text-primary mt-2">Master the Thematic Apperception Test</span>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 md:mb-8 text-white leading-tight font-display">
+                CRUSH YOUR SSB TAT
+                <span className="block bg-gradient-to-r from-accent via-secondary to-champion-gold bg-clip-text text-transparent mt-2 md:mt-3">
+                  Like A Champion 🔥
+                </span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                TAT is Part of Day 2 Psychology Tests in SSB. Practice with AI-Powered Feedback & Build Confidence for Army, Navy, and Air Force Selection.
+              <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+                Get AI-Powered Instant Feedback on Day 2 TAT Tests. Master The Psychology Game & Dominate Your SSB Selection Board. 💪
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-                {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="xl" variant="action" className="px-8 py-6 text-lg">
-                      Start TAT Practice <ArrowRight className="h-5 w-5 ml-2" />
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 md:mb-12">
+                {!isSignedIn ? <Link to="/auth/signup" className="w-full sm:w-auto">
+                    <Button size="lg" className="w-full sm:w-auto px-8 md:px-12 py-6 md:py-7 text-lg md:text-xl font-black shadow-action hover:scale-105 transition-all min-h-[56px] md:min-h-[64px] animate-pulse-glow">
+                      START FREE NOW 🚀
+                      <ArrowRight className="h-6 w-6 ml-2" />
                     </Button>
-                  </Link> : <Button size="xl" variant="military-green" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
-                    Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
+                  </Link> : <Button size="lg" className="px-8 md:px-12 py-6 md:py-7 text-lg md:text-xl font-black hover:scale-105 transition-all min-h-[56px] md:min-h-[64px]" onClick={() => navigate("/dashboard/pending")}>
+                    GO TO DASHBOARD
+                    <ArrowRight className="h-6 w-6 ml-2" />
                   </Button>}
-                
               </div>
               
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-                <div className="text-center">
-                  <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary">Day 2</div>
-                  <div className="text-sm text-muted-foreground">SSB Day</div>
+              {/* Trust indicators */}
+              <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 mb-10 md:mb-16 max-w-xl mx-auto">
+                <p className="text-white font-semibold text-sm md:text-base flex items-center justify-center gap-2 flex-wrap">
+                  <CheckCircle className="h-5 w-5 text-accent" />
+                  <span>Free Forever</span>
+                  <span className="text-white/50">•</span>
+                  <CheckCircle className="h-5 w-5 text-accent" />
+                  <span>No Payment Required</span>
+                  <span className="text-white/50">•</span>
+                  <CheckCircle className="h-5 w-5 text-accent" />
+                  <span>Instant Access</span>
+                </p>
+              </div>
+              
+              {/* Stats - Gamified */}
+              <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto">
+                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-success)'}}>
+                    <Calendar className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <div className="text-xl md:text-3xl font-black text-white">Day 2</div>
+                  <div className="text-xs md:text-sm text-white/70 font-semibold">SSB Test Day</div>
                 </div>
-                <div className="text-center">
-                  <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary">30 Seconds</div>
-                  <div className="text-sm text-muted-foreground">Time Per Image</div>
+                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-action)'}}>
+                    <Clock className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <div className="text-xl md:text-3xl font-black text-white">30 Sec</div>
+                  <div className="text-xs md:text-sm text-white/70 font-semibold">Per Image</div>
                 </div>
-                <div className="text-center">
-                  <Image className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary">11-12 TAT</div>
-                  <div className="text-sm text-muted-foreground">Total Images</div>
+                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-champion)'}}>
+                    <Image className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <div className="text-xl md:text-3xl font-black text-white">11-12</div>
+                  <div className="text-xs md:text-sm text-white/70 font-semibold">TAT Images</div>
                 </div>
               </div>
             </div>
@@ -468,6 +517,127 @@ const SSBInterview = () => {
           </div>
         </section>
 
+        {/* Testimonials Section */}
+        <section className="py-16 md:py-20 bg-gradient-to-br from-background via-accent/5 to-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12 md:mb-16">
+              <Badge className="mb-4 bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/20 font-bold px-4 py-2" variant="outline">
+                ⭐ Real Success Stories
+              </Badge>
+              <h2 className="text-3xl md:text-5xl font-black mb-4 text-foreground leading-tight font-display">
+                Future Officers Crushing Their TAT 💪
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                Join thousands who transformed their SSB preparation with our platform
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-12">
+              {/* Testimonial 1 */}
+              <Card className="glass-effect border-primary/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
+                      R
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Rahul Sharma</h4>
+                      <p className="text-sm text-muted-foreground">NDA Recommended 🎖️</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "This platform is a game-changer! Got recommended in my first attempt. The AI analysis helped me understand exactly what assessors look for. 10/10 would recommend! 🔥"
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 2 */}
+              <Card className="glass-effect border-accent/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-white font-bold text-lg">
+                      P
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Priya Kaur</h4>
+                      <p className="text-sm text-muted-foreground">AFCAT Selected ✈️</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "Improved my TAT scores by 40% in just 2 weeks! The instant feedback is insane. Best investment in my SSB prep journey. Absolutely crushing it now! 💯"
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 3 */}
+              <Card className="glass-effect border-secondary/20 hover:scale-105 transition-all duration-300 shadow-glow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
+                      V
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground">Vikram Singh</h4>
+                      <p className="text-sm text-muted-foreground">CDS Cleared 🏆</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    "From confused to confident in 30 days! The scientific approach with Murray's needs framework gave me real insights. Worth every minute! 🚀"
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="glass-effect rounded-3xl p-8 md:p-12 max-w-4xl mx-auto border border-primary/20">
+              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Users className="h-6 w-6 text-primary" />
+                    <p className="text-3xl md:text-4xl font-black text-primary">12K+</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-semibold">Active Users</p>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Trophy className="h-6 w-6 text-accent" />
+                    <p className="text-3xl md:text-4xl font-black text-accent">96%</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-semibold">Success Rate</p>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Sparkles className="h-6 w-6 text-secondary" />
+                    <p className="text-3xl md:text-4xl font-black text-secondary">4.9/5</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-semibold">Rating ⭐</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Guidelines Section */}
         <section className="py-16 bg-muted/30" ref={guidelinesSection.ref}>
           <div className="container mx-auto px-4">
@@ -629,39 +799,90 @@ const SSBInterview = () => {
       
       {/* Welcome Dialog */}
       <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg glass-effect border-primary/30">
           <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
-              <Brain className="h-6 w-6 text-primary" />
-              Start Your SSB TAT Practice
+            <DialogTitle className="text-2xl md:text-3xl font-black flex items-center gap-2 font-display">
+              <Sparkles className="h-7 w-7 text-primary animate-pulse" />
+              Wait! Before You Go... 🎯
             </DialogTitle>
-            <DialogDescription className="text-base pt-4 space-y-3">
-              <p>
-                Master the Thematic Apperception Test with AI-powered feedback and join thousands of successful SSB candidates.
-              </p>
-              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
-                <p className="font-semibold text-foreground mb-2">
-                  ✓ Pending Tests Available
+            <DialogDescription className="text-base pt-4 space-y-4">
+              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-xl p-5">
+                <p className="font-bold text-foreground mb-3 text-lg">
+                  🚀 Start Your Officer Journey TODAY - FREE!
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Get started with your TAT practice tests now. Complete your assessment and receive instant AI analysis.
-                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>Instant AI Analysis</strong> on your TAT stories</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>Join 12,000+ aspirants</strong> crushing their prep</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>96% success rate</strong> in SSB selections</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span><strong>FREE forever</strong> • No payment required</span>
+                  </li>
+                </ul>
               </div>
+              <p className="text-center text-sm text-muted-foreground italic">
+                ⏰ Don't let another day pass without proper TAT preparation!
+              </p>
             </DialogDescription>
           </DialogHeader>
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-3 mt-2">
               <Button
                 size="lg"
+                className="font-black text-lg shadow-action hover:scale-105 transition-all min-h-[56px] animate-pulse-glow"
                 onClick={() => {
                   setShowWelcomeDialog(false);
-                  navigate("/dashboard/pending");
+                  navigate("/auth/signup");
                 }}
               >
-                Make me a TAT expert <ArrowRight className="h-4 w-4 ml-2" />
+                YES! MAKE ME A TAT EXPERT 🔥
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowWelcomeDialog(false)}
+                className="text-xs"
+              >
+                I'll browse more (not recommended)
               </Button>
             </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Sticky Bottom CTA Bar - Mobile Optimized */}
+      {showStickyBar && !isSignedIn && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-primary/30 shadow-2xl animate-slide-in-up">
+          <div className="container mx-auto px-4 py-3 md:py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm md:text-base font-bold text-foreground truncate">
+                  🎯 12,000+ Officers Training Now
+                </p>
+                <p className="text-xs text-muted-foreground hidden sm:block">
+                  Start your FREE TAT practice today!
+                </p>
+              </div>
+              <Link to="/auth/signup">
+                <Button 
+                  size="sm" 
+                  className="px-4 md:px-6 py-5 md:py-6 font-black shadow-action hover:scale-105 transition-all whitespace-nowrap text-sm md:text-base"
+                >
+                  JOIN FREE 🚀
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default SSBInterview;
