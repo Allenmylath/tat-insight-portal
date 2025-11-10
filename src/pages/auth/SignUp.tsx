@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { trackSignupConversion } from "@/utils/trackConversion";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -36,6 +37,9 @@ const SignUp = () => {
     console.log("Attempting Google sign up...", { isLoaded, isSignedIn });
     setIsLoading(true);
     setError("");
+    
+    // Set flag to track conversion after OAuth redirect
+    sessionStorage.setItem('clerk_signup_complete', 'true');
 
     try {
       await signUp.authenticateWithRedirect({
@@ -44,6 +48,8 @@ const SignUp = () => {
         redirectUrlComplete: "/dashboard/pending",
       });
     } catch (err: any) {
+      // Clear flag on error
+      sessionStorage.removeItem('clerk_signup_complete');
       console.error("Google sign up error:", err);
       setError(err.errors?.[0]?.message || err.message || "An error occurred with Google sign up");
     } finally {
@@ -100,6 +106,10 @@ const SignUp = () => {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        
+        // Track Google Ads conversion
+        trackSignupConversion();
+        
         navigate("/dashboard/pending");
       }
     } catch (err: any) {
