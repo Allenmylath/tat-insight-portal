@@ -8,134 +8,142 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Military/SSB Theme - Olive Green, Navy Blue, Saffron */
-    --background: 0 0% 98%; /* Clean white */
-    --foreground: 210 15% 15%; /* Navy dark */
+    /* Youth-Focused Theme - Vibrant, Energetic, Modern */
+    --background: 0 0% 100%; /* Pure white for max contrast */
+    --foreground: 220 15% 10%; /* Deep blue-black */
 
     --card: 0 0% 100%; /* Pure white */
-    --card-foreground: 210 15% 15%;
+    --card-foreground: 220 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 15% 15%;
+    --popover-foreground: 220 15% 10%;
 
-    /* Olive Green Primary (Military) */
-    --primary: 82 35% 35%; /* Olive green */
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 82 30% 45%; /* Lighter olive */
+    /* Electric Blue Primary (Energy, Trust, Modern) */
+    --primary: 220 85% 55%; /* Vibrant electric blue */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 220 85% 65%; /* Lighter blue for glow */
 
-    /* Navy Blue Secondary (Defense) */
-    --secondary: 210 45% 25%; /* Navy blue */
-    --secondary-foreground: 0 0% 98%;
+    /* Bold Orange Secondary (Enthusiasm, Action) */
+    --secondary: 25 95% 55%; /* Bold orange */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 15% 95%; /* Light blue-gray */
-    --muted-foreground: 210 10% 40%; /* Medium gray */
+    --muted: 220 15% 96%; /* Light blue-gray */
+    --muted-foreground: 220 10% 45%; /* Medium gray */
 
-    /* Saffron Accent (Indian flag) */
-    --accent: 30 95% 90%; /* Light orange tint */
-    --accent-foreground: 30 90% 35%; /* Dark orange */
-    --saffron-foreground: 30 40% 20%; /* Dark brown/orange for text on saffron buttons */
+    /* Neon Green Accent (Success, Achievement, Fresh) */
+    --accent: 145 80% 50%; /* Neon green */
+    --accent-foreground: 0 0% 100%;
 
-    /* Action Red (Bold CTA) - NEW for 18-24 males */
+    /* Action Red (Bold CTA) */
     --action-red: 0 85% 60%; /* Bold red for action buttons */
-    --action-red-foreground: 0 0% 98%;
+    --action-red-foreground: 0 0% 100%;
     --victory-red: 0 72% 50%; /* Darker red for hover states */
     --red-glow: 0 85% 70%; /* For animations/effects */
 
-    /* Champion Gold (Achievement) - NEW */
-    --champion-gold: 45 100% 50%; /* Gold for achievements */
-    --champion-gold-foreground: 45 40% 15%; /* Dark text on gold */
+    /* Champion Gold (Achievement) */
+    --champion-gold: 45 100% 55%; /* Brighter gold */
+    --champion-gold-foreground: 45 40% 10%; /* Dark text on gold */
     
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 88%; /* Light border */
-    --input: 210 15% 92%; /* Input backgrounds */
-    --ring: 82 35% 35%; /* Focus ring matches primary */
+    --border: 220 15% 90%; /* Light border */
+    --input: 220 15% 95%; /* Input backgrounds */
+    --ring: 220 85% 55%; /* Focus ring matches primary */
 
-    --radius: 0.5rem;
+    --radius: 1rem; /* Larger radius for modern look */
 
-    /* Custom Design Tokens - Military Style */
-    --gradient-military: linear-gradient(135deg, hsl(82 40% 25%), hsl(82 35% 32%)); /* Darker olive gradient for better contrast */
-    --gradient-navy: linear-gradient(135deg, hsl(210 45% 25%), hsl(210 40% 35%)); /* Navy gradient */
-    --gradient-saffron: linear-gradient(135deg, hsl(30 90% 55%), hsl(30 85% 65%)); /* Saffron gradient */
-    --gradient-hero: linear-gradient(180deg, hsl(210 20% 97%), hsl(0 0% 98%)); /* Light gradient */
+    /* Custom Design Tokens - Youth/Gaming Style */
+    --gradient-hero: linear-gradient(135deg, hsl(250 85% 65%), hsl(280 80% 60%)); /* Purple-blue gradient */
+    --gradient-action: linear-gradient(135deg, hsl(340 85% 65%), hsl(0 85% 60%)); /* Pink-red gradient */
+    --gradient-success: linear-gradient(135deg, hsl(200 90% 60%), hsl(180 100% 50%)); /* Blue-cyan gradient */
+    --gradient-champion: linear-gradient(135deg, hsl(330 85% 65%), hsl(45 100% 55%)); /* Pink-yellow gradient */
+    --gradient-elite: linear-gradient(135deg, hsl(180 90% 50%), hsl(270 75% 30%)); /* Cyan-purple gradient */
+    --gradient-card: linear-gradient(135deg, hsl(220 85% 55% / 0.05), hsl(280 80% 60% / 0.05)); /* Subtle card gradient */
     
-    /* NEW - Patriotic Animated Gradient (Saffron-White-Green) */
-    --gradient-tricolor: linear-gradient(135deg, hsl(30 90% 55%) 0%, hsl(0 0% 98%) 50%, hsl(120 35% 45%) 100%);
-    --gradient-action-red: linear-gradient(135deg, hsl(0 85% 60%), hsl(0 72% 50%)); /* Action red gradient */
-    --gradient-champion: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 90% 60%)); /* Gold gradient */
-    
-    --shadow-military: 0 10px 30px -10px hsl(82 35% 35% / 0.3); /* Olive shadow */
-    --shadow-elegant: 0 4px 20px -2px hsl(210 15% 15% / 0.15); /* Navy shadow */
-    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.4); /* Bold red shadow */
-    --shadow-champion: 0 8px 25px -5px hsl(45 100% 50% / 0.3); /* Gold shadow */
+    --shadow-glow: 0 8px 32px -8px hsl(220 85% 55% / 0.4); /* Blue glow */
+    --shadow-elegant: 0 4px 20px -2px hsl(220 15% 15% / 0.1); /* Subtle shadow */
+    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.4); /* Red shadow */
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.3); /* Gold shadow */
+    --shadow-float: 0 12px 40px -10px hsl(220 85% 55% / 0.3); /* Floating effect */
     
     /* Text colors for gradients and overlays */
-    --gradient-foreground: 0 0% 98%; /* Light text for dark gradients */
-    --overlay-foreground: 0 0% 98%; /* Light text for dark overlays */
+    --gradient-foreground: 0 0% 100%; /* Light text for dark gradients */
+    --overlay-foreground: 0 0% 100%; /* Light text for dark overlays */
     
-    /* Professional spacing */
-    --section-padding: 4rem 1rem;
+    /* Mobile-optimized spacing */
+    --section-padding: 3rem 1rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 210 15% 25%;
-    --sidebar-primary: 82 35% 35%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 210 15% 95%;
-    --sidebar-accent-foreground: 210 15% 25%;
-    --sidebar-border: 210 15% 88%;
-    --sidebar-ring: 82 35% 35%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 15% 15%;
+    --sidebar-primary: 220 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 96%;
+    --sidebar-accent-foreground: 220 15% 15%;
+    --sidebar-border: 220 15% 90%;
+    --sidebar-ring: 220 85% 55%;
   }
 
   .dark {
-    /* Dark mode - Youth-optimized with vibrant colors and true blacks */
-    --background: 0 0% 5%; /* True black for AMOLED */
-    --foreground: 45 15% 95%; /* Bright warm white */
+    /* Dark mode - Youth Gaming Aesthetic with Neon Colors */
+    --background: 0 0% 3%; /* True black for AMOLED */
+    --foreground: 0 0% 98%; /* Bright white */
 
-    --card: 0 0% 10%; /* Dark charcoal */
-    --card-foreground: 45 15% 95%;
+    --card: 0 0% 8%; /* Dark charcoal */
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 45 15% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 85% 60%; /* Vibrant red for dark mode */
-    --primary-foreground: 0 0% 5%;
-    --primary-glow: 0 85% 70%;
+    --primary: 180 100% 50%; /* Neon cyan */
+    --primary-foreground: 0 0% 3%;
+    --primary-glow: 180 100% 60%;
 
-    --secondary: 0 0% 15%; /* Dark gray */
-    --secondary-foreground: 45 15% 95%;
+    --secondary: 330 85% 60%; /* Hot pink */
+    --secondary-foreground: 0 0% 3%;
 
     --muted: 0 0% 15%;
-    --muted-foreground: 45 10% 70%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 45 15% 95%;
+    --accent: 270 80% 60%; /* Electric purple */
+    --accent-foreground: 0 0% 98%;
     
     /* Action Red in dark mode */
     --action-red: 0 85% 65%; /* Brighter for dark backgrounds */
-    --action-red-foreground: 0 0% 5%;
+    --action-red-foreground: 0 0% 3%;
     --victory-red: 0 75% 55%;
     --red-glow: 0 85% 75%;
     
     /* Champion Gold in dark mode */
-    --champion-gold: 45 100% 55%; /* Brighter gold */
+    --champion-gold: 45 100% 60%; /* Brighter gold */
     --champion-gold-foreground: 45 40% 10%;
 
     --destructive: 0 85% 60%;
-    --destructive-foreground: 45 15% 95%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 85% 60%;
+    --border: 0 0% 18%;
+    --input: 0 0% 15%;
+    --ring: 180 100% 50%;
     
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 45 15% 85%;
-    --sidebar-primary: 0 75% 55%;
-    --sidebar-primary-foreground: 0 0% 8%;
-    --sidebar-accent: 0 0% 18%;
-    --sidebar-accent-foreground: 45 15% 85%;
-    --sidebar-border: 0 0% 25%;
-    --sidebar-ring: 0 75% 55%;
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(250 85% 35%), hsl(280 80% 30%));
+    --gradient-action: linear-gradient(135deg, hsl(340 85% 45%), hsl(0 85% 40%));
+    --gradient-success: linear-gradient(135deg, hsl(200 90% 40%), hsl(180 100% 35%));
+    --gradient-champion: linear-gradient(135deg, hsl(330 85% 45%), hsl(45 100% 40%));
+    --gradient-elite: linear-gradient(135deg, hsl(180 90% 35%), hsl(270 75% 25%));
+    
+    --shadow-glow: 0 8px 32px -8px hsl(180 100% 50% / 0.5);
+    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.5);
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.4);
+    
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 180 90% 45%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 180 90% 45%;
   }
 }
 
@@ -172,6 +180,55 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.8);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .animate-shimmer {
   animation: shimmer 3s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.glass-effect {
+  backdrop-filter: blur(12px);
+  background: hsl(var(--card) / 0.7);
+  border: 1px solid hsl(var(--border) / 0.5);
 }

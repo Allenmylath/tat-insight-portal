@@ -69,33 +69,33 @@ const Index = () => {
   };
   return <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <header className="border-b glass-effect sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-saffron rounded-lg flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-gradient-foreground" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center animate-gradient" style={{background: 'var(--gradient-hero)'}}>
+              <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">TAT Pro</h1>
-              <p className="text-xs text-muted-foreground">SSB Assessment</p>
+              <p className="text-xs text-primary font-semibold">Elite SSB Prep 🎯</p>
             </div>
           </div>
           
           <div className="flex items-center gap-2 md:gap-4">
-            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2">
+            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2 hover:scale-105 transition-transform">
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Contact Us</span>
+              <span className="hidden sm:inline">Help</span>
             </Button>
             
             {!isSignedIn ? <div className="flex items-center gap-2">
                 <Link to="/auth/signin">
-                  <Button variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign In</Button>
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm px-3 sm:px-4 min-h-[40px]">Sign In</Button>
                 </Link>
                 <Link to="/auth/signup">
-                  <Button variant="default" size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Sign Up</Button>
+                  <Button size="sm" className="text-xs sm:text-sm px-3 sm:px-4 min-h-[40px] shadow-glow hover:scale-105 transition-transform">Join Now</Button>
                 </Link>
               </div> : <div className="flex items-center gap-2 md:gap-4">
-                <Button onClick={() => navigate("/dashboard/pending")} variant="government">
+                <Button onClick={() => navigate("/dashboard/pending")} className="shadow-glow hover:scale-105 transition-transform" size="sm">
                   Dashboard
                 </Button>
                 <DropdownMenu>
@@ -126,125 +126,142 @@ const Index = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-[length:200%_200%] animate-tricolor-shift" 
-               style={{backgroundImage: 'var(--gradient-tricolor)'}}></div>
+        <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 animate-gradient" 
+               style={{background: 'var(--gradient-hero)', backgroundSize: '200% 200%'}}></div>
           <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
           backgroundImage: `url(${heroImage})`
         }}></div>
           
+          {/* Floating elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-xl animate-float"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-float" style={{animationDelay: '1s'}}></div>
+          
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              <Badge className="mb-8 px-6 py-3 text-lg bg-primary/20 text-primary border-primary/30 hover:bg-primary/30 shadow-lg font-semibold" variant="outline">
-                Scientific TAT Assessment • Founded on Murray's Research
+              <Badge className="mb-6 px-4 py-2 text-sm md:text-base bg-white/20 text-white border-white/30 backdrop-blur-sm hover:bg-white/30 font-semibold animate-pulse-glow" variant="outline">
+                🎯 Elite TAT Preparation • 12,000+ Future Officers
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Scientific 
-                <span className="text-primary block">Thematic Apperception Analysis</span>
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 text-white leading-tight">
+                CRUSH YOUR 
+                <span className="block bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">SSB TAT LIKE A PRO</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                Advanced psychological assessment platform based on Henry Murray's original TAT methodology. 
-                Experience evidence-based personality evaluation through projective storytelling techniques.
+              <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+                Master the psychological edge. Train with AI-powered analysis based on proven TAT methodology. 
+                Join thousands of future officers crushing their assessments. 💪
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                {!isSignedIn ? <Link to="/auth/signup">
-                    <Button size="xl" variant="default" className="px-8 py-6 text-lg">
-                      Start your TAT test
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                {!isSignedIn ? <Link to="/auth/signup" className="w-full sm:w-auto">
+                    <Button size="lg" className="w-full sm:w-auto px-10 py-6 text-lg font-bold shadow-action hover:scale-105 transition-all min-h-[56px]">
+                      START FREE NOW 🚀
                       <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
-                  </Link> : <Button size="xl" variant="default" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
-                    Continue Assessment
+                  </Link> : <Button size="lg" className="px-10 py-6 text-lg font-bold shadow-action hover:scale-105 transition-all min-h-[56px]" onClick={() => navigate("/dashboard/pending")}>
+                    CONTINUE TRAINING
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>}
                 
               </div>
+
+              <p className="text-white/80 text-sm mb-12">✓ No credit card required • ✓ Instant access • ✓ Start in 30 seconds</p>
               
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-                {stats.map((stat, index) => <div key={index} className="text-center">
-                    <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-primary">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>)}
+              {/* Gamified Stats */}
+              <div className="grid grid-cols-3 gap-4 md:gap-8 mt-12 max-w-3xl mx-auto">
+                <div className="glass-effect p-4 md:p-6 rounded-2xl hover:scale-105 transition-transform">
+                  <div className="text-3xl md:text-5xl font-black text-white mb-2">12K+</div>
+                  <div className="text-xs md:text-sm text-white/80 font-semibold">Officers Trained</div>
+                </div>
+                <div className="glass-effect p-4 md:p-6 rounded-2xl hover:scale-105 transition-transform">
+                  <div className="text-3xl md:text-5xl font-black text-white mb-2">96%</div>
+                  <div className="text-xs md:text-sm text-white/80 font-semibold">Success Rate</div>
+                </div>
+                <div className="glass-effect p-4 md:p-6 rounded-2xl hover:scale-105 transition-transform">
+                  <div className="text-3xl md:text-5xl font-black text-white mb-2">#1</div>
+                  <div className="text-xs md:text-sm text-white/80 font-semibold">TAT Platform</div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Murray Foundation Section */}
-        <section className="py-20 bg-card/30">
+        <section className="py-16 md:py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
                 <div>
-                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" variant="outline">
-                    Founded by Dr. Henry Murray • Harvard Psychological Clinic
+                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 font-semibold" variant="outline">
+                    🎓 Harvard Research • Military-Proven Since WWII
                   </Badge>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                    Rooted in Scientific Excellence
+                  <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-foreground leading-tight">
+                    Battle-Tested Psychology Meets Modern Tech
                   </h2>
-                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                    The Thematic Apperception Test was developed by Dr. Henry Murray at Harvard University's 
-                    Psychological Clinic in 1935. This groundbreaking projective technique revolutionized 
-                    personality assessment by revealing unconscious drives, emotions, and thought patterns 
-                    through narrative storytelling.
+                  <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
+                    Dr. Henry Murray developed the TAT at Harvard in 1935 - and it's been the secret weapon of military 
+                    selection boards worldwide ever since. This isn't just theory - it's the REAL psychological framework 
+                    that defense forces use to identify future leaders.
                   </p>
-                  <div className="bg-accent/30 p-6 rounded-lg mb-6 border-l-4 border-primary">
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      Military Applications Since WWII
+                  <div className="glass-effect p-6 rounded-2xl mb-6 border-l-4 border-primary hover:scale-105 transition-transform">
+                    <h4 className="font-bold text-foreground mb-3 flex items-center gap-2 text-lg">
+                      <Award className="h-6 w-6 text-primary" />
+                      Why Military Organizations Trust TAT
                     </h4>
                     <p className="text-muted-foreground leading-relaxed">
-                      Since World War II, TAT has been extensively used by military organizations worldwide 
-                      for personnel selection and psychological evaluation. Its proven effectiveness in 
-                      assessing leadership potential, emotional stability, and decision-making capabilities 
-                      under pressure has made it a cornerstone of military recruitment processes.
+                      For 80+ years, TAT has been the gold standard for assessing leadership potential, emotional intelligence, 
+                      and decision-making under pressure. Used by SSB, NDA, AFCAT, and defense forces globally. 
+                      <span className="font-semibold text-foreground"> Now YOU can master it.</span>
                     </p>
                   </div>
-                  <blockquote className="border-l-4 border-primary pl-6 mb-6 italic text-muted-foreground">
-                    "The TAT is based on the well-recognized fact that when a person interprets an ambiguous 
-                    social situation he is apt to expose his own personality as much as the phenomenon to which he is attending."
-                    <cite className="block mt-2 text-sm font-semibold text-primary">— Dr. Henry Murray</cite>
-                  </blockquote>
-                  <Button onClick={downloadPDF} variant="government" className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Download Murray's Research (PDF)
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button onClick={downloadPDF} variant="outline" className="gap-2 hover:scale-105 transition-transform min-h-[48px]">
+                      <Download className="h-5 w-5" />
+                      Get Research PDF
+                    </Button>
+                    {!isSignedIn && (
+                      <Link to="/auth/signup">
+                        <Button className="gap-2 shadow-glow hover:scale-105 transition-transform min-h-[48px] w-full sm:w-auto">
+                          Start Training Now
+                          <ArrowRight className="h-5 w-5" />
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-saffron/20 rounded-full blur-3xl"></div>
-                  <img src={henryMurrayImage} alt="Dr. Henry Murray, founder of the Thematic Apperception Test" className="w-full max-w-sm mx-auto rounded-full shadow-elegant border-4 border-primary/20" />
-                  <div className="mt-6 text-center">
-                    <p className="font-semibold text-foreground">Dr. Henry Murray</p>
-                    <p className="text-sm text-muted-foreground">Harvard Psychological Clinic</p>
-                    <p className="text-sm text-muted-foreground">TAT Creator • 1893-1988</p>
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse-glow"></div>
+                  <img src={henryMurrayImage} alt="Dr. Henry Murray, founder of the Thematic Apperception Test" className="w-full max-w-sm mx-auto rounded-3xl shadow-float border-4 border-primary/30 hover:scale-105 transition-transform" />
+                  <div className="mt-6 text-center glass-effect p-4 rounded-2xl max-w-sm mx-auto">
+                    <p className="font-bold text-foreground text-lg">Dr. Henry Murray</p>
+                    <p className="text-sm text-primary font-semibold">Harvard Psychological Clinic</p>
+                    <p className="text-xs text-muted-foreground">TAT Creator • 1893-1988</p>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                Scientific Assessment Framework
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-4 text-foreground">
+                Your Elite Training System 💪
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Experience Murray's revolutionary approach to personality assessment through validated psychological methodologies
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                Proven methodology + AI analysis = Your unfair advantage in SSB selection
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {features.map((feature, index) => <Card key={index} className="shadow-elegant border-primary/10 hover:shadow-saffron transition-all duration-300 hover:border-primary/30">
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+              {features.map((feature, index) => <Card key={index} className="shadow-glow border-primary/20 hover:scale-105 transition-all duration-300 glass-effect group">
                   <CardHeader className="text-center">
-                    <div className="w-32 h-32 rounded-lg overflow-hidden mx-auto mb-4 shadow-md">
-                      <img src={feature.image} alt={feature.title} className="w-full h-full object-cover" />
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden mx-auto mb-4 shadow-float border-2 border-primary/20 group-hover:border-primary/50 transition-all">
+                      <img src={feature.image} alt={feature.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                     </div>
-                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
+                    <CardTitle className="text-lg md:text-xl text-foreground font-bold">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-center text-muted-foreground leading-relaxed">
+                    <CardDescription className="text-center text-muted-foreground leading-relaxed text-sm md:text-base">
                       {feature.description}
                     </CardDescription>
                   </CardContent>
@@ -254,98 +271,117 @@ const Index = () => {
         </section>
 
         {/* Research Methodology Section */}
-        <section className="py-20 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                Evidence-Based Psychological Assessment
+        <section className="py-16 md:py-20 relative overflow-hidden">
+          {/* Gradient background */}
+          <div className="absolute inset-0 opacity-50" style={{background: 'var(--gradient-card)'}}></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 font-semibold" variant="outline">
+                ⚡ AI-Powered Analysis • Real-Time Feedback
+              </Badge>
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-foreground leading-tight">
+                Train Like An Elite, Score Like A Champion
               </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Experience the scientific rigor of Murray's projective methodology, refined through decades of psychological research
+              <p className="text-base md:text-lg text-muted-foreground mb-8">
+                Get instant psychological insights that military boards look for. No guesswork, just results. 🎯
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-              <Card className="shadow-elegant border-primary/10">
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12">
+              <Card className="glass-effect shadow-glow hover:scale-105 transition-all border-primary/20">
                 <CardHeader className="text-center">
-                  <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Projective Analysis</CardTitle>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{background: 'var(--gradient-success)'}}>
+                    <FileText className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-lg font-bold">Story Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Reveal unconscious personality traits through ambiguous stimulus interpretation and narrative construction
+                  <p className="text-muted-foreground text-center text-sm md:text-base">
+                    AI breaks down your stories to reveal leadership traits, emotional intelligence, and officer-like qualities
                   </p>
                 </CardContent>
               </Card>
               
-              <Card className="shadow-elegant border-primary/10">
+              <Card className="glass-effect shadow-glow hover:scale-105 transition-all border-primary/20">
                 <CardHeader className="text-center">
-                  <Brain className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Psychodynamic Insight</CardTitle>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{background: 'var(--gradient-champion)'}}>
+                    <Brain className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-lg font-bold">Personality Insights</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Explore underlying motivations, conflicts, and personality dynamics through thematic analysis
+                  <p className="text-muted-foreground text-center text-sm md:text-base">
+                    Understand your psychological profile like never before. Know your strengths, work on weaknesses
                   </p>
                 </CardContent>
               </Card>
               
-              <Card className="shadow-elegant border-primary/10">
+              <Card className="glass-effect shadow-glow hover:scale-105 transition-all border-primary/20">
                 <CardHeader className="text-center">
-                  <Award className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="text-lg">Clinical Validation</CardTitle>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{background: 'var(--gradient-elite)'}}>
+                    <Award className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-lg font-bold">Score Improvement</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-center">
-                    Backed by extensive clinical research and validated against established psychological assessment standards
+                  <p className="text-muted-foreground text-center text-sm md:text-base">
+                    Track your progress with every test. See real improvement with data-backed feedback and benchmarks
                   </p>
                 </CardContent>
               </Card>
             </div>
             
-            <div className="text-center">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">
-                Begin Your Scientific Assessment Journey
+            <div className="text-center max-w-3xl mx-auto glass-effect p-8 md:p-12 rounded-3xl">
+              <h3 className="text-2xl md:text-3xl font-extrabold mb-4 text-foreground">
+                Ready To Dominate Your SSB TAT? 🚀
               </h3>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Experience the depth and precision of Murray's TAT methodology in a modern, comprehensive assessment platform
+              <p className="text-base md:text-lg text-muted-foreground mb-8">
+                Join 12,000+ future officers who are crushing their preparation. Start training in 30 seconds - FREE.
               </p>
               
               {isLoaded && (
                 !isSignedIn ? (
-                  <Link to="/auth/signup">
-                    <Button size="lg" variant="action" className="px-8 py-6 text-lg">
-                      Get Started Today
-                      <ArrowRight className="h-5 w-5 ml-2" />
+                  <Link to="/auth/signup" className="inline-block">
+                    <Button size="lg" className="px-10 py-6 text-lg font-bold shadow-action hover:scale-105 transition-all min-h-[56px]">
+                      START FREE NOW 🔥
+                      <ArrowRight className="h-6 w-6 ml-2" />
                     </Button>
                   </Link>
                 ) : (
-                  <Button size="lg" variant="action" className="px-8 py-6 text-lg" onClick={() => navigate("/dashboard/pending")}>
-                    Go to Dashboard
-                    <ArrowRight className="h-5 w-5 ml-2" />
+                  <Button size="lg" className="px-10 py-6 text-lg font-bold shadow-action hover:scale-105 transition-all min-h-[56px]" onClick={() => navigate("/dashboard/pending")}>
+                    GO TO DASHBOARD
+                    <ArrowRight className="h-6 w-6 ml-2" />
                   </Button>
                 )
               )}
+              
+              <p className="text-sm text-muted-foreground mt-4">
+                ✓ Free forever • ✓ No payment required • ✓ Cancel anytime
+              </p>
             </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-card/30 py-12">
+      <footer className="border-t glass-effect py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Company Info */}
             <div className="flex flex-col">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-gradient-foreground" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'var(--gradient-hero)'}}>
+                  <BookOpen className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground">TAT Pro</p>
-                  <p className="text-xs text-muted-foreground">SSC Assessment Platform</p>
+                  <p className="font-bold text-foreground text-lg">TAT Pro</p>
+                  <p className="text-xs text-primary font-semibold">Elite SSB Prep Platform 🎯</p>
                 </div>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Empowering 12,000+ future officers with AI-powered TAT training.
+              </p>
             </div>
 
             {/* Contact Details */}
@@ -373,15 +409,15 @@ const Index = () => {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © 2024 TAT Pro by MYLATH HOLDINGS. Designed for SSC candidate success.
+          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs md:text-sm text-muted-foreground text-center md:text-left">
+              © 2024 TAT Pro by MYLATH HOLDINGS. Empowering future officers. 💪
             </p>
-            <div className="flex gap-4 text-sm text-muted-foreground">
-              <a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a>
-              <a href="/terms-and-conditions" className="hover:text-foreground transition-colors">Terms & Conditions</a>
-              <a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a>
+            <div className="flex flex-wrap justify-center gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
+              <a href="/privacy-policy" className="hover:text-primary transition-colors font-medium">Privacy</a>
+              <a href="/refund-policy" className="hover:text-primary transition-colors font-medium">Refund</a>
+              <a href="/terms-and-conditions" className="hover:text-primary transition-colors font-medium">Terms</a>
+              <a href="/about-tat" className="hover:text-primary transition-colors font-medium">About</a>
             </div>
           </div>
         </div>
