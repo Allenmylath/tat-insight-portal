@@ -13,36 +13,45 @@ export const MurrayNeedsChart = ({ needs }: MurrayNeedsChartProps) => {
 
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {
-      case 'Very High': return 'bg-red-500/20 text-red-700';
-      case 'High': return 'bg-orange-500/20 text-orange-700';
-      case 'Moderate': return 'bg-yellow-500/20 text-yellow-700';
-      case 'Low': return 'bg-green-500/20 text-green-700';
+      case 'Very High': return 'bg-gradient-to-r from-red-500 to-pink-600 text-white';
+      case 'High': return 'bg-gradient-to-r from-orange-500 to-amber-600 text-white';
+      case 'Moderate': return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
+      case 'Low': return 'bg-gradient-to-r from-green-500 to-emerald-600 text-white';
       default: return 'bg-muted text-muted-foreground';
     }
   };
 
+  const getProgressColor = (score: number) => {
+    if (score >= 80) return '[&>div]:bg-gradient-to-r [&>div]:from-red-500 [&>div]:to-pink-600';
+    if (score >= 60) return '[&>div]:bg-gradient-to-r [&>div]:from-orange-500 [&>div]:to-amber-600';
+    if (score >= 40) return '[&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-orange-500';
+    return '[&>div]:bg-gradient-to-r [&>div]:from-green-500 [&>div]:to-emerald-600';
+  };
+
   return (
-    <Card>
+    <Card className="glass-effect border-2 border-primary/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Brain className="h-5 w-5 text-primary" />
-          Murray Psychological Needs
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Brain className="h-6 w-6 text-primary" />
+          💪 YOUR PSYCHOLOGICAL SUPERPOWERS
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {needs.map((need, index) => (
-          <div key={index} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-sm">{need.name}</h4>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className={getIntensityColor(need.intensity)}>
+          <div key={index} className="space-y-3 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10 hover:border-primary/30 transition-all">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1 flex-1">
+                <h4 className="font-bold text-base">{need.name}</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{need.description}</p>
+              </div>
+              <div className="flex flex-col items-end gap-2 ml-4">
+                <Badge className={`${getIntensityColor(need.intensity)} font-bold px-3 py-1`}>
                   {need.intensity}
                 </Badge>
-                <span className="text-sm font-medium">{need.score}%</span>
+                <span className="text-2xl font-black text-primary">{need.score}%</span>
               </div>
             </div>
-            <Progress value={need.score} className="h-2" />
-            <p className="text-xs text-muted-foreground">{need.description}</p>
+            <Progress value={need.score} className={`h-3 ${getProgressColor(need.score)}`} />
           </div>
         ))}
       </CardContent>

@@ -21,59 +21,71 @@ export const SelectionRecommendationPanel = ({ recommendation }: SelectionRecomm
     }
   };
 
+  const getRecommendationGradient = (rec: string) => {
+    switch (rec) {
+      case 'Strongly Recommend': return 'bg-gradient-to-r from-green-500 to-emerald-600';
+      case 'Recommend': return 'bg-gradient-to-r from-blue-500 to-indigo-600';
+      case 'Consider': return 'bg-gradient-to-r from-yellow-500 to-orange-500';
+      case 'Not Recommended': return 'bg-gradient-to-r from-purple-500 to-pink-600';
+      default: return 'bg-gradient-to-r from-gray-500 to-slate-600';
+    }
+  };
+
   return (
-    <Card>
+    <Card className="glass-effect border-2 border-green-500/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5 text-primary" />
-          Selection Recommendation
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Users className="h-6 w-6 text-green-600" />
+          🎯 YOUR PATH FORWARD
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Overall Recommendation */}
-        <div className="space-y-2">
+        {/* Overall Recommendation - Hero */}
+        <div className={`${getRecommendationGradient(recommendation.overall_recommendation)} rounded-2xl p-6 text-white space-y-3`}>
           <div className="flex items-center justify-between">
-            <span className="font-medium">Overall Recommendation</span>
-            <div className="flex items-center gap-2">
-              <Badge className={getRecommendationColor(recommendation.overall_recommendation)}>
-                {recommendation.overall_recommendation}
-              </Badge>
-              <span className="text-sm font-medium">{recommendation.confidence_level}% Confidence</span>
-            </div>
+            <span className="font-bold text-lg">SELECTION STATUS</span>
+            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-base px-4 py-1.5">
+              {recommendation.overall_recommendation}
+            </Badge>
           </div>
-          <Progress value={recommendation.confidence_level} className="h-3" />
+          <div className="space-y-2">
+            <p className="text-4xl font-black drop-shadow-lg">
+              {recommendation.confidence_level}% CONFIDENCE
+            </p>
+            <Progress value={recommendation.confidence_level} className="h-4 bg-white/20 [&>div]:bg-white" />
+          </div>
         </div>
 
-        {/* Key Strengths */}
+        {/* Key Strengths - Positive First */}
         {recommendation.key_strengths && recommendation.key_strengths.length > 0 && (
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-medium text-sm">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              Key Strengths
+            <h4 className="flex items-center gap-2 font-bold text-lg">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              💪 YOUR SUPERPOWERS
             </h4>
-            <div className="space-y-2">
+            <div className="grid gap-3">
               {recommendation.key_strengths.map((strength, index) => (
-                <div key={index} className="flex items-start gap-2 p-2 bg-green-500/10 rounded-lg">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">{strength}</span>
+                <div key={index} className="flex items-start gap-3 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border-2 border-green-500/20 hover:border-green-500/40 transition-all">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-base font-medium">{strength}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Areas for Development */}
+        {/* Areas for Development - Reframed Positively */}
         {recommendation.areas_for_development && recommendation.areas_for_development.length > 0 && (
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-medium text-sm">
-              <TrendingUp className="h-4 w-4 text-orange-600" />
-              Areas for Development
+            <h4 className="flex items-center gap-2 font-bold text-lg">
+              <TrendingUp className="h-5 w-5 text-orange-600" />
+              🚀 LEVEL UP THESE SKILLS
             </h4>
-            <div className="space-y-2">
+            <div className="grid gap-3">
               {recommendation.areas_for_development.map((area, index) => (
-                <div key={index} className="flex items-start gap-2 p-2 bg-orange-500/10 rounded-lg">
-                  <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">{area}</span>
+                <div key={index} className="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border-2 border-orange-500/20 hover:border-orange-500/40 transition-all">
+                  <AlertCircle className="h-6 w-6 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-base font-medium">{area}</span>
                 </div>
               ))}
             </div>
@@ -97,20 +109,20 @@ export const SelectionRecommendationPanel = ({ recommendation }: SelectionRecomm
           </div>
         )}
 
-        {/* Next Steps */}
+        {/* Next Steps - Action Oriented */}
         {recommendation.next_steps && recommendation.next_steps.length > 0 && (
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-medium text-sm">
-              <ArrowRight className="h-4 w-4 text-blue-600" />
-              Recommended Next Steps
+            <h4 className="flex items-center gap-2 font-bold text-lg">
+              <ArrowRight className="h-5 w-5 text-blue-600" />
+              🎯 YOUR ACTION PLAN
             </h4>
-            <div className="space-y-2">
+            <div className="grid gap-3">
               {recommendation.next_steps.map((step, index) => (
-                <div key={index} className="flex items-start gap-2 p-2 bg-blue-500/10 rounded-lg">
-                  <span className="text-xs font-bold text-blue-600 mt-0.5 flex-shrink-0">
+                <div key={index} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border-2 border-blue-500/20 hover:border-blue-500/40 transition-all">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-lg">
                     {index + 1}
-                  </span>
-                  <span className="text-sm">{step}</span>
+                  </div>
+                  <span className="text-base font-medium flex-1">{step}</span>
                 </div>
               ))}
             </div>

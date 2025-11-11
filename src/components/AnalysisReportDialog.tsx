@@ -7,6 +7,7 @@ import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/
 import { MurrayNeedsChart } from "@/components/MurrayNeedsChart";
 import { MilitaryAssessmentCard } from "@/components/MilitaryAssessmentCard";
 import { SelectionRecommendationPanel } from "@/components/SelectionRecommendationPanel";
+import { ScoreHero } from "@/components/ScoreHero";
 import { EnhancedAnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, Menu, X } from "lucide-react";
@@ -205,14 +206,11 @@ export const AnalysisReportDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              {testTitle} - Full Analysis Report
-              <Badge variant="default" className="bg-primary/10 text-primary">
-                {score}% Confidence
-              </Badge>
+            <DialogTitle className="text-2xl font-bold">
+              🏆 YOUR CHAMPION REPORT
             </DialogTitle>
             <Button
               variant="outline"
@@ -228,13 +226,18 @@ export const AnalysisReportDialog = ({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Score Hero Section */}
+          <ScoreHero score={score} testTitle={testTitle} />
+
           {/* Summary */}
-          <Card>
+          <Card className="glass-effect border-2 border-primary/20">
             <CardHeader>
-              <CardTitle className="text-lg">Analysis Summary</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                📊 Quick Analysis
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-base text-foreground leading-relaxed font-medium">
                 {analysis.summary || "Comprehensive psychological assessment completed. View detailed results in the tabs below."}
               </p>
             </CardContent>

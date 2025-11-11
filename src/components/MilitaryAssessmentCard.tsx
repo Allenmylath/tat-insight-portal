@@ -31,72 +31,60 @@ export const MilitaryAssessmentCard = ({ assessment }: MilitaryAssessmentCardPro
     }
   };
 
+  const getScoreGradient = (score: number) => {
+    if (score >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-600';
+    if (score >= 60) return 'bg-gradient-to-r from-blue-500 to-indigo-600';
+    if (score >= 40) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
+    return 'bg-gradient-to-r from-purple-500 to-pink-600';
+  };
+
   return (
-    <Card>
+    <Card className="glass-effect border-2 border-accent/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          Military Assessment
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Shield className="h-6 w-6 text-accent" />
+          🎖️ OFFICER POTENTIAL ASSESSMENT
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Overall Rating */}
-        <div className="space-y-2">
+        {/* Overall Rating - Hero Section */}
+        <div className={`${getScoreGradient(assessment.overall_rating)} rounded-2xl p-6 text-white space-y-3`}>
           <div className="flex items-center justify-between">
-            <span className="font-medium">Overall Rating</span>
-            <div className="flex items-center gap-2">
-              <Badge className={getSuitabilityColor(assessment.suitability)}>
-                {assessment.suitability}
-              </Badge>
-              <span className="text-lg font-bold">{assessment.overall_rating}%</span>
-            </div>
+            <span className="font-bold text-lg">OVERALL OFFICER RATING</span>
+            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-base px-4 py-1.5">
+              {assessment.suitability}
+            </Badge>
           </div>
-          <Progress value={assessment.overall_rating} className="h-3" />
+          <div className="flex items-baseline gap-2">
+            <span className="text-6xl font-black drop-shadow-lg">{assessment.overall_rating}</span>
+            <span className="text-4xl font-bold">%</span>
+          </div>
+          <Progress value={assessment.overall_rating} className="h-4 bg-white/20 [&>div]:bg-white" />
         </div>
 
-        {/* 6 Military Qualities */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Effective Intelligence</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.effective_intelligence} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.effective_intelligence}%</span>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Planning & Organizing</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.planning_organizing} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.planning_organizing}%</span>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Social Adaptability</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.social_adaptability} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.social_adaptability}%</span>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Cooperation</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.cooperation} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.cooperation}%</span>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Sense of Responsibility</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.sense_of_responsibility} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.sense_of_responsibility}%</span>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Courage & Determination</span>
-            <div className="flex items-center gap-2">
-              <Progress value={assessment.courage_determination} className="h-2 flex-1" />
-              <span className="text-sm font-medium">{assessment.courage_determination}%</span>
-            </div>
+        {/* 6 Military Qualities - Enhanced Cards */}
+        <div className="space-y-3">
+          <h3 className="font-bold text-lg mb-4">🎯 CORE OFFICER QUALITIES</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { label: "Effective Intelligence", value: assessment.effective_intelligence, icon: "🧠" },
+              { label: "Planning & Organizing", value: assessment.planning_organizing, icon: "📋" },
+              { label: "Social Adaptability", value: assessment.social_adaptability, icon: "🤝" },
+              { label: "Cooperation", value: assessment.cooperation, icon: "👥" },
+              { label: "Sense of Responsibility", value: assessment.sense_of_responsibility, icon: "⚖️" },
+              { label: "Courage & Determination", value: assessment.courage_determination, icon: "💪" }
+            ].map((quality, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/10 hover:border-primary/30 transition-all space-y-2">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-base font-bold flex items-center gap-2">
+                    <span className="text-xl">{quality.icon}</span>
+                    {quality.label}
+                  </span>
+                  <span className="text-2xl font-black text-primary">{quality.value}%</span>
+                </div>
+                <Progress value={quality.value} className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-accent" />
+              </div>
+            ))}
           </div>
         </div>
 

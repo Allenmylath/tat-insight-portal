@@ -1,12 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Trophy, Eye, Calendar, Loader2, Brain } from "lucide-react";
+import { CheckCircle2, Trophy, Eye, Calendar, Loader2, Brain, TrendingUp, Flame } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
 import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
+import { GamificationPanel } from "@/components/GamificationPanel";
 import { useState } from "react";
 import { Button as LinkButton } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -121,22 +122,41 @@ const AttemptedTests = () => {
 
   const visibleTests = isPro ? (attemptedTests || []) : (attemptedTests || []).filter(test => !test.isPremium);
 
+  // Calculate stats for gamification
+  const averageScore = visibleTests.length > 0 
+    ? Math.round(visibleTests.reduce((sum, test) => sum + (test.score || 0), 0) / visibleTests.length)
+    : 0;
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
       {!isSignedIn && <PreviewBanner />}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Attempted Tests</h1>
-          <p className="text-muted-foreground">
-            Review your completed psychological assessments and results
-          </p>
+      
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-gradient rounded-3xl p-8 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2">YOUR TEST JOURNEY 🚀</h1>
+            <p className="text-white/90 text-lg">
+              Track your progress and conquer every challenge!
+            </p>
+          </div>
+          <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-lg px-4 py-2 gap-2">
+            <Trophy className="h-5 w-5" />
+            {visibleTests.length} Completed
+          </Badge>
         </div>
-        <Badge variant="secondary" className="gap-2">
-          <CheckCircle2 className="h-4 w-4" />
-          {visibleTests.length} Completed
-        </Badge>
       </div>
+
+      {/* Gamification Stats */}
+      {visibleTests.length > 0 && (
+        <GamificationPanel 
+          testsCompleted={visibleTests.length}
+          averageScore={averageScore}
+          streak={5}
+          achievements={["first_test"]}
+        />
+      )}
 
       {isLoading ? (
         <Card>
@@ -164,93 +184,114 @@ const AttemptedTests = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6">
-          {visibleTests.map((test) => (
-            <Card key={test.id} className="shadow-elegant">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                      {test.title} - Attempt #{test.attemptNumber}
-                      {test.isPremium && (
-                        <Badge variant="secondary" className="text-xs">Pro</Badge>
-                      )}
-                    </CardTitle>
-                     <CardDescription className="flex items-center gap-4 text-sm">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {test.completedAt ? new Date(test.completedAt).toLocaleDateString() : 'Unknown date'}
-                      </span>
-                      <span>Duration: {test.duration}</span>
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {test.score !== null ? (
-                      <Badge variant="default" className="bg-primary/10 text-primary">
-                        <Trophy className="h-3 w-3 mr-1" />
-                        {test.score}%
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-muted-foreground">
-                        Analysis Pending
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {test.score === null ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="bg-muted/30 rounded-lg p-4 cursor-help">
-                        <h4 className="font-medium text-sm text-foreground mb-2">Analysis Summary</h4>
-                        <p className="text-sm text-muted-foreground">{test.analysis}</p>
+        <div>
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Trophy className="h-6 w-6 text-primary" />
+            Your Tests
+          </h2>
+          <div className="grid gap-6">
+            {visibleTests.map((test, index) => {
+              const scoreGradient = test.score && test.score >= 80 
+                ? 'from-green-500/10 to-emerald-500/10 border-green-500/30' 
+                : test.score && test.score >= 60 
+                ? 'from-blue-500/10 to-indigo-500/10 border-blue-500/30'
+                : test.score && test.score >= 40
+                ? 'from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
+                : 'from-purple-500/10 to-pink-500/10 border-purple-500/30';
+
+              return (
+                <Card key={test.id} className={`glass-effect border-2 bg-gradient-to-r ${scoreGradient} hover:scale-[1.02] transition-all`}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <CardTitle className="flex items-center gap-2 text-xl">
+                          <Trophy className="h-6 w-6 text-primary" />
+                          {test.title}
+                          <Badge className="bg-primary/20 text-primary border-primary/30">
+                            Attempt #{test.attemptNumber}
+                          </Badge>
+                        </CardTitle>
+                        <CardDescription className="flex items-center gap-4 text-base">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {test.completedAt ? new Date(test.completedAt).toLocaleDateString() : 'Unknown date'}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Brain className="h-4 w-4" />
+                            {test.duration}
+                          </span>
+                        </CardDescription>
                       </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">Story is being evaluated. Processing time varies depending on server traffic and availability.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <div className="bg-muted/30 rounded-lg p-4">
-                    <h4 className="font-medium text-sm text-foreground mb-2">Analysis Summary</h4>
-                    <p className="text-sm text-muted-foreground">{test.analysis}</p>
-                  </div>
-                )}
-                <div className="flex gap-2">
-                  <Button 
-                    variant="government" 
-                    size="sm" 
-                    className="gap-2"
-                    onClick={() => {
-                      if (test.fullAnalysis) {
-                        setPendingAnalysis({
-                          analysis: test.fullAnalysis,
-                          title: test.title,
-                          score: test.score || 0
-                        });
-                        setShowValuationLogic(true);
-                      }
-                    }}
-                    disabled={!test.fullAnalysis}
-                  >
-                    <Eye className="h-4 w-4" />
-                    View Full Report
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      window.location.href = `/test/${test.testId}`;
-                    }}
-                  >
-                    Retake Test
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                      <div className="flex flex-col items-end gap-2">
+                        {test.score !== null ? (
+                          <>
+                            <div className="text-4xl font-black text-primary">{test.score}%</div>
+                            <Badge className="bg-gradient-to-r from-primary to-accent text-white px-3 py-1">
+                              {test.score >= 80 ? 'EXCELLENT! 🏆' : test.score >= 60 ? 'GREAT JOB! 💪' : test.score >= 40 ? 'SOLID! 🚀' : 'KEEP GOING! 💪'}
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            ⏳ Analysis Pending
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {test.score === null ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-card/50 rounded-xl p-4 cursor-help">
+                            <h4 className="font-bold text-base text-foreground mb-2">📊 Analysis Summary</h4>
+                            <p className="text-base text-muted-foreground leading-relaxed">{test.analysis}</p>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">Story is being evaluated. Processing time varies depending on server traffic and availability.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <div className="bg-card/50 rounded-xl p-4">
+                        <h4 className="font-bold text-base text-foreground mb-2">📊 What We Found</h4>
+                        <p className="text-base text-muted-foreground leading-relaxed">{test.analysis}</p>
+                      </div>
+                    )}
+                    <div className="flex gap-3">
+                      <Button 
+                        className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-bold gap-2 shadow-action"
+                        size="lg" 
+                        onClick={() => {
+                          if (test.fullAnalysis) {
+                            setPendingAnalysis({
+                              analysis: test.fullAnalysis,
+                              title: test.title,
+                              score: test.score || 0
+                            });
+                            setShowValuationLogic(true);
+                          }
+                        }}
+                        disabled={!test.fullAnalysis}
+                      >
+                        <Eye className="h-5 w-5" />
+                        SEE MY FULL ANALYSIS 🎯
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        className="gap-2 border-2 hover:border-primary/50"
+                        onClick={() => {
+                          window.location.href = `/test/${test.testId}`;
+                        }}
+                      >
+                        BEAT MY SCORE 🔥
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
 
