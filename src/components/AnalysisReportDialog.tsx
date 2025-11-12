@@ -10,7 +10,7 @@ import { SelectionRecommendationPanel } from "@/components/SelectionRecommendati
 import { ScoreHero } from "@/components/ScoreHero";
 import { EnhancedAnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink, ChevronRight, Activity, Award, Target, FileText } from "lucide-react";
+import { Copy, ExternalLink, ChevronRight, Activity, Award, Target, FileText, X } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
@@ -310,14 +310,24 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[95vh] p-0 flex flex-col">
+          {/* Drag Handle */}
+          <div className="flex justify-center pt-2 pb-1">
+            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
+          </div>
+
           {/* Sticky Header */}
-          <SheetHeader className="sticky top-0 z-10 bg-background border-b px-4 py-4 space-y-0">
-            <div className="flex items-center justify-between">
+          <SheetHeader className="sticky top-0 z-10 bg-background border-b px-4 py-3 space-y-0">
+            <div className="flex items-center justify-between gap-3">
               <SheetTitle className="text-lg font-bold">🏆 Your Report</SheetTitle>
-              <Button variant="outline" size="sm" onClick={handleCopyToChatGPT} className="gap-1.5 h-9">
-                <Copy className="h-3.5 w-3.5" />
-                <span className="text-xs">Copy</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleCopyToChatGPT} className="gap-1.5 h-9">
+                  <Copy className="h-3.5 w-3.5" />
+                  <span className="text-xs">Copy</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="h-9 w-9 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </SheetHeader>
 
