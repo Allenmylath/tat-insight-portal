@@ -10,6 +10,7 @@ import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
 import { useUser } from '@clerk/clerk-react';
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import SSBInterview from "./pages/SSBInterview";
 import TatTestInfo from "./pages/TatTestInfo";
@@ -36,21 +37,25 @@ import { TestProvider } from "@/contexts/TestContext";
 
 const queryClient = new QueryClient();
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
-  <SidebarProvider>
-    <div className="min-h-screen flex w-full">
-      <AppSidebar />
-      <div className="flex-1 flex flex-col">
-        <header className="h-12 flex items-center border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-          <SidebarTrigger className="ml-4" />
-        </header>
-        <main className="flex-1 p-6">
-          {children}
-        </main>
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <SidebarProvider defaultOpen={!isMobile}>
+      <div className="min-h-screen flex w-full relative">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-12 flex items-center border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+            <SidebarTrigger className="ml-4" />
+          </header>
+          <main className="flex-1 p-4 md:p-6 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
-  </SidebarProvider>
-);
+    </SidebarProvider>
+  );
+};
 
 const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
@@ -68,7 +73,17 @@ const App = () => {
   );
 
   return (
-    <StatsigProvider client={client} loadingComponent={<div>Loading...</div>}>
+    <StatsigProvider 
+      client={client} 
+      loadingComponent={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      }
+    >
       <QueryClientProvider client={queryClient}>
         <TestProvider>
           <TooltipProvider>

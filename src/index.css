@@ -224,6 +224,17 @@ All colors MUST be HSL.
   }
 }
 
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  #root {
+    overflow-x: hidden;
+  }
+  
+  body {
+    overflow-x: hidden;
+  }
+}
+
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
