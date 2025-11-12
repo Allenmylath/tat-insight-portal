@@ -370,20 +370,20 @@ const SSBInterview = () => {
             <div className="max-w-5xl mx-auto text-center">
               {/* Live Activity Badge - Mobile Optimized */}
               <Badge
-                className="mb-4 sm:mb-6 md:mb-8 px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base glass-effect border-primary/30 font-bold animate-pulse-glow inline-flex items-center gap-2"
+                className="mb-4 sm:mb-6 md:mb-8 px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base bg-white/20 backdrop-blur-md border-2 border-white/40 font-bold animate-pulse-glow inline-flex items-center gap-2 text-white shadow-xl"
                 variant="outline"
               >
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 animate-pulse" />
-                  <span className="hidden xs:inline">
-                    <span className="text-orange-500 font-black">{activeUsers}</span> Officers Training Now
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-400 animate-pulse drop-shadow-lg" />
+                  <span className="hidden xs:inline drop-shadow-lg">
+                    <span className="text-orange-300 font-black">{activeUsers}</span> Officers Training Now
                   </span>
-                  <span className="xs:hidden text-orange-500 font-black">{activeUsers} Live</span>
+                  <span className="xs:hidden text-orange-300 font-black drop-shadow-lg">{activeUsers} Live</span>
                   <span className="hidden sm:inline">•</span>
-                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500" />
-                  <span className="text-green-500 font-black">{recentSignups}</span>
-                  <span className="hidden sm:inline">joined today</span>
-                  <span className="sm:hidden">today</span>
+                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 drop-shadow-lg" />
+                  <span className="text-green-300 font-black drop-shadow-lg">{recentSignups}</span>
+                  <span className="hidden sm:inline drop-shadow-lg">joined today</span>
+                  <span className="sm:hidden drop-shadow-lg">today</span>
                 </div>
               </Badge>
 
@@ -440,51 +440,57 @@ const SSBInterview = () => {
               </div>
 
               {/* Trust indicators - Compact for Mobile */}
-              <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-8 sm:mb-10 md:mb-16 max-w-xl mx-auto">
-                <p className="text-white font-semibold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
+              <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-8 sm:mb-10 md:mb-16 max-w-xl mx-auto shadow-xl">
+                <p className="text-white font-semibold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap drop-shadow-lg">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
                   <span>Free Forever</span>
-                  <span className="text-white/50 hidden xs:inline">•</span>
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
+                  <span className="text-white/70 hidden xs:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
                   <span className="hidden xs:inline">No Payment</span>
                   <span className="xs:hidden">Free</span>
-                  <span className="text-white/50 hidden sm:inline">•</span>
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
+                  <span className="text-white/70 hidden sm:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
                   <span>Instant Access</span>
                 </p>
               </div>
 
               {/* Stats - Mobile Grid */}
               <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 max-w-3xl mx-auto px-2">
-                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
                     style={{ background: "var(--gradient-success)" }}
                   >
                     <Calendar className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">Day 2</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">SSB Test</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">Day 2</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                    SSB Test
+                  </div>
                 </div>
-                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
                     style={{ background: "var(--gradient-action)" }}
                   >
                     <Clock className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">30 Sec</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">Per Image</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">30 Sec</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                    Per Image
+                  </div>
                 </div>
-                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
                     style={{ background: "var(--gradient-champion)" }}
                   >
                     <Image className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">11-12</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">Images</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">11-12</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                    Images
+                  </div>
                 </div>
               </div>
             </div>
