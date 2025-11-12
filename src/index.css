@@ -224,16 +224,6 @@ All colors MUST be HSL.
   }
 }
 
-/* Image lazy loading states */
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-}
-
-img[loading="lazy"].loaded {
-  opacity: 1;
-}
-
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

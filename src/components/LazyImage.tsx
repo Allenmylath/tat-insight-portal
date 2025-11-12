@@ -22,7 +22,7 @@ export const LazyImage = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isInView, setIsInView] = useState(priority);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (priority) return;
@@ -47,6 +47,10 @@ export const LazyImage = ({
     return () => observer.disconnect();
   }, [priority]);
 
+  useEffect(() => {
+    console.log('LazyImage Debug:', { src, isInView, isLoaded, hasError, priority });
+  }, [src, isInView, isLoaded, hasError, priority]);
+
   const handleLoad = () => {
     setIsLoaded(true);
   };
@@ -57,7 +61,7 @@ export const LazyImage = ({
   };
 
   return (
-    <div ref={imgRef} className={`relative ${placeholderClassName}`}>
+    <div ref={imgRef} className={`relative ${placeholderClassName}`} style={{ minHeight: '100px' }}>
       {!isLoaded && !hasError && (
         <Skeleton className={`absolute inset-0 ${className}`} />
       )}
@@ -79,6 +83,7 @@ export const LazyImage = ({
           }`}
           onLoad={handleLoad}
           onError={handleError}
+          style={{ display: 'block' }}
         />
       )}
     </div>
