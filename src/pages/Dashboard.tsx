@@ -27,8 +27,14 @@ const Dashboard = () => {
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
 
   useEffect(() => {
+    console.log('Dashboard: useEffect triggered', { 
+      userId: userData?.id, 
+      isSignedIn, 
+      loading 
+    });
+
     const fetchTests = async () => {
-      
+      console.log('Dashboard: Starting fetchTests');
       try {
         // First, get all active tests
         const { data: allTests, error: testsError } = await supabase
@@ -153,10 +159,16 @@ const Dashboard = () => {
         setCompletedTests(completedTestsList);
         setAbandonedTests(abandonedTestsList);
         setTests(pendingTestsList);
+        console.log('Dashboard: Tests set successfully', {
+          completed: completedTestsList.length,
+          abandoned: abandonedTestsList.length,
+          pending: pendingTestsList.length
+        });
       } catch (error) {
-        console.error('Error fetching tests:', error);
+        console.error('Dashboard: Error fetching tests:', error);
       } finally {
         setTestsLoading(false);
+        console.log('Dashboard: Tests loading complete');
       }
     };
 
@@ -380,13 +392,18 @@ const Dashboard = () => {
               </div>
               <Progress value={progressPercentage} className="h-3" />
               
-              {availableCompletedTests.length > 0 && (
+              {availableCompletedTests && availableCompletedTests.length > 0 && (
                 <div className="mt-6">
                   <p className="text-sm font-medium mb-2">Average Score</p>
                   <div className="flex items-center gap-2">
                     <Award className="h-5 w-5 text-primary" />
                     <span className="text-2xl font-bold text-primary">
-                      {Math.round(availableCompletedTests.reduce((acc, test) => acc + test.score!, 0) / availableCompletedTests.length)}%
+                      {Math.round(
+                        availableCompletedTests
+                          .filter(test => test.score != null)
+                          .reduce((acc, test) => acc + (test.score || 0), 0) / 
+                        availableCompletedTests.length
+                      )}%
                     </span>
                   </div>
                 </div>

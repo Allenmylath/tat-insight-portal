@@ -89,8 +89,14 @@ export const useUserData = () => {
           filter: `id=eq.${userData.id}`
         },
         (payload) => {
-          console.log('Realtime user data update:', payload);
-          setUserData(payload.new as UserData);
+          try {
+            console.log('Realtime user data update:', payload);
+            if (payload.new && typeof payload.new === 'object') {
+              setUserData(payload.new as UserData);
+            }
+          } catch (error) {
+            console.error('Error processing realtime update:', error);
+          }
         }
       )
       .subscribe();
