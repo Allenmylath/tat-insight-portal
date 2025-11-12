@@ -43,8 +43,13 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
   // Cleanup: Close any stuck PhonePe iframe on unmount
   useEffect(() => {
     return () => {
-      if (window.PhonePeCheckout?.closePage) {
-        window.PhonePeCheckout.closePage();
+      try {
+        if (window.PhonePeCheckout?.closePage) {
+          window.PhonePeCheckout.closePage();
+        }
+      } catch (error) {
+        // Silently catch PhonePe cleanup errors - DOM may already be removed
+        console.log('PhonePe cleanup: Element already removed');
       }
     };
   }, []);
