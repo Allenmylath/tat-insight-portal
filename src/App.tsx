@@ -48,7 +48,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="min-h-screen flex w-full relative">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-12 flex items-center border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+          <header className="h-12 flex items-center border-b bg-card/50 backdrop-blur-sm sticky top-0 z-30">
             <SidebarTrigger className="ml-4" />
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-auto">

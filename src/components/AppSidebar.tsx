@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt, Star, Zap } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -79,6 +80,7 @@ export function AppSidebar() {
   const { signOut } = useClerk();
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
+  const isMobile = useIsMobile();
 
   const isActive = (path: string, exact?: boolean) => {
     if (exact) {
@@ -96,7 +98,7 @@ export function AppSidebar() {
     <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-card border-r">
         {/* Header */}
-        {!isCollapsed && (
+        {(!isCollapsed || isMobile) && (
           <div className="p-4 border-b">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 bg-gradient-saffron rounded-lg flex items-center justify-center">
@@ -117,7 +119,7 @@ export function AppSidebar() {
         )}
 
         {/* Active Test Image */}
-        {isTestActive && activeTest && !isCollapsed && (
+        {isTestActive && activeTest && (!isCollapsed || isMobile) && (
           <div className="p-4 border-b">
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Active Test</h3>
@@ -149,7 +151,7 @@ export function AppSidebar() {
                       className={() => getNavCls(isActive(item.url, item.exact))}
                     >
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {(!isCollapsed || isMobile) && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -171,7 +173,7 @@ export function AppSidebar() {
                       className={() => getNavCls(isActive(item.url))}
                     >
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {(!isCollapsed || isMobile) && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -182,7 +184,7 @@ export function AppSidebar() {
                   className="hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  {!isCollapsed && <span>Sign Out</span>}
+                  {(!isCollapsed || isMobile) && <span>Sign Out</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -190,7 +192,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Earn Free Credits CTA - Show when credits = 0 */}
-        {!isCollapsed && !loading && userData && userData.credit_balance === 0 && (
+        {(!isCollapsed || isMobile) && !loading && userData && userData.credit_balance === 0 && (
           <div className="mt-auto p-4 border-t">
             <div className="bg-gradient-to-br from-yellow-400/10 via-orange-400/10 to-yellow-400/10 border-2 border-yellow-500/40 rounded-lg p-3 relative overflow-hidden">
               {/* Animated background effect */}
@@ -223,7 +225,7 @@ export function AppSidebar() {
         )}
 
         {/* Upgrade CTA for Free Users */}
-        {!isCollapsed && !isPro && !loading && (
+        {(!isCollapsed || isMobile) && !isPro && !loading && (
           <div className="mt-auto p-4 border-t">
             <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
@@ -243,10 +245,6 @@ export function AppSidebar() {
           </div>
         )}
 
-        {/* Sidebar Toggle */}
-        <div className="mt-auto p-2">
-          <SidebarTrigger className="w-full" />
-        </div>
       </SidebarContent>
     </Sidebar>
   );
