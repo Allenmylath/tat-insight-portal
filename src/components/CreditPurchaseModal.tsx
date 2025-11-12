@@ -40,6 +40,15 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
     }
   }, [open]);
 
+  // Cleanup: Close any stuck PhonePe iframe on unmount
+  useEffect(() => {
+    return () => {
+      if (window.PhonePeCheckout?.closePage) {
+        window.PhonePeCheckout.closePage();
+      }
+    };
+  }, []);
+
   const fetchCreditPackages = async () => {
     try {
       const { data, error } = await supabase
@@ -84,37 +93,57 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
         throw new Error('Failed to create payment order');
       }
 
-      // Open PhonePe payment in iframe
+      // Open PhonePe payment
       if (window.PhonePeCheckout) {
-        window.PhonePeCheckout.transact({
-          tokenUrl: data.data.checkoutUrl,
-          type: "IFRAME",
-          callback: (response: string) => {
-            console.log('PhonePe callback response:', response);
-            
-            if (response === 'USER_CANCEL') {
-              toast({
-                title: "Payment Cancelled",
-                description: "You cancelled the payment process.",
-                variant: "destructive"
-              });
-            } else if (response === 'CONCLUDED') {
-              toast({
-                title: "Payment Processing",
-                description: "Your payment is being processed. Credits will be added shortly.",
-                variant: "default"
-              });
+        if (isMobile) {
+          // Mobile: Use REDIRECT mode
+          window.PhonePeCheckout.transact({
+            tokenUrl: data.data.checkoutUrl
+          });
+          
+          // Show feedback and close modal
+          toast({
+            title: "Redirecting to Payment",
+            description: "You'll be redirected to PhonePe to complete your payment.",
+          });
+          
+          setPurchasing(null);
+          onOpenChange(false);
+        } else {
+          // Desktop: Use IFRAME mode and close modal to prevent overlay conflicts
+          window.PhonePeCheckout.transact({
+            tokenUrl: data.data.checkoutUrl,
+            type: "IFRAME",
+            callback: (response: string) => {
+              console.log('PhonePe callback response:', response);
               
-              // Close modal and refresh page to update credit balance
-              setTimeout(() => {
-                onOpenChange(false);
-                window.location.reload();
-              }, 2000);
+              if (response === 'USER_CANCEL') {
+                toast({
+                  title: "Payment Cancelled",
+                  description: "You cancelled the payment process.",
+                  variant: "destructive"
+                });
+              } else if (response === 'CONCLUDED') {
+                toast({
+                  title: "Payment Processing",
+                  description: "Your payment is being processed. Credits will be added shortly.",
+                  variant: "default"
+                });
+                
+                // Refresh page to update credit balance
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+              }
+              
+              setPurchasing(null);
             }
-            
-            setPurchasing(null);
-          }
-        });
+          });
+          
+          // Close modal immediately to prevent z-index/overlay conflicts
+          onOpenChange(false);
+          setPurchasing(null);
+        }
       } else {
         throw new Error('PhonePe checkout not available');
       }
