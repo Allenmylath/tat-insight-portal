@@ -148,23 +148,23 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
     return <Zap className="h-6 w-6" />;
   };
 
-  const PackagesContent = () => (
-    <>
-      {/* Hero Header */}
-      <div className="text-center space-y-3 mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <Coins className="h-4 w-4 text-primary animate-pulse" />
-          <span className="text-sm font-semibold">
-            Current Balance: {userData?.credit_balance || 0} credits
-          </span>
+    const PackagesContent = () => (
+      <div className="w-full overflow-x-hidden">
+        {/* Hero Header */}
+        <div className="text-center space-y-3 mb-6 w-full overflow-x-hidden">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <Coins className="h-4 w-4 text-primary animate-pulse" />
+            <span className="text-sm font-semibold">
+              Current Balance: {userData?.credit_balance || 0} credits
+            </span>
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-primary bg-clip-text text-transparent animate-gradient break-words px-2">
+            POWER UP YOUR TAT! 🚀
+          </h3>
+          <p className="text-sm text-muted-foreground break-words px-2">
+            12,000+ Officers Trained • 100% Safe & Secure 🔒
+          </p>
         </div>
-        <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-primary bg-clip-text text-transparent animate-shimmer">
-          POWER UP YOUR TAT! 🚀
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          12,000+ Officers Trained • 100% Safe & Secure 🔒
-        </p>
-      </div>
 
       {/* Loading State */}
       {loading ? (
@@ -182,11 +182,12 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
           ))}
         </div>
       ) : (
-        <div className={`grid gap-4 md:gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
-          {packages.map((pkg) => (
+        <div className={`grid gap-4 md:gap-6 w-full ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
+          {packages.map((pkg, index) => (
             <Card 
               key={pkg.id} 
-              className={`relative glass-effect border-2 transition-all duration-300 hover:scale-105 animate-fade-in bg-gradient-to-br ${getPackageGradient(pkg)} ${getPackageBorder(pkg)}`}
+              className={`relative glass-effect border-2 transition-all duration-300 active:scale-[0.98] md:hover:scale-105 animate-fade-in bg-gradient-to-br ${getPackageGradient(pkg)} ${getPackageBorder(pkg)} w-full max-w-full overflow-hidden`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               {pkg.is_popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
@@ -261,30 +262,30 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
       )}
 
       {/* Trust Footer */}
-      <div className="text-center space-y-2 mt-6 pt-6 border-t border-border/50">
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+      <div className="text-center space-y-2 mt-6 pt-6 border-t border-border/50 overflow-x-hidden">
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground flex-wrap">
           <Lock className="h-4 w-4" />
-          <span>100% Secure Payment • UPI, Cards, Net Banking</span>
+          <span className="break-words px-2">100% Secure Payment • UPI, Cards, Net Banking</span>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground break-words px-2">
           Credits never expire • Use them anytime, forever ∞
         </p>
       </div>
-    </>
+    </div>
   );
 
   // Render mobile drawer or desktop dialog
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh] px-4 pb-8">
+        <DrawerContent className="max-h-[90vh] px-4 pb-8 overflow-x-hidden">
           <DrawerHeader className="text-left px-0">
             <DrawerTitle className="flex items-center gap-2 text-xl">
               <Coins className="h-5 w-5 text-primary" />
               Purchase Credits
             </DrawerTitle>
           </DrawerHeader>
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto overflow-x-hidden">
             <PackagesContent />
           </div>
         </DrawerContent>
