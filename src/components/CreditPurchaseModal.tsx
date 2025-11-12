@@ -224,11 +224,6 @@ export const CreditPurchaseModal = ({ open, onOpenChange }: CreditPurchaseModalP
                   <div className="text-xs text-muted-foreground">
                     ₹{(pkg.price / pkg.credits).toFixed(1)} per credit
                   </div>
-                  {pkg.credits >= 500 && (
-                    <Badge variant="outline" className="text-xs bg-green-500/10 text-green-500 border-green-500/20">
-                      Save ₹{Math.round((100 - (pkg.price / pkg.credits)) * pkg.credits)} 💰
-                    </Badge>
-                  )}
                 </div>
                 
                 <div className="text-xs text-muted-foreground space-y-1">
