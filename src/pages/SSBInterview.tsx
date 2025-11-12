@@ -1113,62 +1113,71 @@ const SSBInterview = () => {
 
       {/* Welcome Dialog - Mobile Enhanced */}
       <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-lg mx-auto glass-effect border-primary/30">
-          <DialogHeader>
-            <DialogTitle className="text-xl xs:text-2xl sm:text-3xl font-black flex items-center gap-2 font-display leading-tight">
-              <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-primary animate-pulse flex-shrink-0" />
-              <span>Wait! Before You Go... 🎯</span>
+        <DialogContent className="w-[95vw] sm:w-[90vw] max-w-lg glass-effect border-primary/30 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="space-y-2 sm:space-y-3">
+            <DialogTitle className="text-lg xs:text-xl sm:text-2xl font-black flex items-start gap-2 font-display leading-tight pr-8">
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse flex-shrink-0 mt-0.5" />
+              <span className="break-words">Wait! Before You Go... 🎯</span>
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base pt-3 sm:pt-4 space-y-3 sm:space-y-4">
-              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-xl p-4 sm:p-5">
-                <p className="font-bold text-foreground mb-2 sm:mb-3 text-base sm:text-lg">
+            <DialogDescription className="text-xs xs:text-sm sm:text-base pt-2 sm:pt-3 space-y-3 sm:space-y-4">
+              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-lg sm:rounded-xl p-3 sm:p-5">
+                <p className="font-bold text-foreground mb-2 sm:mb-3 text-sm xs:text-base sm:text-lg break-words">
                   🚀 Start Your Officer Journey TODAY - FREE!
                 </p>
                 <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span>
+                  <li className="flex items-start gap-1.5 sm:gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span className="break-words">
                       <strong>Instant AI Analysis</strong> on your stories
                     </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span>
+                  <li className="flex items-start gap-1.5 sm:gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span className="break-words">
                       <strong>Join 12,000+ aspirants</strong> crushing prep
                     </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span>
+                  <li className="flex items-start gap-1.5 sm:gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span className="break-words">
                       <strong>96% success rate</strong> in SSB
                     </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span>
+                  <li className="flex items-start gap-1.5 sm:gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span className="break-words">
                       <strong>FREE forever</strong> • No payment
                     </span>
                   </li>
                 </ul>
               </div>
-              <p className="text-center text-xs sm:text-sm text-muted-foreground italic">
+              <p className="text-center text-[10px] xs:text-xs sm:text-sm text-muted-foreground italic break-words px-2">
                 ⏰ Don't let another day pass without proper TAT prep!
               </p>
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-2.5 sm:gap-3 mt-2">
+          <div className="flex flex-col gap-2 sm:gap-3 mt-3 sm:mt-4">
             <Button
               size="lg"
-              className="font-black text-base sm:text-lg shadow-action hover:scale-105 transition-all h-12 sm:h-14 animate-pulse-glow"
+              className="font-black text-xs xs:text-sm sm:text-base md:text-lg shadow-action hover:scale-105 transition-all h-11 xs:h-12 sm:h-14 w-full whitespace-normal leading-tight px-3 sm:px-4"
               onClick={() => {
                 setShowWelcomeDialog(false);
                 navigate("/auth/signup");
               }}
             >
-              YES! MAKE ME A TAT EXPERT 🔥
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
+              <span className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+                <span>YES! MAKE ME A TAT EXPERT</span>
+                <span className="flex items-center gap-1">
+                  🔥 <ArrowRight className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
+                </span>
+              </span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowWelcomeDialog(false)} className="text-xs h-9">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowWelcomeDialog(false)}
+              className="text-[10px] xs:text-xs sm:text-sm h-8 xs:h-9 w-full"
+            >
               I'll browse more (not recommended)
             </Button>
           </div>
