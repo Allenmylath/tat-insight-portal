@@ -24,11 +24,12 @@ const buttonVariants = cva(
         champion: "bg-[var(--gradient-champion)] text-[hsl(var(--champion-gold-foreground))] hover:opacity-90 shadow-[var(--shadow-champion)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
       },
       size: {
-        default: "h-11 px-5 py-2.5", // Increased from h-10 for better mobile touch
+        default: "h-11 px-5 py-2.5 touch-target", // Mobile-optimized with touch target
         sm: "h-9 rounded-md px-3",
-        lg: "h-12 rounded-md px-10 text-base", // Increased from h-11 for better mobile
-        xl: "h-14 rounded-lg px-12 text-lg font-bold", // NEW - Extra large for CTAs
-        icon: "h-11 w-11", // Increased from h-10 for better touch targets
+        lg: "h-12 rounded-md px-10 text-base touch-target-lg", // Better for mobile CTAs
+        xl: "h-14 rounded-lg px-12 text-lg font-bold touch-target-lg", // Extra large for primary CTAs
+        icon: "h-11 w-11 touch-target", // Optimal touch target for icons
+        mobile: "h-12 px-6 text-base touch-target-lg", // NEW - Optimized specifically for mobile
       },
     },
     defaultVariants: {

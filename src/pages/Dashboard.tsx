@@ -207,10 +207,10 @@ const Dashboard = () => {
       {!isSignedIn && <PreviewBanner />}
       
       {/* Welcome Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome Back!</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">Welcome Back!</h1>
+          <p className="text-base md:text-sm text-muted-foreground mt-1">
             Continue your psychological assessment journey
           </p>
         </div>
@@ -266,10 +266,10 @@ const Dashboard = () => {
               </div>
               
               {/* Right side - CTA Button */}
-              <div className="flex flex-col gap-2 min-w-[200px]">
+              <div className="flex flex-col gap-2 w-full md:min-w-[200px]">
                 <Button 
-                  size="lg" 
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg gap-2 font-semibold"
+                  size="mobile"
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg gap-2 font-semibold text-base"
                   onClick={() => {
                     const message = `Hi! I want to earn ₹100 credits by sharing tattests.me.\n\nMy email: ${userData?.email}\n\nPost link: `;
                     window.open(`https://wa.me/918921635144?text=${encodeURIComponent(message)}`, '_blank');
@@ -278,7 +278,7 @@ const Dashboard = () => {
                   <Zap className="h-5 w-5" />
                   Send WhatsApp Message
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
+                <p className="text-sm md:text-xs text-center text-muted-foreground">
                   Credits added within 24 hours
                 </p>
               </div>
@@ -312,7 +312,7 @@ const Dashboard = () => {
         </Card>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Credit Overview & Test Progress */}
         <div className="lg:col-span-2 space-y-6">
           {/* Credit Overview */}
@@ -337,18 +337,18 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{isSignedIn ? (userData?.credit_balance || 0) : 10}</div>
-                    <div className="text-sm text-muted-foreground">Available Credits</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="text-center p-4 sm:p-0">
+                    <div className="text-3xl md:text-2xl font-bold text-primary">{isSignedIn ? (userData?.credit_balance || 0) : 10}</div>
+                    <div className="text-base md:text-sm text-muted-foreground mt-1">Available Credits</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{isSignedIn ? (userData?.total_credits_purchased || 0) : 0}</div>
-                    <div className="text-sm text-muted-foreground">Total Purchased</div>
+                  <div className="text-center p-4 sm:p-0">
+                    <div className="text-3xl md:text-2xl font-bold text-green-600">{isSignedIn ? (userData?.total_credits_purchased || 0) : 0}</div>
+                    <div className="text-base md:text-sm text-muted-foreground mt-1">Total Purchased</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{isSignedIn ? (userData?.total_credits_spent || 0) : 0}</div>
-                    <div className="text-sm text-muted-foreground">Total Spent</div>
+                  <div className="text-center p-4 sm:p-0">
+                    <div className="text-3xl md:text-2xl font-bold text-blue-600">{isSignedIn ? (userData?.total_credits_spent || 0) : 0}</div>
+                    <div className="text-base md:text-sm text-muted-foreground mt-1">Total Spent</div>
                   </div>
                 </div>
               )}

@@ -67,14 +67,19 @@ const Results = () => {
   return (
     <div className="space-y-6">
       {!isSignedIn && <PreviewBanner />}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Results & Analysis</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">Results & Analysis</h1>
+          <p className="text-base md:text-sm text-muted-foreground mt-1">
             Comprehensive psychological assessment results and insights
           </p>
         </div>
-        <Button variant="government" className="gap-2" disabled={!analysisResults || analysisResults.length === 0}>
+        <Button 
+          variant="government" 
+          size="mobile"
+          className="gap-2 w-full sm:w-auto" 
+          disabled={!analysisResults || analysisResults.length === 0}
+        >
           <Download className="h-4 w-4" />
           Export Report
         </Button>
@@ -119,25 +124,25 @@ const Results = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-6">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Overall Performance</span>
-                    <span className={`text-2xl font-bold ${getScoreColor(overallScore)}`}>
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                <div className="flex-1 w-full">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-base md:text-sm font-medium">Overall Performance</span>
+                    <span className={`text-4xl md:text-2xl font-bold ${getScoreColor(overallScore)}`}>
                       {overallScore}%
                     </span>
                   </div>
-                  <Progress value={overallScore} className="h-3" />
+                  <Progress value={overallScore} className="h-4 md:h-3" />
                 </div>
-                <div className={`p-4 rounded-full ${getScoreBg(overallScore)}`}>
-                  <Brain className={`h-8 w-8 ${getScoreColor(overallScore)}`} />
+                <div className={`p-6 sm:p-4 rounded-full ${getScoreBg(overallScore)}`}>
+                  <Brain className={`h-12 w-12 sm:h-8 sm:w-8 ${getScoreColor(overallScore)}`} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Personality Traits Grid */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             {personalityTraits.map((trait, index) => (
               <Card key={index} className="shadow-sm">
                 <CardHeader className="pb-4">
@@ -157,7 +162,7 @@ const Results = () => {
           </div>
 
           {/* Detailed Analysis */}
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
             <Card className="shadow-elegant">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">

@@ -169,10 +169,58 @@ All colors MUST be HSL.
 
   html {
     scroll-behavior: smooth;
+    /* Prevent iOS auto-zoom on input focus */
+    font-size: 16px;
   }
 
   body {
     @apply bg-background text-foreground;
+    /* Improve text rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Mobile-optimized typography */
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold leading-tight;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl lg:text-3xl font-semibold leading-snug;
+  }
+
+  /* Ensure minimum font sizes for readability */
+  .text-xs {
+    font-size: max(0.75rem, 14px);
+  }
+
+  .text-sm {
+    font-size: max(0.875rem, 14px);
+  }
+
+  /* Touch target utilities */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-padding {
+    @apply px-4 md:px-6 lg:px-8;
+  }
+
+  .mobile-section {
+    @apply py-8 md:py-12 lg:py-16;
   }
 }
 
