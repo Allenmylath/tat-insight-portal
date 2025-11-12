@@ -418,7 +418,7 @@ const SSBInterview = () => {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-bold glass-effect border-white/30 text-white hover:bg-white/10 hover:scale-105 transition-all"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-bold bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white/30 hover:border-white hover:scale-105 transition-all shadow-lg"
                       onClick={() => {
                         document.getElementById("demo-section")?.scrollIntoView({ behavior: "smooth" });
                       }}
