@@ -3,194 +3,326 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, Link } from "react-router-dom";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LogOut, User, BookOpen, Award, CheckCircle, ArrowRight, Brain, Target, TrendingUp, Image, BarChart3, Clock, MessageCircle, Calendar, Shield, Zap, ThumbsUp, ThumbsDown, CheckSquare, Sparkles, Users, Trophy } from "lucide-react";
+import {
+  LogOut,
+  User,
+  BookOpen,
+  Award,
+  CheckCircle,
+  ArrowRight,
+  Brain,
+  Target,
+  TrendingUp,
+  Image,
+  BarChart3,
+  Clock,
+  MessageCircle,
+  Calendar,
+  Shield,
+  Zap,
+  ThumbsUp,
+  ThumbsDown,
+  CheckSquare,
+  Sparkles,
+  Users,
+  Trophy,
+  Star,
+  Flame,
+  Timer,
+  Eye,
+  Play,
+} from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
+
 const SSBInterview = () => {
   const navigate = useNavigate();
-  const {
-    isSignedIn,
-    user
-  } = useUser();
-  const {
-    signOut
-  } = useClerk();
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  
+  const [activeUsers, setActiveUsers] = useState(847);
+  const [recentSignups, setRecentSignups] = useState(23);
+
   useEffect(() => {
-    // Show sticky bar after scrolling 50% of page instead of intrusive popup
+    // Simulate real-time active users
+    const userInterval = setInterval(() => {
+      setActiveUsers((prev) => prev + Math.floor(Math.random() * 5) - 2);
+    }, 8000);
+
+    // Simulate recent signups counter
+    const signupInterval = setInterval(() => {
+      setRecentSignups((prev) => Math.min(prev + 1, 50));
+    }, 15000);
+
+    // Show sticky bar after scrolling 20% of page
     const handleScroll = () => {
       const scrolled = window.scrollY;
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
       const scrollPercent = (scrolled / (docHeight - windowHeight)) * 100;
-      
-      setShowStickyBar(scrollPercent > 20);
+
+      setShowStickyBar(scrollPercent > 15);
     };
-    
-    // Show welcome dialog on exit intent instead of immediate popup
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !isSignedIn) {
+
+    // Exit intent for mobile (when user scrolls up rapidly at top)
+    let lastScrollY = window.scrollY;
+    const handleExitIntent = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 100 && lastScrollY > currentScrollY && !isSignedIn) {
         setShowWelcomeDialog(true);
       }
+      lastScrollY = currentScrollY;
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleExitIntent);
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleExitIntent);
+      clearInterval(userInterval);
+      clearInterval(signupInterval);
     };
   }, [isSignedIn]);
-  
+
   const ssbSection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
   const tatSection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
   const olqsSection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
   const featuresSection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
   const guidelinesSection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
   const strategySection = useScrollAnimation({
-    threshold: 0.2
+    threshold: 0.2,
   });
-  const ssbProcess = [{
-    day: "Day 1",
-    title: "Screening",
-    content: "OIR & PPDT",
-    icon: Shield
-  }, {
-    day: "Day 2",
-    title: "Psychology Tests",
-    content: "TAT, WAT, SRT, SD",
-    highlight: true,
-    icon: Brain
-  }, {
-    day: "Day 3",
-    title: "GTO Tasks",
-    content: "Group Testing",
-    icon: Target
-  }, {
-    day: "Day 4",
-    title: "Interview",
-    content: "Personal Interview",
-    icon: MessageCircle
-  }, {
-    day: "Day 5",
-    title: "Conference",
-    content: "Final Assessment",
-    icon: Award
-  }];
-  const olqs = ["Effective Intelligence", "Reasoning Ability", "Organizing Ability", "Power of Expression", "Social Adjustment", "Cooperation", "Sense of Responsibility", "Initiative", "Self Confidence", "Speed of Decision", "Influence Group", "Liveliness", "Determination", "Courage", "Stamina"];
-  const platformFeatures = [{
-    icon: Image,
-    title: "Authentic TAT Practice",
-    description: "Military-themed images similar to actual SSB. Practice with 30-second viewing and 4-minute writing time limits."
-  }, {
-    icon: Brain,
-    title: "AI-Powered Analysis",
-    description: "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions."
-  }, {
-    icon: TrendingUp,
-    title: "Track Your Progress",
-    description: "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB."
-  }];
-  const dos = [{
-    text: "Start with clear setting and characters"
-  }, {
-    text: "Show proactive decision-making"
-  }, {
-    text: "Include positive resolution"
-  }, {
-    text: "Demonstrate leadership and teamwork"
-  }, {
-    text: "Keep it realistic and relatable"
-  }, {
-    text: "Complete story within time"
-  }];
-  const donts = [{
-    text: "Avoid negative/tragic endings"
-  }, {
-    text: "Don't leave stories incomplete"
-  }, {
-    text: "Avoid passive characters"
-  }, {
-    text: "Don't make unrealistic stories"
-  }, {
-    text: "Avoid violence or crime themes"
-  }, {
-    text: "Don't copy common templates"
-  }];
-  const prepStrategy = [{
-    week: "Week 1-2",
-    focus: "Understand TAT Basics",
-    icon: BookOpen
-  }, {
-    week: "Week 3-4",
-    focus: "Daily Practice (2-3 stories/day)",
-    icon: Target
-  }, {
-    week: "Week 5-6",
-    focus: "Analyze Feedback & Improve",
-    icon: BarChart3
-  }, {
-    week: "Week 7-8",
-    focus: "Timed Practice (Exam Conditions)",
-    icon: Clock
-  }, {
-    week: "Final Week",
-    focus: "Build Confidence with Mock Tests",
-    icon: Award
-  }];
-  return <div className="min-h-screen bg-background">
-      {/* Header */}
+
+  const ssbProcess = [
+    {
+      day: "Day 1",
+      title: "Screening",
+      content: "OIR & PPDT",
+      icon: Shield,
+    },
+    {
+      day: "Day 2",
+      title: "Psychology Tests",
+      content: "TAT, WAT, SRT, SD",
+      highlight: true,
+      icon: Brain,
+    },
+    {
+      day: "Day 3",
+      title: "GTO Tasks",
+      content: "Group Testing",
+      icon: Target,
+    },
+    {
+      day: "Day 4",
+      title: "Interview",
+      content: "Personal Interview",
+      icon: MessageCircle,
+    },
+    {
+      day: "Day 5",
+      title: "Conference",
+      content: "Final Assessment",
+      icon: Award,
+    },
+  ];
+
+  const olqs = [
+    "Effective Intelligence",
+    "Reasoning Ability",
+    "Organizing Ability",
+    "Power of Expression",
+    "Social Adjustment",
+    "Cooperation",
+    "Sense of Responsibility",
+    "Initiative",
+    "Self Confidence",
+    "Speed of Decision",
+    "Influence Group",
+    "Liveliness",
+    "Determination",
+    "Courage",
+    "Stamina",
+  ];
+
+  const platformFeatures = [
+    {
+      icon: Image,
+      title: "Authentic TAT Practice",
+      description:
+        "Military-themed images similar to actual SSB. Practice with 30-second viewing and 4-minute writing time limits.",
+      benefit: "Feel confident on exam day",
+    },
+    {
+      icon: Brain,
+      title: "AI-Powered Analysis",
+      description:
+        "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions.",
+      benefit: "Know your weak spots instantly",
+    },
+    {
+      icon: TrendingUp,
+      title: "Track Your Progress",
+      description:
+        "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB.",
+      benefit: "Watch yourself improve daily",
+    },
+  ];
+
+  const dos = [
+    {
+      text: "Start with clear setting and characters",
+    },
+    {
+      text: "Show proactive decision-making",
+    },
+    {
+      text: "Include positive resolution",
+    },
+    {
+      text: "Demonstrate leadership and teamwork",
+    },
+    {
+      text: "Keep it realistic and relatable",
+    },
+    {
+      text: "Complete story within time",
+    },
+  ];
+
+  const donts = [
+    {
+      text: "Avoid negative/tragic endings",
+    },
+    {
+      text: "Don't leave stories incomplete",
+    },
+    {
+      text: "Avoid passive characters",
+    },
+    {
+      text: "Don't make unrealistic stories",
+    },
+    {
+      text: "Avoid violence or crime themes",
+    },
+    {
+      text: "Don't copy common templates",
+    },
+  ];
+
+  const prepStrategy = [
+    {
+      week: "Week 1-2",
+      focus: "Understand TAT Basics",
+      icon: BookOpen,
+    },
+    {
+      week: "Week 3-4",
+      focus: "Daily Practice (2-3 stories/day)",
+      icon: Target,
+    },
+    {
+      week: "Week 5-6",
+      focus: "Analyze Feedback & Improve",
+      icon: BarChart3,
+    },
+    {
+      week: "Week 7-8",
+      focus: "Timed Practice (Exam Conditions)",
+      icon: Clock,
+    },
+    {
+      week: "Final Week",
+      focus: "Build Confidence with Mock Tests",
+      icon: Award,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header - Mobile Optimized */}
       <header className="border-b glass-effect backdrop-blur-lg sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+        <div className="container mx-auto px-3 sm:px-4 py-2.5 sm:py-3 md:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center" style={{background: 'var(--gradient-hero)'}}>
-              <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <div
+              className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center"
+              style={{ background: "var(--gradient-hero)" }}
+            >
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
             </div>
-            <Link to="/" className="text-lg md:text-xl font-extrabold text-foreground hover:text-primary transition-colors font-display">
+            <Link
+              to="/"
+              className="text-base sm:text-lg md:text-xl font-extrabold text-foreground hover:text-primary transition-colors font-display"
+            >
               TAT Pro 🎯
             </Link>
           </div>
-          
-          <div className="flex items-center gap-2 md:gap-3">
-            <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2 min-h-[40px] hidden sm:flex">
-              <MessageCircle className="h-4 w-4" />
-              <span>Help</span>
+
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+            <Button
+              onClick={() => window.open("https://wa.link/1mj98f", "_blank")}
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-8 sm:h-9 md:h-10 px-2 sm:px-3 md:px-4 text-xs sm:text-sm"
+            >
+              <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Help</span>
             </Button>
-            
-            {!isSignedIn ? <div className="flex items-center gap-2">
-                <Link to="/auth/signin" className="hidden sm:block">
-                  <Button variant="outline" size="sm" className="min-h-[40px]">Sign In</Button>
+
+            {!isSignedIn ? (
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Link to="/auth/signin" className="hidden xs:block">
+                  <Button variant="ghost" size="sm" className="h-8 sm:h-9 md:h-10 px-2 sm:px-3 text-xs sm:text-sm">
+                    Sign In
+                  </Button>
                 </Link>
                 <Link to="/auth/signup">
-                  <Button size="sm" className="px-4 md:px-6 font-bold min-h-[40px] shadow-action">
+                  <Button
+                    size="sm"
+                    className="px-3 sm:px-4 md:px-6 font-bold h-8 sm:h-9 md:h-10 shadow-action text-xs sm:text-sm"
+                  >
                     START FREE 🚀
                   </Button>
                 </Link>
-              </div> : <div className="flex items-center gap-2 md:gap-4">
-                <Button onClick={() => navigate("/dashboard/pending")} variant="default" className="min-h-[40px]">Dashboard</Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 md:gap-4">
+                <Button
+                  onClick={() => navigate("/dashboard/pending")}
+                  variant="default"
+                  size="sm"
+                  className="h-8 sm:h-9 md:h-10 px-3 sm:px-4 text-xs sm:text-sm"
+                >
+                  Dashboard
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
-                          {user?.emailAddresses[0]?.emailAddress?.charAt(0).toUpperCase() || 'U'}
+                    <Button variant="ghost" className="relative h-7 w-7 sm:h-8 sm:w-8 rounded-full">
+                      <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs sm:text-sm">
+                          {user?.emailAddresses[0]?.emailAddress?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -206,484 +338,623 @@ const SSBInterview = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>}
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       <main>
-        {/* Hero Section */}
-        <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+        {/* Hero Section - Redesigned for Mobile */}
+        <section className="relative py-12 sm:py-16 md:py-20 lg:py-28 overflow-hidden">
           {/* Animated gradient background */}
-          <div className="absolute inset-0 animate-gradient opacity-70" style={{background: 'var(--gradient-hero)'}}></div>
-          <div className="absolute inset-0 opacity-5 bg-cover bg-center" style={{
-          backgroundImage: `url(${heroImage})`
-        }}></div>
-          
+          <div
+            className="absolute inset-0 animate-gradient opacity-70"
+            style={{ background: "var(--gradient-hero)" }}
+          ></div>
+          <div
+            className="absolute inset-0 opacity-5 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${heroImage})`,
+            }}
+          ></div>
+
           {/* Floating elements */}
-          <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
-          
+          <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-16 sm:w-20 h-16 sm:h-20 bg-accent/20 rounded-full blur-3xl animate-float"></div>
+          <div
+            className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-24 sm:w-32 h-24 sm:h-32 bg-primary/20 rounded-full blur-3xl animate-float"
+            style={{ animationDelay: "1s" }}
+          ></div>
+
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-5xl mx-auto text-center">
-              <Badge className="mb-6 md:mb-8 px-4 md:px-8 py-2 md:py-3 text-sm md:text-base glass-effect border-primary/30 font-bold animate-pulse-glow" variant="outline">
-                <Trophy className="h-4 w-4 mr-2 inline" />
-                12,000+ Future Officers Training Here • Join The Elite 🎖️
+              {/* Live Activity Badge - Mobile Optimized */}
+              <Badge
+                className="mb-4 sm:mb-6 md:mb-8 px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base glass-effect border-primary/30 font-bold animate-pulse-glow inline-flex items-center gap-2"
+                variant="outline"
+              >
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 animate-pulse" />
+                  <span className="hidden xs:inline">
+                    <span className="text-orange-500 font-black">{activeUsers}</span> Officers Training Now
+                  </span>
+                  <span className="xs:hidden text-orange-500 font-black">{activeUsers} Live</span>
+                  <span className="hidden sm:inline">•</span>
+                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500" />
+                  <span className="text-green-500 font-black">{recentSignups}</span>
+                  <span className="hidden sm:inline">joined today</span>
+                  <span className="sm:hidden">today</span>
+                </div>
               </Badge>
-              
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 md:mb-8 text-white leading-tight font-display">
-                CRUSH YOUR SSB TAT
-                <span className="block bg-gradient-to-r from-accent via-secondary to-champion-gold bg-clip-text text-transparent mt-2 md:mt-3">
-                  Like A Champion 🔥
+
+              {/* Main Headline - Mobile First */}
+              <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 md:mb-8 text-white leading-[1.1] sm:leading-tight font-display">
+                <span className="block">CRUSH YOUR</span>
+                <span className="block mt-1 sm:mt-2">SSB TAT 🔥</span>
+                <span className="block bg-gradient-to-r from-accent via-secondary to-champion-gold bg-clip-text text-transparent mt-1.5 sm:mt-2 md:mt-3 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+                  Like A Champion
                 </span>
               </h1>
-              
-              <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
-                Get AI-Powered Instant Feedback on Day 2 TAT Tests. Master The Psychology Game & Dominate Your SSB Selection Board. 💪
+
+              {/* Subheadline - Concise for Mobile */}
+              <p className="text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
+                <span className="hidden sm:inline">Get AI-Powered Instant Feedback on Day 2 TAT Tests. </span>
+                Master The Psychology Game & <span className="text-accent font-bold">Dominate Your SSB</span> 💪
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 md:mb-12">
-                {!isSignedIn ? <Link to="/auth/signup" className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full sm:w-auto px-8 md:px-12 py-6 md:py-7 text-lg md:text-xl font-black shadow-action hover:scale-105 transition-all min-h-[56px] md:min-h-[64px] animate-pulse-glow">
-                      START FREE NOW 🚀
-                      <ArrowRight className="h-6 w-6 ml-2" />
+
+              {/* CTA Buttons - Mobile Optimized */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-6 sm:mb-8 md:mb-10 px-4 sm:px-0">
+                {!isSignedIn ? (
+                  <>
+                    <Link to="/auth/signup" className="w-full sm:w-auto">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto px-6 sm:px-8 md:px-12 py-5 sm:py-6 md:py-7 text-base sm:text-lg md:text-xl font-black shadow-action hover:scale-105 transition-all animate-pulse-glow"
+                      >
+                        <Play className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+                        START FREE NOW 🚀
+                      </Button>
+                    </Link>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-bold glass-effect border-white/30 text-white hover:bg-white/10 hover:scale-105 transition-all"
+                      onClick={() => {
+                        document.getElementById("demo-section")?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
+                      <Eye className="h-5 w-5 mr-2" />
+                      See How It Works
                     </Button>
-                  </Link> : <Button size="lg" className="px-8 md:px-12 py-6 md:py-7 text-lg md:text-xl font-black hover:scale-105 transition-all min-h-[56px] md:min-h-[64px]" onClick={() => navigate("/dashboard/pending")}>
+                  </>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto px-8 md:px-12 py-6 md:py-7 text-lg md:text-xl font-black hover:scale-105 transition-all"
+                    onClick={() => navigate("/dashboard/pending")}
+                  >
                     GO TO DASHBOARD
                     <ArrowRight className="h-6 w-6 ml-2" />
-                  </Button>}
+                  </Button>
+                )}
               </div>
-              
-              {/* Trust indicators */}
-              <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 mb-10 md:mb-16 max-w-xl mx-auto">
-                <p className="text-white font-semibold text-sm md:text-base flex items-center justify-center gap-2 flex-wrap">
-                  <CheckCircle className="h-5 w-5 text-accent" />
+
+              {/* Trust indicators - Compact for Mobile */}
+              <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-8 sm:mb-10 md:mb-16 max-w-xl mx-auto">
+                <p className="text-white font-semibold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
                   <span>Free Forever</span>
-                  <span className="text-white/50">•</span>
-                  <CheckCircle className="h-5 w-5 text-accent" />
-                  <span>No Payment Required</span>
-                  <span className="text-white/50">•</span>
-                  <CheckCircle className="h-5 w-5 text-accent" />
+                  <span className="text-white/50 hidden xs:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
+                  <span className="hidden xs:inline">No Payment</span>
+                  <span className="xs:hidden">Free</span>
+                  <span className="text-white/50 hidden sm:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
                   <span>Instant Access</span>
                 </p>
               </div>
-              
-              {/* Stats - Gamified */}
-              <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto">
-                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-success)'}}>
-                    <Calendar className="h-6 w-6 md:h-8 md:w-8 text-white" />
+
+              {/* Stats - Mobile Grid */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 max-w-3xl mx-auto px-2">
+                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                  <div
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    style={{ background: "var(--gradient-success)" }}
+                  >
+                    <Calendar className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-xl md:text-3xl font-black text-white">Day 2</div>
-                  <div className="text-xs md:text-sm text-white/70 font-semibold">SSB Test Day</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">Day 2</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">SSB Test</div>
                 </div>
-                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-action)'}}>
-                    <Clock className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                  <div
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    style={{ background: "var(--gradient-action)" }}
+                  >
+                    <Clock className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-xl md:text-3xl font-black text-white">30 Sec</div>
-                  <div className="text-xs md:text-sm text-white/70 font-semibold">Per Image</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">30 Sec</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">Per Image</div>
                 </div>
-                <div className="glass-effect border border-white/20 rounded-2xl p-4 md:p-6 hover:scale-105 transition-all">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3" style={{background: 'var(--gradient-champion)'}}>
-                    <Image className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                <div className="glass-effect border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all">
+                  <div
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3"
+                    style={{ background: "var(--gradient-champion)" }}
+                  >
+                    <Image className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-xl md:text-3xl font-black text-white">11-12</div>
-                  <div className="text-xs md:text-sm text-white/70 font-semibold">TAT Images</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white">11-12</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-white/70 font-semibold">Images</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SSB Process Section */}
-        <section className="py-16 bg-muted/30" ref={ssbSection.ref}>
+        {/* Social Proof Section - NEW - Moved Up */}
+        <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-accent/5 to-background">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" variant="outline">
-                  Service Selection Board
-                </Badge>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                  Understanding the SSB Interview Process
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  The 5-day Service Selection Board interview is your gateway to becoming an officer in the Indian Armed Forces. 
-                  TAT is a crucial component of Day 2 Psychology Tests.
-                </p>
-              </div>
-
-              {/* 5-Day Timeline */}
-              <div className="relative">
-                {/* Progress Line - Desktop */}
-                <div className="hidden md:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto" style={{
-                width: 'calc(100% - 120px)',
-                marginLeft: '60px'
-              }}>
-                  <div className="h-full bg-gradient-to-r from-primary via-primary to-primary w-[40%] animate-pulse"></div>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-4 relative">
-                  {ssbProcess.map((day, index) => <div key={index} className="relative">
-                      {/* Connector Dot */}
-                      <div className={`hidden md:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 z-10 transition-all duration-500 ${day.highlight ? 'bg-primary border-primary shadow-lg shadow-primary/50 scale-110 animate-pulse' : 'bg-background border-border'}`}>
-                        {day.highlight && <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>}
-                      </div>
-                      
-                      <Card 
-                        onClick={() => navigate("/dashboard/pending")}
-                        className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl cursor-pointer ${day.highlight ? 'border-2 border-primary bg-primary/5 shadow-lg' : 'border border-border hover:border-primary/50'} ${ssbSection.isVisible ? 'animate-fade-in' : 'opacity-0'}`} 
-                        style={{
-                          animationDelay: `${index * 0.1}s`,
-                          animationFillMode: "both"
-                        }}
-                      >
-                        <CardHeader className="pb-3">
-                          <div className={`mx-auto mb-3 transition-transform duration-300 ${day.highlight ? 'scale-110' : ''}`}>
-                            <day.icon className={`h-10 w-10 mx-auto mb-2 transition-colors duration-300 ${day.highlight ? 'text-primary animate-bounce' : 'text-muted-foreground'}`} style={{
-                          animationDuration: '2s'
-                        }} />
-                          </div>
-                          <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 transition-all duration-300 ${day.highlight ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>
-                            {day.day}
-                          </div>
-                          <CardTitle className="text-base">{day.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-sm text-muted-foreground">{day.content}</p>
-                        </CardContent>
-                      </Card>
-                      
-                      {/* Mobile connector arrow */}
-                      {index < ssbProcess.length - 1 && <div className="md:hidden flex justify-center py-2">
-                          <ArrowRight className={`h-6 w-6 ${day.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
-                        </div>}
-                    </div>)}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* TAT Details Section */}
-        <section className="py-16 bg-background" ref={tatSection.ref}>
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8 md:p-12">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                    <Brain className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                    TAT in SSB: What You Need to Know
-                  </h3>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      When & Format
-                    </h4>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Conducted on <strong>Day 2</strong> of SSB (Psychology Tests)</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span><strong>11-12 ambiguous images</strong> shown sequentially</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span><strong>30 seconds</strong> to view each image</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span><strong>4 minutes</strong> to write your story</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Target className="h-5 w-5 text-primary" />
-                      What Assessors Look For
-                    </h4>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Positive themes and constructive endings</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Decision-making ability in stories</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Leadership qualities and problem-solving</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Social responsibility and teamwork</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Emotional stability and maturity</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-8 p-6 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-destructive" />
-                    Common Challenges Candidates Face
-                  </h4>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                      <span>Time pressure (only 4 minutes per story)</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Image className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                      <span>Interpreting ambiguous military-themed images</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <BarChart3 className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                      <span>Maintaining consistency in character traits</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Shield className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                      <span>Avoiding negative or passive stories</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* OLQs Section */}
-        <section className="py-16 bg-muted/30" ref={olqsSection.ref}>
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                  15 Officer Like Qualities (OLQs) Assessed
-                </h3>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  TAT reveals these personality traits through your story themes. Understanding OLQs helps you craft better narratives.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {olqs.map((olq, index) => <div key={index} className="bg-card border border-primary/20 rounded-lg p-4 text-center hover:border-primary hover:shadow-lg hover:scale-105 transition-all duration-300">
-                    <Award className="h-6 w-6 text-primary mx-auto mb-2" />
-                    <p className="text-sm font-medium text-foreground">{olq}</p>
-                  </div>)}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Platform Features */}
-        <section className="py-16 bg-background" ref={featuresSection.ref}>
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                How This Platform Helps You Prepare
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Everything you need to master TAT and ace your SSB Day 2 Psychology Tests
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {platformFeatures.map((feature, index) => <Card key={index} className="border-primary/20 hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300">
-                  <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-center text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>)}
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="py-16 md:py-20 bg-gradient-to-br from-background via-accent/5 to-background">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12 md:mb-16">
-              <Badge className="mb-4 bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/20 font-bold px-4 py-2" variant="outline">
+            <div className="text-center mb-8 sm:mb-12">
+              <Badge
+                className="mb-3 sm:mb-4 bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/20 font-bold px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
+                variant="outline"
+              >
                 ⭐ Real Success Stories
               </Badge>
-              <h2 className="text-3xl md:text-5xl font-black mb-4 text-foreground leading-tight font-display">
-                Future Officers Crushing Their TAT 💪
+              <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-foreground leading-tight font-display px-2">
+                Future Officers <span className="text-primary">Crushing TAT</span> 💪
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                Join thousands who transformed their SSB preparation with our platform
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+                Join thousands transforming their SSB prep
               </p>
             </div>
-            
-            <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-12">
+
+            {/* Testimonials - Mobile Optimized Grid */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto mb-8 sm:mb-12">
               {/* Testimonial 1 */}
               <Card className="glass-effect border-primary/20 hover:scale-105 transition-all duration-300 shadow-glow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                       R
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground">Rahul Sharma</h4>
-                      <p className="text-sm text-muted-foreground">NDA Recommended 🎖️</p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground text-sm sm:text-base truncate">Rahul Sharma</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">NDA Recommended 🎖️</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 mb-3">
+                  <div className="flex gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                      <Star key={i} className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-champion-gold text-champion-gold" />
                     ))}
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    "This platform is a game-changer! Got recommended in my first attempt. The AI analysis helped me understand exactly what assessors look for. 10/10 would recommend! 🔥"
+                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">
+                    "Game-changer! Got recommended in first attempt. The AI analysis showed me exactly what assessors
+                    look for. 10/10! 🔥"
                   </p>
                 </CardContent>
               </Card>
 
               {/* Testimonial 2 */}
               <Card className="glass-effect border-accent/20 hover:scale-105 transition-all duration-300 shadow-glow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-white font-bold text-lg">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                       P
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground">Priya Kaur</h4>
-                      <p className="text-sm text-muted-foreground">AFCAT Selected ✈️</p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground text-sm sm:text-base truncate">Priya Kaur</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">AFCAT Selected ✈️</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 mb-3">
+                  <div className="flex gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                      <Star key={i} className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-champion-gold text-champion-gold" />
                     ))}
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    "Improved my TAT scores by 40% in just 2 weeks! The instant feedback is insane. Best investment in my SSB prep journey. Absolutely crushing it now! 💯"
+                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">
+                    "Improved TAT scores by 40% in just 2 weeks! Instant feedback is insane. Best investment in my SSB
+                    prep! 💯"
                   </p>
                 </CardContent>
               </Card>
 
               {/* Testimonial 3 */}
-              <Card className="glass-effect border-secondary/20 hover:scale-105 transition-all duration-300 shadow-glow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
+              <Card className="glass-effect border-secondary/20 hover:scale-105 transition-all duration-300 shadow-glow sm:col-span-2 lg:col-span-1">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                       V
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground">Vikram Singh</h4>
-                      <p className="text-sm text-muted-foreground">CDS Cleared 🏆</p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground text-sm sm:text-base truncate">Vikram Singh</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">CDS Cleared 🏆</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 mb-3">
+                  <div className="flex gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-champion-gold text-lg">⭐</span>
+                      <Star key={i} className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-champion-gold text-champion-gold" />
                     ))}
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    "From confused to confident in 30 days! The scientific approach with Murray's needs framework gave me real insights. Worth every minute! 🚀"
+                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">
+                    "From confused to confident in 30 days! Scientific approach with Murray's framework gave me real
+                    insights. Worth it! 🚀"
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Trust indicators */}
-            <div className="glass-effect rounded-3xl p-8 md:p-12 max-w-4xl mx-auto border border-primary/20">
-              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+            {/* Trust indicators - Mobile Stack */}
+            <div className="glass-effect rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 max-w-4xl mx-auto border border-primary/20">
+              <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-16">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Users className="h-6 w-6 text-primary" />
-                    <p className="text-3xl md:text-4xl font-black text-primary">12K+</p>
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                    <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    <p className="text-2xl sm:text-3xl md:text-4xl font-black text-primary">12K+</p>
                   </div>
-                  <p className="text-sm text-muted-foreground font-semibold">Active Users</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground font-semibold">Active Users</p>
                 </div>
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Trophy className="h-6 w-6 text-accent" />
-                    <p className="text-3xl md:text-4xl font-black text-accent">96%</p>
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                    <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                    <p className="text-2xl sm:text-3xl md:text-4xl font-black text-accent">96%</p>
                   </div>
-                  <p className="text-sm text-muted-foreground font-semibold">Success Rate</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground font-semibold">Success Rate</p>
                 </div>
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Sparkles className="h-6 w-6 text-secondary" />
-                    <p className="text-3xl md:text-4xl font-black text-secondary">4.9/5</p>
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
+                    <p className="text-2xl sm:text-3xl md:text-4xl font-black text-secondary">4.9/5</p>
                   </div>
-                  <p className="text-sm text-muted-foreground font-semibold">Rating ⭐</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground font-semibold">Rating ⭐</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Guidelines Section */}
-        <section className="py-16 bg-muted/30" ref={guidelinesSection.ref}>
+        {/* Platform Features - With Benefits */}
+        <section className="py-12 sm:py-16 bg-background" ref={featuresSection.ref} id="demo-section">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-12">
+              <Badge
+                className="mb-3 sm:mb-4 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
+                variant="outline"
+              >
+                ⚡ Platform Features
+              </Badge>
+              <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 text-foreground px-2 leading-tight">
+                Everything You Need To <span className="text-primary">Master TAT</span>
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-4">
+                Ace your SSB Day 2 Psychology Tests with confidence
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto mb-8 sm:mb-12">
+              {platformFeatures.map((feature, index) => (
+                <Card
+                  key={index}
+                  className="border-primary/20 hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+                >
+                  <CardHeader className="text-center pb-3 sm:pb-4">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
+                      <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-base sm:text-lg md:text-xl text-foreground mb-2">
+                      {feature.title}
+                    </CardTitle>
+                    <Badge variant="outline" className="text-[10px] sm:text-xs text-accent border-accent/30">
+                      {feature.benefit}
+                    </Badge>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-center text-muted-foreground leading-relaxed text-xs sm:text-sm">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Quick CTA */}
+            {!isSignedIn && (
+              <div className="text-center">
+                <Link to="/auth/signup">
+                  <Button
+                    size="lg"
+                    className="px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-black shadow-action hover:scale-105 transition-all"
+                  >
+                    Start Practicing Now - FREE 🚀
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* SSB Process Section - Compact for Mobile */}
+        <section className="py-12 sm:py-16 bg-muted/30" ref={ssbSection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                  What Makes a Good TAT Story for SSB?
+              <div className="text-center mb-8 sm:mb-12">
+                <Badge
+                  className="mb-3 sm:mb-4 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
+                  variant="outline"
+                >
+                  📋 SSB Interview
+                </Badge>
+                <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-foreground px-2 leading-tight">
+                  Understanding The <span className="text-primary">5-Day Process</span>
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  Practical guidelines to help you write compelling stories that showcase positive OLQs
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
+                  TAT is crucial on Day 2 Psychology Tests
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
+              {/* 5-Day Timeline - Mobile Optimized */}
+              <div className="relative">
+                {/* Progress Line - Hidden on Mobile */}
+                <div
+                  className="hidden lg:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto"
+                  style={{
+                    width: "calc(100% - 120px)",
+                    marginLeft: "60px",
+                  }}
+                >
+                  <div className="h-full bg-gradient-to-r from-primary via-primary to-primary w-[40%] animate-pulse"></div>
+                </div>
+
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4 relative">
+                  {ssbProcess.map((day, index) => (
+                    <div key={index} className="relative">
+                      {/* Connector Dot - Desktop Only */}
+                      <div
+                        className={`hidden lg:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 z-10 transition-all duration-500 ${day.highlight ? "bg-primary border-primary shadow-lg shadow-primary/50 scale-110 animate-pulse" : "bg-background border-border"}`}
+                      >
+                        {day.highlight && (
+                          <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+                        )}
+                      </div>
+
+                      <Card
+                        onClick={() => navigate("/dashboard/pending")}
+                        className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl cursor-pointer ${day.highlight ? "border-2 border-primary bg-primary/5 shadow-lg" : "border border-border hover:border-primary/50"} ${ssbSection.isVisible ? "animate-fade-in" : "opacity-0"}`}
+                        style={{
+                          animationDelay: `${index * 0.1}s`,
+                          animationFillMode: "both",
+                        }}
+                      >
+                        <CardHeader className="pb-2 sm:pb-3 pt-3 sm:pt-6">
+                          <div
+                            className={`mx-auto mb-2 sm:mb-3 transition-transform duration-300 ${day.highlight ? "scale-110" : ""}`}
+                          >
+                            <day.icon
+                              className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto mb-1.5 sm:mb-2 transition-colors duration-300 ${day.highlight ? "text-primary animate-bounce" : "text-muted-foreground"}`}
+                              style={{
+                                animationDuration: "2s",
+                              }}
+                            />
+                          </div>
+                          <div
+                            className={`inline-block px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold mb-1.5 sm:mb-2 transition-all duration-300 ${day.highlight ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}
+                          >
+                            {day.day}
+                          </div>
+                          <CardTitle className="text-sm sm:text-base">{day.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 sm:pb-4">
+                          <p className="text-xs sm:text-sm text-muted-foreground">{day.content}</p>
+                        </CardContent>
+                      </Card>
+
+                      {/* Mobile connector arrow */}
+                      {index < ssbProcess.length - 1 && index % 2 === 0 && (
+                        <div className="xs:hidden flex justify-center py-1.5">
+                          <ArrowRight
+                            className={`h-5 w-5 ${day.highlight ? "text-primary" : "text-muted-foreground"}`}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* TAT Details Section - Streamlined */}
+        <section className="py-12 sm:py-16 bg-background" ref={tatSection.ref}>
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-primary/5 border border-primary/20 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12">
+                <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                    <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+                  </div>
+                  <h3 className="text-xl xs:text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+                    TAT in SSB: What You Need To Know
+                  </h3>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                      When & Format
+                    </h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          On <strong>Day 2</strong> of SSB
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          <strong>11-12 images</strong> shown
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          <strong>30 seconds</strong> to view
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          <strong>4 minutes</strong> to write
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
+                      <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                      What Assessors Look For
+                    </h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-2">
+                        <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">Positive themes</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">Decision-making ability</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">Leadership qualities</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">Social responsibility</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">Emotional stability</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-destructive flex-shrink-0" />
+                    Common Challenges
+                  </h4>
+                  <div className="grid sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-muted-foreground">
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <span>Time pressure (4 minutes)</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <span>Ambiguous military images</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <span>Maintaining consistency</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <span>Avoiding negative stories</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* OLQs Section - Compact Grid */}
+        <section className="py-12 sm:py-16 bg-muted/30" ref={olqsSection.ref}>
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8 sm:mb-12">
+                <h3 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-foreground px-2 leading-tight">
+                  15 Officer Like Qualities <span className="text-primary">(OLQs)</span>
+                </h3>
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
+                  TAT reveals these traits through your stories
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+                {olqs.map((olq, index) => (
+                  <div
+                    key={index}
+                    className="bg-card border border-primary/20 rounded-lg p-3 sm:p-4 text-center hover:border-primary hover:shadow-lg hover:scale-105 transition-all duration-300"
+                  >
+                    <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-1.5 sm:mb-2" />
+                    <p className="text-[10px] xs:text-xs sm:text-sm font-medium text-foreground leading-tight">{olq}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Guidelines Section - Simplified */}
+        <section className="py-12 sm:py-16 bg-background" ref={guidelinesSection.ref}>
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-foreground px-2 leading-tight">
+                  What Makes A <span className="text-primary">Good TAT Story?</span>
+                </h2>
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
+                  Guidelines to showcase positive OLQs
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
                 {/* DO's */}
                 <Card className="border-green-500/30 bg-green-500/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                      <ThumbsUp className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400 text-base sm:text-lg">
+                      <ThumbsUp className="h-5 w-5 sm:h-6 sm:w-6" />
                       DO's - Follow These
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-3">
-                      {dos.map((item, index) => <li key={index} className="flex items-start gap-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                          <span className="text-muted-foreground">{item.text}</span>
-                        </li>)}
+                    <ul className="space-y-2 sm:space-y-3">
+                      {dos.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2 sm:gap-3">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground text-xs sm:text-sm">{item.text}</span>
+                        </li>
+                      ))}
                     </ul>
                   </CardContent>
                 </Card>
 
                 {/* DON'Ts */}
                 <Card className="border-red-500/30 bg-red-500/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                      <ThumbsDown className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400 text-base sm:text-lg">
+                      <ThumbsDown className="h-5 w-5 sm:h-6 sm:w-6" />
                       DON'Ts - Avoid These
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-3">
-                      {donts.map((item, index) => <li key={index} className="flex items-start gap-3">
-                          <CheckSquare className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                          <span className="text-muted-foreground">{item.text}</span>
-                        </li>)}
+                    <ul className="space-y-2 sm:space-y-3">
+                      {donts.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2 sm:gap-3">
+                          <CheckSquare className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground text-xs sm:text-sm">{item.text}</span>
+                        </li>
+                      ))}
                     </ul>
                   </CardContent>
                 </Card>
@@ -692,51 +963,67 @@ const SSBInterview = () => {
           </div>
         </section>
 
-        {/* Preparation Strategy */}
-        <section className="py-16 bg-background" ref={strategySection.ref}>
+        {/* Preparation Strategy - Compact */}
+        <section className="py-12 sm:py-16 bg-muted/30" ref={strategySection.ref}>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                  Your SSB TAT Preparation Strategy
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-foreground px-2 leading-tight">
+                  Your <span className="text-primary">8-Week Prep Plan</span>
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  Follow this proven 8-week preparation plan to build confidence and master TAT
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
+                  Proven strategy to master TAT
                 </p>
               </div>
 
-              <div className="space-y-4 mb-12">
-                {prepStrategy.map((step, index) => <Card key={index} className="border-primary/20 hover:border-primary hover:scale-105 transition-all duration-300">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                          <step.icon className="h-6 w-6 text-primary-foreground" />
+              <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+                {prepStrategy.map((step, index) => (
+                  <Card
+                    key={index}
+                    className="border-primary/20 hover:border-primary hover:scale-105 transition-all duration-300"
+                  >
+                    <CardHeader className="pb-2 sm:pb-3 pt-3 sm:pt-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                          <step.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                         </div>
-                        <div className="flex-1">
-                          <Badge className="mb-2">{step.week}</Badge>
-                          <CardTitle className="text-lg">{step.focus}</CardTitle>
+                        <div className="flex-1 min-w-0">
+                          <Badge className="mb-1 sm:mb-2 text-[10px] xs:text-xs">{step.week}</Badge>
+                          <CardTitle className="text-sm sm:text-base md:text-lg leading-tight">{step.focus}</CardTitle>
                         </div>
                       </div>
                     </CardHeader>
-                  </Card>)}
+                  </Card>
+                ))}
               </div>
 
               <div className="text-center">
-                <div className="bg-card border-2 border-primary/20 rounded-2xl p-8">
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">
-                    Ready to Start Your SSB TAT Preparation?
+                <div className="bg-card border-2 border-primary/20 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+                  <h3 className="text-xl xs:text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-foreground leading-tight px-2">
+                    Ready To Start Your TAT Prep?
                   </h3>
-                  <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
-                    Join thousands of SSB aspirants who are mastering TAT with AI-powered feedback and comprehensive practice
+                  <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-5 sm:mb-6 max-w-2xl mx-auto px-2">
+                    Join thousands mastering TAT with AI-powered feedback
                   </p>
-                  
-                  {!isSignedIn ? <Link to="/auth/signup">
-                      <Button size="lg" className="px-8">
+
+                  {!isSignedIn ? (
+                    <Link to="/auth/signup">
+                      <Button
+                        size="lg"
+                        className="px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-black shadow-action hover:scale-105 transition-all"
+                      >
                         Start Free Practice Today <ArrowRight className="h-5 w-5 ml-2" />
                       </Button>
-                    </Link> : <Button size="lg" className="px-8" onClick={() => navigate("/dashboard/pending")}>
+                    </Link>
+                  ) : (
+                    <Button
+                      size="lg"
+                      className="px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-black"
+                      onClick={() => navigate("/dashboard/pending")}
+                    >
                       Go to Dashboard <ArrowRight className="h-5 w-5 ml-2" />
-                    </Button>}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -744,145 +1031,180 @@ const SSBInterview = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-muted/30 border-t py-12">
+      {/* Footer - Mobile Optimized */}
+      <footer className="bg-muted/30 border-t py-8 sm:py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-primary-foreground" />
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            <div className="col-span-2 sm:col-span-1">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-lg text-foreground">TAT Assessment</span>
+                <span className="font-bold text-base sm:text-lg text-foreground">TAT Assessment</span>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Your trusted platform for SSB TAT preparation with AI-powered analysis.
               </p>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/about-tat" className="hover:text-primary transition-colors">About TAT</Link></li>
-                <li><Link to="/ssb-procedure" className="hover:text-primary transition-colors">SSB Procedure</Link></li>
-                <li><Link to="/dashboard/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+              <h4 className="font-semibold mb-3 sm:mb-4 text-foreground text-sm sm:text-base">Quick Links</h4>
+              <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
+                <li>
+                  <Link to="/about-tat" className="hover:text-primary transition-colors">
+                    About TAT
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/ssb-procedure" className="hover:text-primary transition-colors">
+                    SSB Procedure
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/pricing" className="hover:text-primary transition-colors">
+                    Pricing
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link></li>
-                <li><Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link></li>
+              <h4 className="font-semibold mb-3 sm:mb-4 text-foreground text-sm sm:text-base">Legal</h4>
+              <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
+                <li>
+                  <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms-and-conditions" className="hover:text-primary transition-colors">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/refund-policy" className="hover:text-primary transition-colors">
+                    Refund Policy
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Contact</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h4 className="font-semibold mb-3 sm:mb-4 text-foreground text-sm sm:text-base">Contact</h4>
+              <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  <button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} className="hover:text-primary transition-colors">
+                  <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <button
+                    onClick={() => window.open("https://wa.link/1mj98f", "_blank")}
+                    className="hover:text-primary transition-colors text-left"
+                  >
                     WhatsApp Support
                   </button>
                 </li>
               </ul>
             </div>
           </div>
-          
-          <div className="border-t pt-8 text-center text-sm text-muted-foreground">
+
+          <div className="border-t pt-6 sm:pt-8 text-center text-xs sm:text-sm text-muted-foreground">
             <p>&copy; {new Date().getFullYear()} TAT Assessment. All rights reserved.</p>
           </div>
         </div>
       </footer>
-      
-      {/* Welcome Dialog */}
+
+      {/* Welcome Dialog - Mobile Enhanced */}
       <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
-        <DialogContent className="sm:max-w-lg glass-effect border-primary/30">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg mx-auto glass-effect border-primary/30">
           <DialogHeader>
-            <DialogTitle className="text-2xl md:text-3xl font-black flex items-center gap-2 font-display">
-              <Sparkles className="h-7 w-7 text-primary animate-pulse" />
-              Wait! Before You Go... 🎯
+            <DialogTitle className="text-xl xs:text-2xl sm:text-3xl font-black flex items-center gap-2 font-display leading-tight">
+              <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-primary animate-pulse flex-shrink-0" />
+              <span>Wait! Before You Go... 🎯</span>
             </DialogTitle>
-            <DialogDescription className="text-base pt-4 space-y-4">
-              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-xl p-5">
-                <p className="font-bold text-foreground mb-3 text-lg">
+            <DialogDescription className="text-sm sm:text-base pt-3 sm:pt-4 space-y-3 sm:space-y-4">
+              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border border-primary/20 rounded-xl p-4 sm:p-5">
+                <p className="font-bold text-foreground mb-2 sm:mb-3 text-base sm:text-lg">
                   🚀 Start Your Officer Journey TODAY - FREE!
                 </p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>Instant AI Analysis</strong> on your TAT stories</span>
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span>
+                      <strong>Instant AI Analysis</strong> on your stories
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>Join 12,000+ aspirants</strong> crushing their prep</span>
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span>
+                      <strong>Join 12,000+ aspirants</strong> crushing prep
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>96% success rate</strong> in SSB selections</span>
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span>
+                      <strong>96% success rate</strong> in SSB
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                    <span><strong>FREE forever</strong> • No payment required</span>
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <span>
+                      <strong>FREE forever</strong> • No payment
+                    </span>
                   </li>
                 </ul>
               </div>
-              <p className="text-center text-sm text-muted-foreground italic">
-                ⏰ Don't let another day pass without proper TAT preparation!
+              <p className="text-center text-xs sm:text-sm text-muted-foreground italic">
+                ⏰ Don't let another day pass without proper TAT prep!
               </p>
             </DialogDescription>
           </DialogHeader>
-            <div className="flex flex-col gap-3 mt-2">
-              <Button
-                size="lg"
-                className="font-black text-lg shadow-action hover:scale-105 transition-all min-h-[56px] animate-pulse-glow"
-                onClick={() => {
-                  setShowWelcomeDialog(false);
-                  navigate("/auth/signup");
-                }}
-              >
-                YES! MAKE ME A TAT EXPERT 🔥
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowWelcomeDialog(false)}
-                className="text-xs"
-              >
-                I'll browse more (not recommended)
-              </Button>
-            </div>
+          <div className="flex flex-col gap-2.5 sm:gap-3 mt-2">
+            <Button
+              size="lg"
+              className="font-black text-base sm:text-lg shadow-action hover:scale-105 transition-all h-12 sm:h-14 animate-pulse-glow"
+              onClick={() => {
+                setShowWelcomeDialog(false);
+                navigate("/auth/signup");
+              }}
+            >
+              YES! MAKE ME A TAT EXPERT 🔥
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowWelcomeDialog(false)} className="text-xs h-9">
+              I'll browse more (not recommended)
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
-      
-      {/* Sticky Bottom CTA Bar - Mobile Optimized */}
+
+      {/* Sticky Bottom CTA Bar - Enhanced Mobile */}
       {showStickyBar && !isSignedIn && (
         <div className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-primary/30 shadow-2xl animate-slide-in-up">
-          <div className="container mx-auto px-4 py-3 md:py-4">
-            <div className="flex items-center justify-between gap-3">
+          <div className="container mx-auto px-3 sm:px-4 py-2.5 sm:py-3 md:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm md:text-base font-bold text-foreground truncate">
-                  🎯 12,000+ Officers Training Now
+                <p className="text-xs xs:text-sm sm:text-base font-bold text-foreground truncate flex items-center gap-1.5">
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 animate-pulse flex-shrink-0" />
+                  <span className="hidden xs:inline">🎯 {activeUsers}+ Training Now</span>
+                  <span className="xs:hidden">🎯 {activeUsers} Live</span>
                 </p>
-                <p className="text-xs text-muted-foreground hidden sm:block">
+                <p className="text-[10px] xs:text-xs text-muted-foreground hidden sm:block">
                   Start your FREE TAT practice today!
                 </p>
               </div>
               <Link to="/auth/signup">
-                <Button 
-                  size="sm" 
-                  className="px-4 md:px-6 py-5 md:py-6 font-black shadow-action hover:scale-105 transition-all whitespace-nowrap text-sm md:text-base"
+                <Button
+                  size="sm"
+                  className="px-3 xs:px-4 sm:px-6 py-4 sm:py-5 md:py-6 font-black shadow-action hover:scale-105 transition-all whitespace-nowrap text-xs xs:text-sm sm:text-base"
                 >
-                  JOIN FREE 🚀
+                  <span className="hidden xs:inline">JOIN FREE 🚀</span>
+                  <span className="xs:hidden">START 🚀</span>
                 </Button>
               </Link>
             </div>
           </div>
         </div>
       )}
-    </div>;
+    </div>
+  );
 };
+
 export default SSBInterview;
