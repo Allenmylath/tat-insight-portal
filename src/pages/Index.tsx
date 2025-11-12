@@ -233,7 +233,13 @@ const Index = () => {
                 </div>
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse-glow"></div>
-                  <img src={henryMurrayImage} alt="Dr. Henry Murray, founder of the Thematic Apperception Test" className="w-full max-w-sm mx-auto rounded-3xl shadow-float border-4 border-primary/30 hover:scale-105 transition-transform" />
+                  <img 
+                    src={henryMurrayImage} 
+                    alt="Dr. Henry Murray, founder of the Thematic Apperception Test" 
+                    loading="eager"
+                    decoding="async"
+                    className="w-full max-w-sm mx-auto rounded-3xl shadow-float border-4 border-primary/30 hover:scale-105 transition-transform" 
+                  />
                   <div className="mt-6 text-center glass-effect p-4 rounded-2xl max-w-sm mx-auto">
                     <p className="font-bold text-foreground text-lg">Dr. Henry Murray</p>
                     <p className="text-sm text-primary font-semibold">Harvard Psychological Clinic</p>
@@ -256,7 +262,13 @@ const Index = () => {
               {features.map((feature, index) => <Card key={index} className="shadow-glow border-primary/20 hover:scale-105 transition-all duration-300 glass-effect group">
                   <CardHeader className="text-center">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden mx-auto mb-4 shadow-float border-2 border-primary/20 group-hover:border-primary/50 transition-all">
-                      <img src={feature.image} alt={feature.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                      <img 
+                        src={feature.image} 
+                        alt={feature.title} 
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform" 
+                      />
                     </div>
                     <CardTitle className="text-lg md:text-xl text-foreground font-bold">{feature.title}</CardTitle>
                   </CardHeader>
