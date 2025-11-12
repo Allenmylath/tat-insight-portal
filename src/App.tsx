@@ -11,6 +11,9 @@ import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
 import { useUser } from '@clerk/clerk-react';
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import Index from "./pages/Index";
 import SSBInterview from "./pages/SSBInterview";
 import TatTestInfo from "./pages/TatTestInfo";
@@ -60,6 +63,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
   const statsigUserId = user?.id || 'anonymous-user';
+  const [statsigTimeout, setStatsigTimeout] = useState(false);
   
   const { client } = useClientAsyncInit(
     import.meta.env.VITE_STATSIG_CLIENT_KEY,
@@ -72,18 +76,36 @@ const App = () => {
     }
   );
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStatsigTimeout(true);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <StatsigProvider 
-      client={client} 
-      loadingComponent={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading...</p>
+    <ErrorBoundary>
+      <StatsigProvider 
+        client={client} 
+        loadingComponent={
+          <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="text-center">
+              {!statsigTimeout ? (
+                <>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-foreground">Loading Dashboard...</p>
+                  <p className="text-xs text-muted-foreground mt-2">This may take a moment</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-foreground mb-4">Taking longer than expected...</p>
+                  <Button onClick={() => window.location.reload()}>Retry</Button>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      }
-    >
+        }
+      >
       <QueryClientProvider client={queryClient}>
         <TestProvider>
           <TooltipProvider>
@@ -168,6 +190,7 @@ const App = () => {
         </TestProvider>
       </QueryClientProvider>
     </StatsigProvider>
+    </ErrorBoundary>
   );
 };
 
