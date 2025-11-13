@@ -64,11 +64,15 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
   const statsigUserId = user?.id || 'anonymous-user';
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
   const [statsigTimeout, setStatsigTimeout] = useState(false);
   
   const { client } = useClientAsyncInit(
     import.meta.env.VITE_STATSIG_CLIENT_KEY,
-    { userID: statsigUserId },
+    { 
+      userID: statsigUserId,
+      email: userEmail,
+    },
     { 
       plugins: [
         new StatsigAutoCapturePlugin(), 
@@ -92,6 +96,39 @@ const App = () => {
       sessionStorage.removeItem('clerk_signup_complete');
     }
   }, []);
+
+  // Sync Clerk user identity to Statsig
+  useEffect(() => {
+    if (isClerkLoaded && client) {
+      const newUserId = user?.id || 'anonymous-user';
+      const userEmail = user?.primaryEmailAddress?.emailAddress;
+      
+      // Update Statsig user identity when Clerk user changes
+      client.updateUserAsync({
+        userID: newUserId,
+        email: userEmail,
+        custom: {
+          clerkUserId: user?.id,
+          signedIn: !!user,
+        }
+      }).then(() => {
+        console.log('Statsig user updated:', newUserId);
+      });
+    }
+  }, [user?.id, isClerkLoaded, client]);
+
+  // Don't render until Clerk is loaded
+  if (!isClerkLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground">Loading Dashboard...</p>
+          <p className="text-xs text-muted-foreground mt-2">This may take a moment</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
