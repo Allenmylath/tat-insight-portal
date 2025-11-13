@@ -10,6 +10,7 @@ import { StatsigProvider, useClientAsyncInit } from '@statsig/react-bindings';
 import { StatsigAutoCapturePlugin } from '@statsig/web-analytics';
 import { StatsigSessionReplayPlugin } from '@statsig/session-replay';
 import { useUser } from '@clerk/clerk-react';
+import { supabase } from '@/integrations/supabase/client';
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -41,6 +42,23 @@ import { TestProvider } from "@/contexts/TestContext";
 
 const queryClient = new QueryClient();
 
+// Generate or retrieve stable anonymous user ID
+const getStableAnonymousId = (): string => {
+  const STORAGE_KEY = 'statsig_stable_id';
+  
+  // Check if we already have a stable ID
+  let stableId = localStorage.getItem(STORAGE_KEY);
+  
+  if (!stableId) {
+    // Generate new UUID for this anonymous user
+    stableId = `anon_${crypto.randomUUID()}`;
+    localStorage.setItem(STORAGE_KEY, stableId);
+    console.log('🆔 Generated new anonymous ID:', stableId);
+  }
+  
+  return stableId;
+};
+
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
   
@@ -63,15 +81,55 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
-  const statsigUserId = user?.id || 'anonymous-user';
-  const userEmail = user?.primaryEmailAddress?.emailAddress;
   const [statsigTimeout, setStatsigTimeout] = useState(false);
+  const [supabaseUserId, setSupabaseUserId] = useState<string | null>(null);
+  
+  // Fetch Supabase UUID for logged-in users
+  useEffect(() => {
+    const getSupabaseUserId = async () => {
+      if (user?.id) {
+        const { data } = await supabase
+          .from('users')
+          .select('id')
+          .eq('clerk_id', user.id)
+          .single();
+        
+        if (data?.id) {
+          setSupabaseUserId(data.id);
+          console.log('✅ Supabase User ID fetched:', data.id);
+        }
+      } else {
+        // User logged out, clear Supabase ID
+        setSupabaseUserId(null);
+      }
+    };
+    
+    if (isClerkLoaded) {
+      getSupabaseUserId();
+    }
+  }, [user?.id, isClerkLoaded]);
+  
+  // Determine user ID for Statsig
+  const statsigUserId = user && supabaseUserId 
+    ? supabaseUserId // Logged-in user: Use Supabase UUID
+    : getStableAnonymousId(); // Anonymous user: Use stable anonymous ID
+    
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
   
   const { client } = useClientAsyncInit(
     import.meta.env.VITE_STATSIG_CLIENT_KEY,
     { 
-      userID: statsigUserId,
+      userID: statsigUserId, // Either Supabase UUID or stable anonymous ID
       email: userEmail,
+      customIDs: {
+        clerkID: user?.id,
+      },
+      custom: {
+        isAnonymous: !user,
+        clerkUserId: user?.id,
+        signedIn: !!user,
+        hasEmail: !!userEmail,
+      }
     },
     { 
       plugins: [
@@ -97,34 +155,52 @@ const App = () => {
     }
   }, []);
 
-  // Sync Clerk user identity to Statsig
+  // Sync user identity to Statsig when it changes
   useEffect(() => {
     if (isClerkLoaded && client) {
-      const newUserId = user?.id || 'anonymous-user';
+      const userId = user && supabaseUserId 
+        ? supabaseUserId 
+        : getStableAnonymousId();
+        
       const userEmail = user?.primaryEmailAddress?.emailAddress;
       
-      // Update Statsig user identity when Clerk user changes
-      client.updateUserAsync({
-        userID: newUserId,
+      console.log('🔄 Updating Statsig user:', {
+        userID: userId,
+        clerkID: user?.id,
         email: userEmail,
+        isAnonymous: !user
+      });
+      
+      client.updateUserAsync({
+        userID: userId,
+        email: userEmail,
+        customIDs: {
+          clerkID: user?.id,
+        },
         custom: {
+          isAnonymous: !user,
           clerkUserId: user?.id,
           signedIn: !!user,
+          hasEmail: !!userEmail,
         }
       }).then(() => {
-        console.log('Statsig user updated:', newUserId);
+        console.log('✅ Statsig user updated successfully');
+      }).catch((error) => {
+        console.error('❌ Statsig update failed:', error);
       });
     }
-  }, [user?.id, isClerkLoaded, client]);
+  }, [user?.id, supabaseUserId, isClerkLoaded, client]);
 
-  // Don't render until Clerk is loaded
-  if (!isClerkLoaded) {
+  // Don't render until Clerk is loaded AND (if logged in) Supabase user is fetched
+  if (!isClerkLoaded || (user && !supabaseUserId)) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-foreground">Loading Dashboard...</p>
-          <p className="text-xs text-muted-foreground mt-2">This may take a moment</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            {user ? 'Fetching user profile...' : 'Initializing session...'}
+          </p>
         </div>
       </div>
     );
