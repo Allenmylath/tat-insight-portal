@@ -468,6 +468,83 @@ export type Database = {
           },
         ]
       }
+      user_activity_summary: {
+        Row: {
+          average_sessions_per_week: number | null
+          clerk_user_id: string
+          created_at: string | null
+          days_since_last_login: number | null
+          first_session_at: string | null
+          id: string
+          is_mobile_user: boolean | null
+          last_session_at: string | null
+          primary_browser: string | null
+          primary_city: string | null
+          primary_country: string | null
+          primary_device_type: string | null
+          sessions_last_30_days: number | null
+          sessions_last_7_days: number | null
+          total_session_duration_seconds: number | null
+          total_sessions: number | null
+          unique_devices_count: number | null
+          unique_locations_count: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          average_sessions_per_week?: number | null
+          clerk_user_id: string
+          created_at?: string | null
+          days_since_last_login?: number | null
+          first_session_at?: string | null
+          id?: string
+          is_mobile_user?: boolean | null
+          last_session_at?: string | null
+          primary_browser?: string | null
+          primary_city?: string | null
+          primary_country?: string | null
+          primary_device_type?: string | null
+          sessions_last_30_days?: number | null
+          sessions_last_7_days?: number | null
+          total_session_duration_seconds?: number | null
+          total_sessions?: number | null
+          unique_devices_count?: number | null
+          unique_locations_count?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          average_sessions_per_week?: number | null
+          clerk_user_id?: string
+          created_at?: string | null
+          days_since_last_login?: number | null
+          first_session_at?: string | null
+          id?: string
+          is_mobile_user?: boolean | null
+          last_session_at?: string | null
+          primary_browser?: string | null
+          primary_city?: string | null
+          primary_country?: string | null
+          primary_device_type?: string | null
+          sessions_last_30_days?: number | null
+          sessions_last_7_days?: number | null
+          total_session_duration_seconds?: number | null
+          total_sessions?: number | null
+          unique_devices_count?: number | null
+          unique_locations_count?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_summary_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_offers: {
         Row: {
           created_at: string
@@ -510,42 +587,164 @@ export type Database = {
           },
         ]
       }
+      user_sessions: {
+        Row: {
+          abandon_at: string | null
+          browser_name: string | null
+          browser_version: string | null
+          city: string | null
+          clerk_user_id: string
+          client_id: string | null
+          country: string | null
+          created_at: string | null
+          device_type: string | null
+          event_type: string | null
+          expire_at: string | null
+          id: string
+          ip_address: string | null
+          is_mobile: boolean | null
+          last_active_at: string | null
+          organization_id: string | null
+          session_created_at: string | null
+          session_duration_seconds: number | null
+          session_ended_at: string | null
+          session_id: string
+          status: string | null
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          abandon_at?: string | null
+          browser_name?: string | null
+          browser_version?: string | null
+          city?: string | null
+          clerk_user_id: string
+          client_id?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_type?: string | null
+          expire_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_mobile?: boolean | null
+          last_active_at?: string | null
+          organization_id?: string | null
+          session_created_at?: string | null
+          session_duration_seconds?: number | null
+          session_ended_at?: string | null
+          session_id: string
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          abandon_at?: string | null
+          browser_name?: string | null
+          browser_version?: string | null
+          city?: string | null
+          clerk_user_id?: string
+          client_id?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_type?: string | null
+          expire_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_mobile?: boolean | null
+          last_active_at?: string | null
+          organization_id?: string | null
+          session_created_at?: string | null
+          session_duration_seconds?: number | null
+          session_ended_at?: string | null
+          session_id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
+          account_created_at: string | null
           clerk_id: string
           created_at: string
           credit_balance: number
           email: string
+          first_name: string | null
+          has_password: boolean | null
+          has_two_factor: boolean | null
           id: string
+          is_banned: boolean | null
+          last_active_at: string | null
+          last_name: string | null
+          last_sign_in_at: string | null
           membership_expires_at: string | null
           membership_type: Database["public"]["Enums"]["membership_type"]
+          primary_email_id: string | null
+          profile_image_url: string | null
           total_credits_purchased: number
           total_credits_spent: number
           updated_at: string
+          username: string | null
         }
         Insert: {
+          account_created_at?: string | null
           clerk_id: string
           created_at?: string
           credit_balance?: number
           email: string
+          first_name?: string | null
+          has_password?: boolean | null
+          has_two_factor?: boolean | null
           id?: string
+          is_banned?: boolean | null
+          last_active_at?: string | null
+          last_name?: string | null
+          last_sign_in_at?: string | null
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          primary_email_id?: string | null
+          profile_image_url?: string | null
           total_credits_purchased?: number
           total_credits_spent?: number
           updated_at?: string
+          username?: string | null
         }
         Update: {
+          account_created_at?: string | null
           clerk_id?: string
           created_at?: string
           credit_balance?: number
           email?: string
+          first_name?: string | null
+          has_password?: boolean | null
+          has_two_factor?: boolean | null
           id?: string
+          is_banned?: boolean | null
+          last_active_at?: string | null
+          last_name?: string | null
+          last_sign_in_at?: string | null
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          primary_email_id?: string | null
+          profile_image_url?: string | null
           total_credits_purchased?: number
           total_credits_spent?: number
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -565,6 +764,10 @@ export type Database = {
         Returns: boolean
       }
       analyze_existing_completed_sessions: { Args: never; Returns: undefined }
+      calculate_session_duration: {
+        Args: { p_session_created_at: string; p_session_ended_at: string }
+        Returns: number
+      }
       deduct_credits_for_test: {
         Args: {
           p_credits_needed?: number
@@ -572,6 +775,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: boolean
+      }
+      refresh_user_activity_summary: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
