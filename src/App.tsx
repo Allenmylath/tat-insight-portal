@@ -42,21 +42,49 @@ import { TestProvider } from "@/contexts/TestContext";
 
 const queryClient = new QueryClient();
 
-// Generate or retrieve stable anonymous user ID
-const getStableAnonymousId = (): string => {
-  const STORAGE_KEY = 'statsig_stable_id';
+// Persistent identity management for Statsig
+const STATSIG_USER_ID_KEY = 'statsig_user_id';
+const STATSIG_USER_EMAIL_KEY = 'statsig_user_email';
+
+// Get or create anonymous ID (only for first-time visitors)
+const getOrCreateAnonymousId = (): string => {
+  const ANON_ID_KEY = 'statsig_anon_id';
+  let anonId = localStorage.getItem(ANON_ID_KEY);
   
-  // Check if we already have a stable ID
-  let stableId = localStorage.getItem(STORAGE_KEY);
-  
-  if (!stableId) {
-    // Generate new UUID for this anonymous user
-    stableId = `anon_${crypto.randomUUID()}`;
-    localStorage.setItem(STORAGE_KEY, stableId);
-    console.log('🆔 Generated new anonymous ID:', stableId);
+  if (!anonId) {
+    anonId = `anon_${crypto.randomUUID()}`;
+    localStorage.setItem(ANON_ID_KEY, anonId);
+    console.log('🆔 Generated new anonymous ID:', anonId);
   }
   
-  return stableId;
+  return anonId;
+};
+
+// Get the persistent user ID (once identified, never reverts to anonymous)
+const getPersistentUserId = (): string => {
+  const persistedId = localStorage.getItem(STATSIG_USER_ID_KEY);
+  
+  if (persistedId) {
+    console.log('✅ Using persisted user ID:', persistedId);
+    return persistedId;
+  }
+  
+  // New visitor - return anonymous ID
+  return getOrCreateAnonymousId();
+};
+
+// Save identified user (called after successful auth + Supabase fetch)
+const persistIdentifiedUser = (supabaseUserId: string, email?: string) => {
+  localStorage.setItem(STATSIG_USER_ID_KEY, supabaseUserId);
+  if (email) {
+    localStorage.setItem(STATSIG_USER_EMAIL_KEY, email);
+  }
+  console.log('💾 Persisted identified user:', { supabaseUserId, email });
+};
+
+// Get persisted email (remains even after logout)
+const getPersistedEmail = (): string | undefined => {
+  return localStorage.getItem(STATSIG_USER_EMAIL_KEY) || undefined;
 };
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -83,12 +111,20 @@ const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
   const [statsigTimeout, setStatsigTimeout] = useState(false);
   const [supabaseUserId, setSupabaseUserId] = useState<string | null>(null);
+  const [isIdentityReady, setIsIdentityReady] = useState(false);
   
   // Fetch Supabase UUID for logged-in users
   useEffect(() => {
-    const getSupabaseUserId = async () => {
+    const initializeIdentity = async () => {
+      if (!isClerkLoaded) {
+        return; // Wait for Clerk to load
+      }
+
       if (user?.id) {
-        const { data } = await supabase
+        // User is authenticated - fetch Supabase ID
+        console.log('🔍 Fetching Supabase user ID for Clerk ID:', user.id);
+        
+        const { data, error } = await supabase
           .from('users')
           .select('id')
           .eq('clerk_id', user.id)
@@ -96,39 +132,49 @@ const App = () => {
         
         if (data?.id) {
           setSupabaseUserId(data.id);
-          console.log('✅ Supabase User ID fetched:', data.id);
+          
+          // Persist the identified user (upgrade from anonymous if needed)
+          const currentEmail = user.primaryEmailAddress?.emailAddress;
+          persistIdentifiedUser(data.id, currentEmail);
+          
+          console.log('✅ Supabase User ID fetched and persisted:', data.id);
+        } else if (error) {
+          console.error('❌ Failed to fetch Supabase user:', error);
         }
       } else {
-        // User logged out, clear Supabase ID
+        // User not authenticated - use persisted ID or anonymous
+        console.log('👤 No authenticated user, using persisted/anonymous ID');
         setSupabaseUserId(null);
       }
+      
+      // Identity is ready for Statsig initialization
+      setIsIdentityReady(true);
     };
     
-    if (isClerkLoaded) {
-      getSupabaseUserId();
-    }
+    initializeIdentity();
   }, [user?.id, isClerkLoaded]);
   
-  // Determine user ID for Statsig
-  const statsigUserId = user && supabaseUserId 
-    ? supabaseUserId // Logged-in user: Use Supabase UUID
-    : getStableAnonymousId(); // Anonymous user: Use stable anonymous ID
-    
-  const userEmail = user?.primaryEmailAddress?.emailAddress;
+  // Determine user ID for Statsig (once identified, always use real ID)
+  const statsigUserId = getPersistentUserId();
+  
+  // Get email (persisted even after logout)
+  const statsigEmail = user?.primaryEmailAddress?.emailAddress || getPersistedEmail();
+  
+  // Check if user is currently signed in (for metadata)
+  const isCurrentlySignedIn = !!user;
   
   const { client } = useClientAsyncInit(
     import.meta.env.VITE_STATSIG_CLIENT_KEY,
     { 
-      userID: statsigUserId, // Either Supabase UUID or stable anonymous ID
-      email: userEmail,
+      userID: statsigUserId,
+      email: statsigEmail,
       customIDs: {
         clerkID: user?.id,
       },
       custom: {
-        isAnonymous: !user,
-        clerkUserId: user?.id,
-        signedIn: !!user,
-        hasEmail: !!userEmail,
+        wasIdentified: !!localStorage.getItem(STATSIG_USER_ID_KEY), // Track if user was ever identified
+        currentlySignedIn: isCurrentlySignedIn,
+        hasEmail: !!statsigEmail,
       }
     },
     { 
@@ -155,51 +201,53 @@ const App = () => {
     }
   }, []);
 
-  // Sync user identity to Statsig when it changes
+  // Sync user metadata to Statsig when auth state changes
   useEffect(() => {
-    if (isClerkLoaded && client) {
-      const userId = user && supabaseUserId 
-        ? supabaseUserId 
-        : getStableAnonymousId();
-        
-      const userEmail = user?.primaryEmailAddress?.emailAddress;
+    if (isIdentityReady && client) {
+      const userId = getPersistentUserId();
+      const email = user?.primaryEmailAddress?.emailAddress || getPersistedEmail();
+      const isSignedIn = !!user;
       
-      console.log('🔄 Updating Statsig user:', {
+      console.log('🔄 Updating Statsig metadata:', {
         userID: userId,
         clerkID: user?.id,
-        email: userEmail,
-        isAnonymous: !user
+        email: email,
+        currentlySignedIn: isSignedIn,
+        wasIdentified: !!localStorage.getItem(STATSIG_USER_ID_KEY)
       });
       
       client.updateUserAsync({
         userID: userId,
-        email: userEmail,
+        email: email,
         customIDs: {
           clerkID: user?.id,
         },
         custom: {
-          isAnonymous: !user,
-          clerkUserId: user?.id,
-          signedIn: !!user,
-          hasEmail: !!userEmail,
+          wasIdentified: !!localStorage.getItem(STATSIG_USER_ID_KEY),
+          currentlySignedIn: isSignedIn,
+          hasEmail: !!email,
         }
       }).then(() => {
-        console.log('✅ Statsig user updated successfully');
+        console.log('✅ Statsig metadata updated successfully');
       }).catch((error) => {
         console.error('❌ Statsig update failed:', error);
       });
     }
-  }, [user?.id, supabaseUserId, isClerkLoaded, client]);
+  }, [user?.id, isIdentityReady, client]);
 
-  // Don't render until Clerk is loaded AND (if logged in) Supabase user is fetched
-  if (!isClerkLoaded || (user && !supabaseUserId)) {
+  // Wait for Clerk to load AND identity to be ready before initializing Statsig
+  if (!isClerkLoaded || !isIdentityReady) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-foreground">Loading Dashboard...</p>
           <p className="text-xs text-muted-foreground mt-2">
-            {user ? 'Fetching user profile...' : 'Initializing session...'}
+            {!isClerkLoaded 
+              ? 'Initializing authentication...' 
+              : user 
+                ? 'Fetching user profile...' 
+                : 'Preparing session...'}
           </p>
         </div>
       </div>
