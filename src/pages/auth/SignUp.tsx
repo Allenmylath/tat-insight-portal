@@ -108,11 +108,14 @@ const SignUp = () => {
         await setActive({ session: completeSignUp.createdSessionId });
         
         // Track Google Ads conversion with enhanced data
-        trackSignupConversion({
+        const userData = {
           email: email,
           firstName: signUp.firstName || undefined,
           lastName: signUp.lastName || undefined,
-        });
+        };
+        
+        console.log("🎯 Email signup - calling trackSignupConversion with userData:", userData);
+        trackSignupConversion(userData);
         
         navigate("/dashboard/pending");
       }

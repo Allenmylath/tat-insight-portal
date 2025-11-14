@@ -190,6 +190,14 @@ const App = () => {
   // Track Google OAuth signup conversion
   useEffect(() => {
     const signupComplete = sessionStorage.getItem("clerk_signup_complete");
+    const hasUser = !!user;
+    
+    console.log("🔍 Google OAuth tracking check:", {
+      signupCompleteFlag: signupComplete,
+      hasUser: hasUser,
+      userEmail: user?.primaryEmailAddress?.emailAddress
+    });
+    
     if (signupComplete === "true" && user) {
       // Get user data from Clerk for enhanced conversions
       const userData = {
@@ -198,6 +206,7 @@ const App = () => {
         lastName: user.lastName || undefined,
       };
       
+      console.log("🎯 Calling trackSignupConversion with userData:", userData);
       trackSignupConversion(userData);
       sessionStorage.removeItem("clerk_signup_complete");
     }
