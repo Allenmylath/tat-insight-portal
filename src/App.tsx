@@ -224,7 +224,7 @@ const App = () => {
                     }
                   />
                   <Route
-                    path="/dashboard/attempted-tests"
+                    path="/dashboard/attempted"
                     element={
                       <ProtectedRoute>
                         <DashboardLayout>
@@ -244,7 +244,7 @@ const App = () => {
                     }
                   />
                   <Route
-                    path="/dashboard/abandoned-tests"
+                    path="/dashboard/abandoned"
                     element={
                       <ProtectedRoute>
                         <DashboardLayout>
@@ -289,6 +289,16 @@ const App = () => {
                       <ProtectedRoute>
                         <DashboardLayout>
                           <Transactions />
+                        </DashboardLayout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard/reconciliation"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardLayout>
+                          <PaymentReconciliation />
                         </DashboardLayout>
                       </ProtectedRoute>
                     }
