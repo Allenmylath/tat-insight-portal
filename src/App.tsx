@@ -191,17 +191,20 @@ const App = () => {
   useEffect(() => {
     const signupComplete = sessionStorage.getItem("clerk_signup_complete");
     const hasUser = !!user;
+    const hasEmail = !!user?.primaryEmailAddress?.emailAddress;
     
     console.log("🔍 Google OAuth tracking check:", {
       signupCompleteFlag: signupComplete,
       hasUser: hasUser,
+      hasEmail: hasEmail,
+      isClerkLoaded: isClerkLoaded,
       userEmail: user?.primaryEmailAddress?.emailAddress
     });
     
-    if (signupComplete === "true" && user) {
+    if (signupComplete === "true" && user && user.primaryEmailAddress?.emailAddress) {
       // Get user data from Clerk for enhanced conversions
       const userData = {
-        email: user.primaryEmailAddress?.emailAddress,
+        email: user.primaryEmailAddress.emailAddress,
         firstName: user.firstName || undefined,
         lastName: user.lastName || undefined,
       };
@@ -209,8 +212,10 @@ const App = () => {
       console.log("🎯 Calling trackSignupConversion with userData:", userData);
       trackSignupConversion(userData);
       sessionStorage.removeItem("clerk_signup_complete");
+    } else if (signupComplete === "true" && !user) {
+      console.log("⏳ Signup flag set but user not loaded yet - waiting...");
     }
-  }, [user]);
+  }, [user, isClerkLoaded]);
 
   // Render immediately - no waiting for anything
   return (
