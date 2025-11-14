@@ -234,7 +234,7 @@ const App = () => {
                     }
                   />
                   <Route
-                    path="/dashboard/pending-tests"
+                    path="/dashboard/pending"
                     element={
                       <ProtectedRoute>
                         <DashboardLayout>
