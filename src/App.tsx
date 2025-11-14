@@ -114,8 +114,6 @@ const App = () => {
     },
     {
       plugins: [new StatsigAutoCapturePlugin(), new StatsigSessionReplayPlugin()],
-      // Non-blocking initialization options
-      initTimeoutMs: 3000, // Allow Statsig to init in background without blocking
     },
   );
 
