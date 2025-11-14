@@ -39,7 +39,7 @@ export default function BlogPost() {
   const fetchPost = async () => {
     try {
       const { data, error } = await supabase
-        .from("blog_posts")
+        .from("blog_posts" as any)
         .select("*")
         .eq("slug", slug)
         .eq("is_published", true)
@@ -52,11 +52,11 @@ export default function BlogPost() {
         return;
       }
 
-      setPost(data);
+      setPost(data as any);
 
       // Increment view count
-      await supabase.rpc("increment_blog_post_views", {
-        p_post_id: data.id,
+      await supabase.rpc("increment_blog_post_views" as any, {
+        p_post_id: (data as any).id,
       });
     } catch (error) {
       console.error("Error fetching blog post:", error);

@@ -82,6 +82,13 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-2 md:gap-4">
+            <Link to="/blog">
+              <Button variant="ghost" size="sm" className="gap-2 hover:scale-105 transition-transform">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Blog</span>
+              </Button>
+            </Link>
+            
             <Button onClick={() => window.open('https://wa.link/1mj98f', '_blank')} variant="outline" size="sm" className="gap-2 hover:scale-105 transition-transform">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Help</span>
