@@ -13,7 +13,6 @@ import { DeviceSwitchInstructions } from "@/components/DeviceSwitchInstructions"
 import { CreditHeader } from "@/components/CreditHeader";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import { trackSignupConversion } from "@/utils/trackConversion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,16 +38,6 @@ const PendingTests = () => {
   const [activeSession, setActiveSession] = useState<any>(null);
   const [showMobileWarningDialog, setShowMobileWarningDialog] = useState(false);
   const [showDeviceSwitchDialog, setShowDeviceSwitchDialog] = useState(false);
-
-  // Track Google OAuth signup conversions
-  useEffect(() => {
-    const isNewUser = sessionStorage.getItem("clerk_signup_complete");
-
-    if (isNewUser) {
-      trackSignupConversion();
-      sessionStorage.removeItem("clerk_signup_complete");
-    }
-  }, []);
 
   useEffect(() => {
     console.log("PendingTests - useEffect triggered", {
