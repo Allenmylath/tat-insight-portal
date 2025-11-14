@@ -104,6 +104,71 @@ export type Database = {
           },
         ]
       }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          is_published: boolean
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_packages: {
         Row: {
           created_at: string
@@ -489,6 +554,7 @@ export type Database = {
           unique_devices_count: number | null
           unique_locations_count: number | null
           updated_at: string | null
+          user_email: string | null
           user_id: string | null
         }
         Insert: {
@@ -511,6 +577,7 @@ export type Database = {
           unique_devices_count?: number | null
           unique_locations_count?: number | null
           updated_at?: string | null
+          user_email?: string | null
           user_id?: string | null
         }
         Update: {
@@ -533,6 +600,7 @@ export type Database = {
           unique_devices_count?: number | null
           unique_locations_count?: number | null
           updated_at?: string | null
+          user_email?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -775,6 +843,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: boolean
+      }
+      increment_blog_post_views: {
+        Args: { p_post_id: string }
+        Returns: undefined
       }
       refresh_user_activity_summary: {
         Args: { p_user_id: string }

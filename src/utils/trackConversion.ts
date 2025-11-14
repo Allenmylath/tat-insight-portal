@@ -41,6 +41,7 @@ const normalizePhone = (phone: string): string => {
 // Track Google Ads signup conversion with enhanced conversion data
 export const trackSignupConversion = (userData?: UserData) => {
   console.log("🔍 trackSignupConversion called with:", userData);
+  
   if (typeof window === "undefined" || !window.gtag) {
     console.warn("gtag not available - conversion not tracked");
     return;
