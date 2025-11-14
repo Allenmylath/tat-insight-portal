@@ -307,8 +307,8 @@ const App = () => {
                   />
 
                   {/* Auth routes */}
-                  <Route path="/sign-in" element={<SignIn />} />
-                  <Route path="/sign-up" element={<SignUp />} />
+                  <Route path="/auth/signin" element={<SignIn />} />
+                  <Route path="/auth/signup" element={<SignUp />} />
 
                   {/* Standalone test route - no dashboard layout */}
                   <Route
