@@ -37,6 +37,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import UpdateBlog from "./pages/admin/UpdateBlog";
 import NotFound from "./pages/NotFound";
 import { PaymentReconciliation } from "@/components/PaymentReconciliation";
 
@@ -296,8 +297,9 @@ const App = () => {
               <Route path="/about-us" element={<AboutUs />} />
               
               {/* Blog routes */}
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/admin/update-blog" element={<UpdateBlog />} />
                 
                 {/* Auth routes */}
                 <Route path="/auth/signin" element={<SignIn />} />
