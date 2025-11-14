@@ -107,8 +107,12 @@ const SignUp = () => {
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
         
-        // Track Google Ads conversion
-        trackSignupConversion();
+        // Track Google Ads conversion with enhanced data
+        trackSignupConversion({
+          email: email,
+          firstName: signUp.firstName || undefined,
+          lastName: signUp.lastName || undefined,
+        });
         
         navigate("/dashboard/pending");
       }
