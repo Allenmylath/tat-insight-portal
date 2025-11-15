@@ -19,13 +19,13 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // No need to redirect - Clerk's signInForceRedirectUrl handles this
-  // Just show loading if already signed in
+  // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      console.log("User already signed in, Clerk will handle redirect");
+      console.log("User already signed in, redirecting to dashboard");
+      navigate("/dashboard/pending");
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, navigate]);
 
   const handleGoogleSignIn = async () => {
     if (!isLoaded || isSignedIn) return;
@@ -63,9 +63,14 @@ const SignIn = () => {
       });
 
       if (result.status === "complete") {
+        console.log("Sign in complete, activating session");
         await setActive({ session: result.createdSessionId });
-        // Clerk's signInForceRedirectUrl will handle the redirect
-        console.log("Sign in complete, Clerk will redirect to dashboard");
+        
+        // Wait a moment for auth state to propagate before redirect
+        setTimeout(() => {
+          console.log("Redirecting to dashboard");
+          navigate("/dashboard/pending");
+        }, 100);
       }
     } catch (err: any) {
       console.error("Sign in error:", err);

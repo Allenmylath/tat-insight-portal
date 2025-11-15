@@ -24,13 +24,13 @@ const SignUp = () => {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
-  // No need to redirect - Clerk's signUpForceRedirectUrl handles this
-  // Just show loading if already signed in
+  // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      console.log("User already signed in, Clerk will handle redirect");
+      console.log("User already signed in, redirecting to dashboard");
+      navigate("/dashboard/pending");
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, navigate]);
 
   const handleGoogleSignUp = async () => {
     if (!isLoaded || isSignedIn) return;
@@ -106,6 +106,7 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
+        console.log("Sign up complete, activating session");
         await setActive({ session: completeSignUp.createdSessionId });
         
         // Track Google Ads conversion with enhanced data
@@ -118,8 +119,11 @@ const SignUp = () => {
         console.log("🎯 Email signup - calling trackSignupConversion with userData:", userData);
         trackSignupConversion(userData);
         
-        // Clerk's signUpForceRedirectUrl will handle the redirect
-        console.log("Sign up complete, Clerk will redirect to dashboard");
+        // Wait a moment for auth state to propagate before redirect
+        setTimeout(() => {
+          console.log("Redirecting to dashboard");
+          navigate("/dashboard/pending");
+        }, 100);
       }
     } catch (err: any) {
       console.error("Verification error:", err);
