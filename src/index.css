@@ -2,120 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Snapchat-Inspired Minimalist Design System
-   Bold, Simple, Youth-Focused - Maximum Impact, Minimum Noise
-   Core Colors: Snapchat Yellow, Black, White
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    /* Snapchat Minimalist - Clean & Bold */
-    --background: 0 0% 100%; /* Pure white */
-    --foreground: 0 0% 0%; /* Pure black */
+    /* Youth-Focused Theme - Vibrant, Energetic, Modern */
+    --background: 0 0% 100%; /* Pure white for max contrast */
+    --foreground: 220 15% 10%; /* Deep blue-black */
 
-    --card: 0 0% 100%; /* White cards */
-    --card-foreground: 0 0% 0%;
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 220 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 220 15% 10%;
 
-    /* Snapchat Yellow - The Star of the Show */
-    --primary: 60 100% 50%; /* #FFFC00 - Snapchat Yellow */
-    --primary-foreground: 0 0% 0%; /* Black text on yellow */
+    /* Electric Blue Primary (Energy, Trust, Modern) */
+    --primary: 220 85% 55%; /* Vibrant electric blue */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 220 85% 65%; /* Lighter blue for glow */
 
-    /* Dark accents for contrast */
-    --secondary: 0 0% 13%; /* Charcoal for subtle elements */
+    /* Bold Orange Secondary (Enthusiasm, Action) */
+    --secondary: 25 95% 55%; /* Bold orange */
     --secondary-foreground: 0 0% 100%;
 
-    /* Minimal grays */
-    --muted: 0 0% 96%; /* Very light gray for backgrounds */
-    --muted-foreground: 0 0% 40%; /* Medium gray for less important text */
+    --muted: 220 15% 96%; /* Light blue-gray */
+    --muted-foreground: 220 10% 45%; /* Medium gray */
 
-    /* Yellow accent (same as primary for consistency) */
-    --accent: 60 100% 50%; /* Snapchat yellow */
-    --accent-foreground: 0 0% 0%;
+    /* Neon Green Accent (Success, Achievement, Fresh) */
+    --accent: 145 80% 50%; /* Neon green */
+    --accent-foreground: 0 0% 100%;
 
-    /* Red for destructive actions only */
-    --destructive: 0 85% 60%;
+    /* Action Red (Bold CTA) */
+    --action-red: 0 85% 60%; /* Bold red for action buttons */
+    --action-red-foreground: 0 0% 100%;
+    --victory-red: 0 72% 50%; /* Darker red for hover states */
+    --red-glow: 0 85% 70%; /* For animations/effects */
+
+    /* Champion Gold (Achievement) */
+    --champion-gold: 45 100% 55%; /* Brighter gold */
+    --champion-gold-foreground: 45 40% 10%; /* Dark text on gold */
+    
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Borders and inputs - subtle grays */
-    --border: 0 0% 90%; /* Light gray border */
-    --input: 0 0% 95%; /* Very light input backgrounds */
-    --ring: 60 100% 50%; /* Yellow focus ring */
+    --border: 220 15% 90%; /* Light border */
+    --input: 220 15% 95%; /* Input backgrounds */
+    --ring: 220 85% 55%; /* Focus ring matches primary */
 
-    --radius: 1rem; /* Modern rounded corners */
+    --radius: 1rem; /* Larger radius for modern look */
 
-    /* Simplified Design Tokens - No Gradients */
-    --shadow-subtle: 0 2px 8px 0 hsl(0 0% 0% / 0.1);
-    --shadow-medium: 0 4px 16px 0 hsl(0 0% 0% / 0.15);
-    --shadow-strong: 0 8px 24px 0 hsl(0 0% 0% / 0.2);
-    --shadow-yellow: 0 4px 16px 0 hsl(60 100% 50% / 0.3); /* Yellow glow for emphasis */
-
+    /* Custom Design Tokens - Youth/Gaming Style */
+    --gradient-hero: linear-gradient(135deg, hsl(250 85% 65%), hsl(280 80% 60%)); /* Purple-blue gradient */
+    --gradient-action: linear-gradient(135deg, hsl(340 85% 65%), hsl(0 85% 60%)); /* Pink-red gradient */
+    --gradient-success: linear-gradient(135deg, hsl(200 90% 60%), hsl(180 100% 50%)); /* Blue-cyan gradient */
+    --gradient-champion: linear-gradient(135deg, hsl(330 85% 65%), hsl(45 100% 55%)); /* Pink-yellow gradient */
+    --gradient-elite: linear-gradient(135deg, hsl(180 90% 50%), hsl(270 75% 30%)); /* Cyan-purple gradient */
+    --gradient-card: linear-gradient(135deg, hsl(220 85% 55% / 0.05), hsl(280 80% 60% / 0.05)); /* Subtle card gradient */
+    
+    --shadow-glow: 0 8px 32px -8px hsl(220 85% 55% / 0.4); /* Blue glow */
+    --shadow-elegant: 0 4px 20px -2px hsl(220 15% 15% / 0.1); /* Subtle shadow */
+    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.4); /* Red shadow */
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.3); /* Gold shadow */
+    --shadow-float: 0 12px 40px -10px hsl(220 85% 55% / 0.3); /* Floating effect */
+    
+    /* Text colors for gradients and overlays */
+    --gradient-foreground: 0 0% 100%; /* Light text for dark gradients */
+    --overlay-foreground: 0 0% 100%; /* Light text for dark overlays */
+    
     /* Mobile-optimized spacing */
     --section-padding: 3rem 1rem;
 
-    /* Achievement Colors - Simplified */
-    --gold: 45 100% 51%; /* Gold for top achievement */
-    --silver: 0 0% 75%; /* Silver */
-    --bronze: 30 65% 45%; /* Bronze */
+    /* Gamification & Achievement Colors */
+    --gold: 45 100% 55%;
+    --silver: 0 0% 75%;
+    --bronze: 30 50% 45%;
+    
+    /* Score Gradients */
+    --excellent: linear-gradient(135deg, hsl(145 80% 50%), hsl(120 75% 45%));
+    --good: linear-gradient(135deg, hsl(220 85% 55%), hsl(200 85% 50%));
+    --average: linear-gradient(135deg, hsl(45 95% 55%), hsl(35 90% 50%));
+    --growing: linear-gradient(135deg, hsl(270 80% 60%), hsl(250 75% 55%));
+    
+    /* Achievement Glows */
+    --achievement-glow: 0 0 20px hsl(45 100% 55% / 0.5);
+    --victory-glow: 0 0 30px hsl(145 80% 50% / 0.6);
 
-    /* Sidebar - Minimal */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 60 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 60 100% 50%;
+    --sidebar-foreground: 220 15% 15%;
+    --sidebar-primary: 220 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 96%;
+    --sidebar-accent-foreground: 220 15% 15%;
+    --sidebar-border: 220 15% 90%;
+    --sidebar-ring: 220 85% 55%;
   }
 
   .dark {
-    /* Dark Mode - High Contrast with Yellow Accent */
-    --background: 0 0% 7%; /* Near black */
+    /* Dark mode - Youth Gaming Aesthetic with Neon Colors */
+    --background: 0 0% 3%; /* True black for AMOLED */
     --foreground: 0 0% 98%; /* Bright white */
 
-    --card: 0 0% 10%; /* Dark charcoal cards */
+    --card: 0 0% 8%; /* Dark charcoal */
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 10%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
-    /* Snapchat Yellow stays vibrant in dark mode */
-    --primary: 60 100% 50%; /* Same yellow */
-    --primary-foreground: 0 0% 0%; /* Black on yellow */
+    --primary: 180 100% 50%; /* Neon cyan */
+    --primary-foreground: 0 0% 3%;
+    --primary-glow: 180 100% 60%;
 
-    --secondary: 0 0% 20%; /* Lighter charcoal for secondary */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 330 85% 60%; /* Hot pink */
+    --secondary-foreground: 0 0% 3%;
 
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 60 100% 50%; /* Yellow accent */
-    --accent-foreground: 0 0% 0%;
+    --accent: 270 80% 60%; /* Electric purple */
+    --accent-foreground: 0 0% 98%;
+    
+    /* Action Red in dark mode */
+    --action-red: 0 85% 65%; /* Brighter for dark backgrounds */
+    --action-red-foreground: 0 0% 3%;
+    --victory-red: 0 75% 55%;
+    --red-glow: 0 85% 75%;
+    
+    /* Champion Gold in dark mode */
+    --champion-gold: 45 100% 60%; /* Brighter gold */
+    --champion-gold-foreground: 45 40% 10%;
 
     --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
+    --border: 0 0% 18%;
     --input: 0 0% 15%;
-    --ring: 60 100% 50%;
-
-    /* Dark mode shadows */
-    --shadow-subtle: 0 2px 8px 0 hsl(0 0% 0% / 0.3);
-    --shadow-medium: 0 4px 16px 0 hsl(0 0% 0% / 0.4);
-    --shadow-strong: 0 8px 24px 0 hsl(0 0% 0% / 0.5);
-    --shadow-yellow: 0 4px 20px 0 hsl(60 100% 50% / 0.4);
-
-    --sidebar-background: 0 0% 10%;
+    --ring: 180 100% 50%;
+    
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(250 85% 35%), hsl(280 80% 30%));
+    --gradient-action: linear-gradient(135deg, hsl(340 85% 45%), hsl(0 85% 40%));
+    --gradient-success: linear-gradient(135deg, hsl(200 90% 40%), hsl(180 100% 35%));
+    --gradient-champion: linear-gradient(135deg, hsl(330 85% 45%), hsl(45 100% 40%));
+    --gradient-elite: linear-gradient(135deg, hsl(180 90% 35%), hsl(270 75% 25%));
+    
+    --shadow-glow: 0 8px 32px -8px hsl(180 100% 50% / 0.5);
+    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.5);
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.4);
+    
+    --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 60 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-primary: 180 90% 45%;
+    --sidebar-primary-foreground: 0 0% 5%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 60 100% 50%;
+    --sidebar-ring: 180 90% 45%;
   }
 }
 
@@ -126,17 +169,19 @@
 
   html {
     scroll-behavior: smooth;
+    /* Prevent iOS auto-zoom on input focus */
     font-size: 16px;
   }
 
   body {
     @apply bg-background text-foreground;
+    /* Improve text rendering on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  /* Clean, Modern Typography */
+  /* Mobile-optimized typography */
   h1 {
     @apply text-3xl md:text-4xl lg:text-5xl font-bold leading-tight;
   }
@@ -149,7 +194,7 @@
     @apply text-xl md:text-2xl lg:text-3xl font-semibold leading-snug;
   }
 
-  /* Minimum font sizes for readability */
+  /* Ensure minimum font sizes for readability */
   .text-xs {
     font-size: max(0.75rem, 14px);
   }
@@ -158,7 +203,7 @@
     font-size: max(0.875rem, 14px);
   }
 
-  /* Touch targets for mobile */
+  /* Touch target utilities */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -184,7 +229,7 @@
   #root {
     overflow-x: hidden;
   }
-
+  
   body {
     overflow-x: hidden;
   }
@@ -192,9 +237,7 @@
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -202,31 +245,60 @@
   }
 }
 
-/* Minimal, Clean Animations - No Visual Noise */
-@keyframes fade-in {
-  from {
-    opacity: 0;
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
   }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  100% {
+    transform: translateX(100%);
   }
 }
 
-@keyframes scale-in {
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.8);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes counter {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.5);
   }
   to {
     opacity: 1;
@@ -234,46 +306,64 @@
   }
 }
 
-@keyframes pulse-subtle {
-  0%,
-  100% {
-    opacity: 1;
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
   }
   50% {
-    opacity: 0.8;
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* Simple utility animations */
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+.animate-shimmer {
+  animation: shimmer 3s infinite;
 }
 
-.animate-slide-up {
-  animation: slide-up 0.4s ease-out;
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out;
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
 }
 
-/* Minimal glass effect - subtle, not overdone */
 .glass-effect {
-  backdrop-filter: blur(8px);
-  background: hsl(var(--card) / 0.8);
-  border: 1px solid hsl(var(--border));
+  backdrop-filter: blur(12px);
+  background: hsl(var(--card) / 0.7);
+  border: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Yellow glow for important elements */
-.glow-yellow {
-  box-shadow: var(--shadow-yellow);
+.animate-confetti {
+  animation: confetti 3s ease-out forwards;
 }
 
-/* Blog Prose Styles - Clean and Readable */
+.animate-counter {
+  animation: counter 0.5s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.glow-gold {
+  box-shadow: var(--achievement-glow);
+}
+
+.glow-victory {
+  box-shadow: var(--victory-glow);
+}
+
+/* Blog Prose Styles */
 .prose {
   color: hsl(var(--foreground));
   max-width: 65ch;
@@ -283,6 +373,13 @@
   margin-top: 1.25em;
   margin-bottom: 1.25em;
   line-height: 1.75;
+}
+
+.prose :where([class~="lead"]):not(:where([class~="not-prose"] *)) {
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
 }
 
 .prose :where(h1):not(:where([class~="not-prose"] *)) {
@@ -312,20 +409,34 @@
   line-height: 1.6;
 }
 
+.prose :where(h4):not(:where([class~="not-prose"] *)) {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  font-size: 1.125em;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+
+.prose :where(img):not(:where([class~="not-prose"] *)) {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border-radius: var(--radius);
+}
+
 .prose :where(a):not(:where([class~="not-prose"] *)) {
   color: hsl(var(--primary));
   text-decoration: underline;
   font-weight: 500;
-  transition: opacity 0.2s;
 }
 
 .prose :where(a):hover:not(:where([class~="not-prose"] *)) {
-  opacity: 0.8;
+  color: hsl(var(--primary-glow));
 }
 
 .prose :where(strong):not(:where([class~="not-prose"] *)) {
   color: hsl(var(--foreground));
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .prose :where(ul):not(:where([class~="not-prose"] *)) {
@@ -353,6 +464,7 @@
   color: hsl(var(--foreground));
   border-left-width: 0.25rem;
   border-left-color: hsl(var(--primary));
+  quotes: "\201C""\201D""\2018""\2019";
   margin-top: 1.6em;
   margin-bottom: 1.6em;
   padding-left: 1em;
@@ -384,11 +496,59 @@
   padding: 0;
 }
 
-/* Dark mode prose */
+.prose :where(table):not(:where([class~="not-prose"] *)) {
+  width: 100%;
+  table-layout: auto;
+  text-align: left;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+}
+
+.prose :where(thead):not(:where([class~="not-prose"] *)) {
+  border-bottom-width: 1px;
+  border-bottom-color: hsl(var(--border));
+}
+
+.prose :where(thead th):not(:where([class~="not-prose"] *)) {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  vertical-align: bottom;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose :where(tbody tr):not(:where([class~="not-prose"] *)) {
+  border-bottom-width: 1px;
+  border-bottom-color: hsl(var(--border));
+}
+
+.prose :where(tbody td):not(:where([class~="not-prose"] *)) {
+  vertical-align: baseline;
+  padding: 0.5714286em;
+}
+
+.prose :where(hr):not(:where([class~="not-prose"] *)) {
+  border-color: hsl(var(--border));
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+/* Dark mode prose styles */
 .dark .prose {
   color: hsl(var(--foreground));
 }
 
 .dark .prose :where(h1, h2, h3, h4, strong):not(:where([class~="not-prose"] *)) {
   color: hsl(var(--foreground));
+}
+
+.dark .prose :where(code):not(:where([class~="not-prose"] *)) {
+  background-color: hsl(var(--muted));
+}
+
+.dark .prose :where(pre):not(:where([class~="not-prose"] *)) {
+  background-color: hsl(var(--muted));
 }
