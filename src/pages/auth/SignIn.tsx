@@ -66,11 +66,9 @@ const SignIn = () => {
         console.log("Sign in complete, activating session");
         await setActive({ session: result.createdSessionId });
         
-        // Wait a moment for auth state to propagate before redirect
-        setTimeout(() => {
-          console.log("Redirecting to dashboard");
-          navigate("/dashboard/pending");
-        }, 100);
+        // Force full page reload to ensure auth state is properly initialized
+        console.log("Redirecting to dashboard with full page reload");
+        window.location.href = "/dashboard/pending";
       }
     } catch (err: any) {
       console.error("Sign in error:", err);
