@@ -123,6 +123,12 @@ const App = () => {
     const syncIdentityInBackground = async () => {
       // Wait for Clerk to be ready (but app already rendered)
       if (!isClerkLoaded) return;
+      
+      // Skip execution if on dashboard to prevent interference during navigation
+      if (window.location.pathname.includes('/dashboard')) {
+        console.log("Skipping Statsig sync during dashboard navigation");
+        return;
+      }
 
       try {
         if (user?.id) {
