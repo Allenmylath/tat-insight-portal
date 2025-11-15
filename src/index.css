@@ -8,157 +8,160 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Youth-Focused Theme - Vibrant, Energetic, Modern */
-    --background: 0 0% 100%; /* Pure white for max contrast */
-    --foreground: 220 15% 10%; /* Deep blue-black */
+    /* Snapchat-Inspired Theme - Yellow & Black Youth Appeal */
+    --background: 0 0% 0%; /* Pure black background */
+    --foreground: 60 100% 50%; /* Bright yellow text */
 
-    --card: 0 0% 100%; /* Pure white */
-    --card-foreground: 220 15% 10%;
+    --card: 0 0% 8%; /* Very dark gray cards */
+    --card-foreground: 60 100% 50%; /* Yellow text on cards */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 10%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 60 100% 50%;
 
-    /* Electric Blue Primary (Energy, Trust, Modern) */
-    --primary: 220 85% 55%; /* Vibrant electric blue */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 220 85% 65%; /* Lighter blue for glow */
+    /* Snapchat Yellow Primary */
+    --primary: 60 100% 50%; /* #FFFC00 - Iconic Snapchat yellow */
+    --primary-foreground: 0 0% 0%; /* Black text on yellow */
+    --primary-glow: 60 100% 60%; /* Lighter yellow for glow */
 
-    /* Bold Orange Secondary (Enthusiasm, Action) */
-    --secondary: 25 95% 55%; /* Bold orange */
-    --secondary-foreground: 0 0% 100%;
+    /* White Secondary (for contrast) */
+    --secondary: 0 0% 100%; /* Pure white */
+    --secondary-foreground: 0 0% 0%; /* Black text */
 
-    --muted: 220 15% 96%; /* Light blue-gray */
-    --muted-foreground: 220 10% 45%; /* Medium gray */
+    --muted: 0 0% 15%; /* Dark gray for muted elements */
+    --muted-foreground: 60 100% 50%; /* Yellow muted text */
 
-    /* Neon Green Accent (Success, Achievement, Fresh) */
-    --accent: 145 80% 50%; /* Neon green */
-    --accent-foreground: 0 0% 100%;
+    /* Yellow accent */
+    --accent: 60 100% 50%; /* Yellow accent */
+    --accent-foreground: 0 0% 0%;
 
-    /* Action Red (Bold CTA) */
-    --action-red: 0 85% 60%; /* Bold red for action buttons */
-    --action-red-foreground: 0 0% 100%;
-    --victory-red: 0 72% 50%; /* Darker red for hover states */
-    --red-glow: 0 85% 70%; /* For animations/effects */
+    /* Action Yellow (CTA buttons) */
+    --action-red: 60 100% 50%;
+    --action-red-foreground: 0 0% 0%;
+    --victory-red: 55 100% 45%;
+    --red-glow: 60 100% 60%;
 
-    /* Champion Gold (Achievement) */
-    --champion-gold: 45 100% 55%; /* Brighter gold */
-    --champion-gold-foreground: 45 40% 10%; /* Dark text on gold */
+    /* Champion Gold (kept for variety) */
+    --champion-gold: 45 100% 55%;
+    --champion-gold-foreground: 0 0% 0%;
     
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%; /* Light border */
-    --input: 220 15% 95%; /* Input backgrounds */
-    --ring: 220 85% 55%; /* Focus ring matches primary */
+    --border: 60 100% 50%; /* Yellow borders */
+    --input: 0 0% 15%; /* Dark inputs */
+    --ring: 60 100% 50%; /* Yellow focus ring */
 
-    --radius: 1rem; /* Larger radius for modern look */
+    --radius: 1.5rem; /* Very rounded corners like Snapchat */
 
-    /* Custom Design Tokens - Youth/Gaming Style */
-    --gradient-hero: linear-gradient(135deg, hsl(250 85% 65%), hsl(280 80% 60%)); /* Purple-blue gradient */
-    --gradient-action: linear-gradient(135deg, hsl(340 85% 65%), hsl(0 85% 60%)); /* Pink-red gradient */
-    --gradient-success: linear-gradient(135deg, hsl(200 90% 60%), hsl(180 100% 50%)); /* Blue-cyan gradient */
-    --gradient-champion: linear-gradient(135deg, hsl(330 85% 65%), hsl(45 100% 55%)); /* Pink-yellow gradient */
-    --gradient-elite: linear-gradient(135deg, hsl(180 90% 50%), hsl(270 75% 30%)); /* Cyan-purple gradient */
-    --gradient-card: linear-gradient(135deg, hsl(220 85% 55% / 0.05), hsl(280 80% 60% / 0.05)); /* Subtle card gradient */
+    /* Snapchat-Inspired Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(60 100% 50%), hsl(45 100% 45%));
+    --gradient-action: linear-gradient(135deg, hsl(60 100% 50%), hsl(50 100% 45%));
+    --gradient-action-red: linear-gradient(135deg, hsl(60 100% 50%), hsl(50 100% 45%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%));
+    --gradient-yellow-black: linear-gradient(135deg, hsl(60 100% 50%), hsl(0 0% 0%));
+    --gradient-champion: linear-gradient(135deg, hsl(45 100% 55%), hsl(60 100% 50%));
+    --gradient-success: linear-gradient(135deg, hsl(145 70% 50%), hsl(120 65% 45%));
+    --gradient-elite: linear-gradient(135deg, hsl(60 100% 50%), hsl(55 100% 45%));
     
-    --shadow-glow: 0 8px 32px -8px hsl(220 85% 55% / 0.4); /* Blue glow */
-    --shadow-elegant: 0 4px 20px -2px hsl(220 15% 15% / 0.1); /* Subtle shadow */
-    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.4); /* Red shadow */
-    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.3); /* Gold shadow */
-    --shadow-float: 0 12px 40px -10px hsl(220 85% 55% / 0.3); /* Floating effect */
+    --shadow-glow: 0 8px 32px -8px hsl(60 100% 50% / 0.5);
+    --shadow-elegant: 0 4px 20px -2px hsl(0 0% 0% / 0.8);
+    --shadow-action: 0 8px 25px -5px hsl(60 100% 50% / 0.6);
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.5);
+    --shadow-yellow: 0 10px 40px -10px hsl(60 100% 50% / 0.6);
+    --shadow-black: 0 4px 20px -2px hsl(0 0% 0% / 0.8);
+    --shadow-float: 0 12px 40px -10px hsl(60 100% 50% / 0.4);
+    --shadow-military: 0 8px 25px -5px hsl(60 100% 50% / 0.4);
     
     /* Text colors for gradients and overlays */
-    --gradient-foreground: 0 0% 100%; /* Light text for dark gradients */
-    --overlay-foreground: 0 0% 100%; /* Light text for dark overlays */
+    --gradient-foreground: 0 0% 0%; /* Black text for yellow gradients */
+    --overlay-foreground: 60 100% 50%; /* Yellow text for dark overlays */
     
     /* Mobile-optimized spacing */
     --section-padding: 3rem 1rem;
 
     /* Gamification & Achievement Colors */
     --gold: 45 100% 55%;
-    --silver: 0 0% 75%;
-    --bronze: 30 50% 45%;
+    --silver: 0 0% 85%;
+    --bronze: 30 50% 50%;
     
     /* Score Gradients */
-    --excellent: linear-gradient(135deg, hsl(145 80% 50%), hsl(120 75% 45%));
-    --good: linear-gradient(135deg, hsl(220 85% 55%), hsl(200 85% 50%));
-    --average: linear-gradient(135deg, hsl(45 95% 55%), hsl(35 90% 50%));
-    --growing: linear-gradient(135deg, hsl(270 80% 60%), hsl(250 75% 55%));
+    --excellent: linear-gradient(135deg, hsl(145 70% 50%), hsl(120 65% 45%));
+    --good: linear-gradient(135deg, hsl(60 100% 50%), hsl(50 100% 45%));
+    --average: linear-gradient(135deg, hsl(45 100% 55%), hsl(35 95% 50%));
+    --growing: linear-gradient(135deg, hsl(60 100% 50%), hsl(55 100% 45%));
     
     /* Achievement Glows */
-    --achievement-glow: 0 0 20px hsl(45 100% 55% / 0.5);
-    --victory-glow: 0 0 30px hsl(145 80% 50% / 0.6);
+    --achievement-glow: 0 0 20px hsl(60 100% 50% / 0.5);
+    --victory-glow: 0 0 30px hsl(60 100% 50% / 0.6);
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 15% 15%;
-    --sidebar-primary: 220 85% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 96%;
-    --sidebar-accent-foreground: 220 15% 15%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 220 85% 55%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 60 100% 50%;
+    --sidebar-primary: 60 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 60 100% 50%;
+    --sidebar-border: 60 100% 50%;
+    --sidebar-ring: 60 100% 50%;
   }
 
   .dark {
-    /* Dark mode - Youth Gaming Aesthetic with Neon Colors */
-    --background: 0 0% 3%; /* True black for AMOLED */
-    --foreground: 0 0% 98%; /* Bright white */
+    /* Same as light mode for Snapchat consistency */
+    --background: 0 0% 0%;
+    --foreground: 60 100% 50%;
 
-    --card: 0 0% 8%; /* Dark charcoal */
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 5%; /* Slightly darker cards in dark mode */
+    --card-foreground: 60 100% 50%;
 
     --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 60 100% 50%;
 
-    --primary: 180 100% 50%; /* Neon cyan */
-    --primary-foreground: 0 0% 3%;
-    --primary-glow: 180 100% 60%;
+    --primary: 60 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --primary-glow: 60 100% 60%;
 
-    --secondary: 330 85% 60%; /* Hot pink */
-    --secondary-foreground: 0 0% 3%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 60 100% 50%;
 
-    --accent: 270 80% 60%; /* Electric purple */
-    --accent-foreground: 0 0% 98%;
+    --accent: 60 100% 50%;
+    --accent-foreground: 0 0% 0%;
     
-    /* Action Red in dark mode */
-    --action-red: 0 85% 65%; /* Brighter for dark backgrounds */
-    --action-red-foreground: 0 0% 3%;
-    --victory-red: 0 75% 55%;
-    --red-glow: 0 85% 75%;
+    --action-red: 60 100% 50%;
+    --action-red-foreground: 0 0% 0%;
+    --victory-red: 55 100% 45%;
+    --red-glow: 60 100% 60%;
     
-    /* Champion Gold in dark mode */
-    --champion-gold: 45 100% 60%; /* Brighter gold */
-    --champion-gold-foreground: 45 40% 10%;
+    --champion-gold: 45 100% 55%;
+    --champion-gold-foreground: 0 0% 0%;
 
     --destructive: 0 85% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 15%;
-    --ring: 180 100% 50%;
+    --border: 60 100% 50%;
+    --input: 0 0% 12%;
+    --ring: 60 100% 50%;
     
-    /* Dark mode gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(250 85% 35%), hsl(280 80% 30%));
-    --gradient-action: linear-gradient(135deg, hsl(340 85% 45%), hsl(0 85% 40%));
-    --gradient-success: linear-gradient(135deg, hsl(200 90% 40%), hsl(180 100% 35%));
-    --gradient-champion: linear-gradient(135deg, hsl(330 85% 45%), hsl(45 100% 40%));
-    --gradient-elite: linear-gradient(135deg, hsl(180 90% 35%), hsl(270 75% 25%));
+    --gradient-hero: linear-gradient(135deg, hsl(60 100% 50%), hsl(45 100% 45%));
+    --gradient-action: linear-gradient(135deg, hsl(60 100% 50%), hsl(50 100% 45%));
+    --gradient-action-red: linear-gradient(135deg, hsl(60 100% 50%), hsl(50 100% 45%));
+    --gradient-champion: linear-gradient(135deg, hsl(45 100% 55%), hsl(60 100% 50%));
+    --gradient-elite: linear-gradient(135deg, hsl(60 100% 50%), hsl(55 100% 45%));
     
-    --shadow-glow: 0 8px 32px -8px hsl(180 100% 50% / 0.5);
-    --shadow-action: 0 8px 25px -5px hsl(0 85% 60% / 0.5);
-    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.4);
+    --shadow-glow: 0 8px 32px -8px hsl(60 100% 50% / 0.5);
+    --shadow-action: 0 8px 25px -5px hsl(60 100% 50% / 0.6);
+    --shadow-champion: 0 8px 25px -5px hsl(45 100% 55% / 0.5);
+    --shadow-yellow: 0 10px 40px -10px hsl(60 100% 50% / 0.6);
     
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 180 90% 45%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 180 90% 45%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 60 100% 50%;
+    --sidebar-primary: 60 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 60 100% 50%;
+    --sidebar-border: 60 100% 50%;
+    --sidebar-ring: 60 100% 50%;
   }
 }
 
@@ -174,24 +177,33 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+    font-weight: 500;
     /* Improve text rendering on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  /* Mobile-optimized typography */
+  /* Mobile-optimized typography with Fredoka headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+
   h1 {
-    @apply text-3xl md:text-4xl lg:text-5xl font-bold leading-tight;
+    @apply text-4xl md:text-6xl font-bold leading-tight;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 
   h2 {
-    @apply text-2xl md:text-3xl lg:text-4xl font-bold leading-tight;
+    @apply text-3xl md:text-5xl font-bold leading-tight;
+    font-weight: 700;
   }
 
   h3 {
-    @apply text-xl md:text-2xl lg:text-3xl font-semibold leading-snug;
+    @apply text-2xl md:text-4xl font-semibold leading-snug;
+    font-weight: 600;
   }
 
   /* Ensure minimum font sizes for readability */
@@ -221,6 +233,23 @@ All colors MUST be HSL.
 
   .mobile-section {
     @apply py-8 md:py-12 lg:py-16;
+  }
+
+  /* Snapchat-style utility classes */
+  .snap-card {
+    @apply bg-card rounded-3xl p-6 border-2 border-primary/20 shadow-[var(--shadow-yellow)];
+  }
+
+  .snap-button {
+    @apply bg-primary text-black font-bold rounded-full px-6 py-3 hover:scale-105 transition-transform shadow-[var(--shadow-yellow)];
+  }
+
+  .snap-glow {
+    box-shadow: var(--shadow-yellow);
+  }
+
+  .snap-text-shadow {
+    text-shadow: 0 0 10px hsl(60 100% 50% / 0.5);
   }
 }
 
@@ -320,6 +349,18 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes yellow-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .animate-shimmer {
   animation: shimmer 3s infinite;
 }
@@ -353,6 +394,19 @@ All colors MUST be HSL.
 
 .animate-bounce-in {
   animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-yellow-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-snap-bounce {
+  animation: bounce-in 0.5s ease-in-out;
+}
+
+.animate-yellow-shift {
+  background-size: 200% 200%;
+  animation: yellow-shift 3s ease infinite;
 }
 
 .glow-gold {
