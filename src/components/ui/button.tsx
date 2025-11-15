@@ -9,29 +9,27 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-yellow)] hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md",
-        outline: "border-3 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground shadow-[var(--shadow-yellow)]",
+        outline: "border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-md",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md",
-        ghost: "hover:bg-primary/10 hover:text-primary",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-yellow)] hover:shadow-2xl font-bold border-2 border-primary/20 hover:scale-[1.02] active:scale-[0.98]",
+        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl font-bold border-2 border-primary/20 hover:scale-[1.02] active:scale-[0.98]",
         government: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-2 border-primary/30 shadow-md hover:shadow-lg",
-        saffron: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-yellow)] hover:shadow-xl font-semibold hover:scale-[1.02] active:scale-[0.98]",
-        action: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-yellow)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
-        "military-green": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-yellow)] hover:shadow-xl font-bold border-2 border-primary-foreground/10 hover:scale-[1.02] active:scale-[0.98]",
+        saffron: "bg-[var(--gradient-saffron)] text-[hsl(var(--saffron-foreground))] hover:opacity-90 shadow-lg hover:shadow-xl font-semibold hover:scale-[1.02] active:scale-[0.98]",
+        // NEW - Youth-focused variants for 18-24 males
+        action: "bg-[var(--gradient-action-red)] text-[hsl(var(--action-red-foreground))] hover:opacity-90 shadow-[var(--shadow-action)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
+        "military-green": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-military)] hover:shadow-xl font-bold border-2 border-primary-foreground/10 hover:scale-[1.02] active:scale-[0.98]",
         champion: "bg-[var(--gradient-champion)] text-[hsl(var(--champion-gold-foreground))] hover:opacity-90 shadow-[var(--shadow-champion)] hover:shadow-xl font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200",
-        // NEW - Snapchat-style variants
-        snap: "bg-primary text-black font-bold rounded-full shadow-[var(--shadow-yellow)] hover:scale-105 transition-transform",
-        "snap-outline": "border-3 border-primary text-primary bg-black rounded-full hover:bg-primary hover:text-black shadow-[var(--shadow-yellow)]",
       },
       size: {
-        default: "h-12 px-6 py-3 text-base font-bold rounded-full touch-target",
-        sm: "h-9 rounded-full px-4 text-sm font-semibold",
-        lg: "h-14 rounded-full px-8 text-lg font-bold touch-target-lg",
-        xl: "h-16 rounded-full px-10 text-xl font-bold touch-target-lg",
-        icon: "h-12 w-12 rounded-full touch-target",
-        mobile: "h-14 px-6 py-4 text-base font-bold rounded-full w-full touch-target-lg",
+        default: "h-11 px-5 py-2.5 touch-target", // Mobile-optimized with touch target
+        sm: "h-9 rounded-md px-3",
+        lg: "h-12 rounded-md px-10 text-base touch-target-lg", // Better for mobile CTAs
+        xl: "h-14 rounded-lg px-12 text-lg font-bold touch-target-lg", // Extra large for primary CTAs
+        icon: "h-11 w-11 touch-target", // Optimal touch target for icons
+        mobile: "h-12 px-6 text-base touch-target-lg", // NEW - Optimized specifically for mobile
       },
     },
     defaultVariants: {

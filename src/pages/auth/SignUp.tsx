@@ -27,7 +27,6 @@ const SignUp = () => {
   // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      console.log("User already signed in, redirecting to dashboard");
       navigate("/dashboard/pending");
     }
   }, [isSignedIn, navigate]);
@@ -106,7 +105,6 @@ const SignUp = () => {
       });
 
       if (completeSignUp.status === "complete") {
-        console.log("Sign up complete, activating session");
         await setActive({ session: completeSignUp.createdSessionId });
         
         // Track Google Ads conversion with enhanced data
@@ -119,9 +117,7 @@ const SignUp = () => {
         console.log("🎯 Email signup - calling trackSignupConversion with userData:", userData);
         trackSignupConversion(userData);
         
-        // Force full page reload to ensure auth state is properly initialized
-        console.log("Redirecting to dashboard with full page reload");
-        window.location.href = "/dashboard/pending";
+        navigate("/dashboard/pending");
       }
     } catch (err: any) {
       console.error("Verification error:", err);

@@ -22,7 +22,6 @@ const SignIn = () => {
   // Redirect if already signed in
   useEffect(() => {
     if (isSignedIn) {
-      console.log("User already signed in, redirecting to dashboard");
       navigate("/dashboard/pending");
     }
   }, [isSignedIn, navigate]);
@@ -63,12 +62,8 @@ const SignIn = () => {
       });
 
       if (result.status === "complete") {
-        console.log("Sign in complete, activating session");
         await setActive({ session: result.createdSessionId });
-        
-        // Force full page reload to ensure auth state is properly initialized
-        console.log("Redirecting to dashboard with full page reload");
-        window.location.href = "/dashboard/pending";
+        navigate("/dashboard/pending");
       }
     } catch (err: any) {
       console.error("Sign in error:", err);

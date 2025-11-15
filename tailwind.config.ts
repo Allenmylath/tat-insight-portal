@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Montserrat', 'system-ui', 'sans-serif'],
-        display: ['Fredoka', 'sans-serif'],
-        body: ['Montserrat', 'sans-serif'],
+        sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -73,16 +73,6 @@ export default {
         },
         "gradient-foreground": "hsl(var(--gradient-foreground))",
         "overlay-foreground": "hsl(var(--overlay-foreground))",
-        // Snapchat theme colors
-        "snap-yellow": {
-          DEFAULT: "hsl(var(--primary))",
-          light: "hsl(60 100% 60%)",
-          dark: "hsl(55 100% 45%)",
-        },
-        "snap-black": {
-          DEFAULT: "hsl(0 0% 0%)",
-          light: "hsl(0 0% 10%)",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -160,20 +150,6 @@ export default {
           "0%, 100%": { transform: "scale(1) rotate(0deg)" },
           "25%": { transform: "scale(1.1) rotate(-5deg)" },
           "75%": { transform: "scale(1.1) rotate(5deg)" }
-        },
-        "yellow-pulse": {
-          "0%, 100%": { 
-            boxShadow: "0 0 10px hsl(60 100% 50% / 0.3)",
-            transform: "scale(1)"
-          },
-          "50%": { 
-            boxShadow: "0 0 30px hsl(60 100% 50% / 0.7)",
-            transform: "scale(1.02)"
-          }
-        },
-        "snap-bounce": {
-          "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.1)" }
         }
       },
       animation: {
@@ -191,8 +167,6 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "tricolor-shift": "tricolor-shift 8s ease infinite",
         "victory-bounce": "victory-bounce 0.6s ease-in-out",
-        "yellow-pulse": "yellow-pulse 2s ease-in-out infinite",
-        "snap-bounce": "snap-bounce 0.5s ease-in-out",
       },
     },
   },
