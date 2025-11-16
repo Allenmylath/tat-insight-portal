@@ -9,8 +9,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const BATCH_SIZE = 20; // Max 20 emails per minute
 const BATCH_DELAY_MS = 60000; // 1 minute between batches
+const EMAIL_DELAY_MS = 3000; // 3 seconds between each email
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
@@ -57,59 +59,65 @@ const handler = async (req: Request): Promise<Response> => {
       const batch = batches[batchIndex];
       console.log(`📧 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} users)`);
 
-      // Process all users in this batch in parallel
-      const batchResults = await Promise.allSettled(
-        batch.map(async (user) => {
-          try {
-            // Generate unique claim token
-            const claimToken = crypto.randomUUID();
-            const expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+      // Process each user sequentially with delay
+      const batchResults = [];
+      for (let i = 0; i < batch.length; i++) {
+        const user = batch[i];
+        try {
+          // Generate unique claim token
+          const claimToken = crypto.randomUUID();
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
 
-            // Insert promotional credit record
-            const { data: promoCredit, error: insertError } = await supabase
-              .from('promotional_credits')
-              .insert({
-                user_id: user.id,
-                credit_type: 'inactivity_bonus',
-                credits_amount: 200,
-                claim_token: claimToken,
-                token_expires_at: expiresAt.toISOString(),
-                email_delivery_status: 'pending',
-                email_attempts: 0,
-              })
-              .select()
-              .single();
+          // Insert promotional credit record
+          const { data: promoCredit, error: insertError } = await supabase
+            .from('promotional_credits')
+            .insert({
+              user_id: user.id,
+              credit_type: 'inactivity_bonus',
+              credits_amount: 200,
+              claim_token: claimToken,
+              token_expires_at: expiresAt.toISOString(),
+              email_delivery_status: 'pending',
+              email_attempts: 0,
+            })
+            .select()
+            .single();
 
-            if (insertError) {
-              console.error(`❌ Failed to create promo credit for ${user.email}:`, insertError);
-              throw insertError;
-            }
-
-            // Call send-promotional-email function
-            const emailResult = await supabase.functions.invoke('send-promotional-email', {
-              body: {
-                user_id: user.id,
-                user_email: user.email,
-                promotional_credit_id: promoCredit.id,
-                claim_token: claimToken,
-              },
-            });
-
-            if (emailResult.error) {
-              console.error(`⚠️ Email function error for ${user.email}:`, emailResult.error);
-              throw emailResult.error;
-            }
-
-            console.log(`✅ Email sent for ${user.email}`);
-            return { success: true, email: user.email };
-
-          } catch (userError: any) {
-            console.error(`💥 Error processing user ${user.email}:`, userError.message);
-            return { success: false, email: user.email, error: userError.message };
+          if (insertError) {
+            console.error(`❌ Failed to create promo credit for ${user.email}:`, insertError);
+            throw insertError;
           }
-        })
-      );
+
+          // Call send-promotional-email function
+          const emailResult = await supabase.functions.invoke('send-promotional-email', {
+            body: {
+              user_id: user.id,
+              user_email: user.email,
+              promotional_credit_id: promoCredit.id,
+              claim_token: claimToken,
+            },
+          });
+
+          if (emailResult.error) {
+            console.error(`⚠️ Email function error for ${user.email}:`, emailResult.error);
+            throw emailResult.error;
+          }
+
+          console.log(`✅ Email sent for ${user.email}`);
+          batchResults.push({ status: 'fulfilled', value: { success: true, email: user.email } });
+
+        } catch (userError: any) {
+          console.error(`💥 Error processing user ${user.email}:`, userError.message);
+          batchResults.push({ status: 'rejected', value: { success: false, email: user.email, error: userError.message } });
+        }
+
+        // Add delay between emails (except after the last one)
+        if (i < batch.length - 1) {
+          console.log(`⏳ Waiting ${EMAIL_DELAY_MS / 1000} seconds before next email...`);
+          await delay(EMAIL_DELAY_MS);
+        }
+      }
 
       // Count successes and failures for this batch
       batchResults.forEach((result) => {
