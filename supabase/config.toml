@@ -22,6 +22,15 @@ verify_jwt = false
 [functions.send-welcome-email]
 verify_jwt = false
 
+[functions.check-inactive-users]
+verify_jwt = false
+
+[functions.send-promotional-email]
+verify_jwt = false
+
+[functions.claim-promotional-credits]
+verify_jwt = false
+
 [db.webhooks.analyze-story]
 enabled = true
 events = ["UPDATE"]

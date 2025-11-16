@@ -71,6 +71,11 @@ const handler = async (req: Request): Promise<Response> => {
             Your Account:
           </h2>
           
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px; background-color: #f0f9ff; padding: 15px; border-left: 4px solid #2563eb;">
+            🎉 <strong>Welcome Gift:</strong> You're starting with <strong>200 FREE credits</strong>! 
+            That's enough for 2 complete TAT test sessions with detailed AI analysis.
+          </p>
+          
           <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
             <strong>Current Credit Balance:</strong> ${payload.record.credit_balance} credits<br/>
             <strong>Membership:</strong> ${payload.record.membership_type.charAt(0).toUpperCase() + payload.record.membership_type.slice(1)}

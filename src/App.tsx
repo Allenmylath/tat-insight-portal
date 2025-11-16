@@ -38,6 +38,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import UpdateBlog from "./pages/admin/UpdateBlog";
 import NotFound from "./pages/NotFound";
+import ClaimCredits from "./pages/ClaimCredits";
 import { PaymentReconciliation } from "@/components/PaymentReconciliation";
 import { TestProvider } from "@/contexts/TestContext";
 
@@ -358,6 +359,16 @@ const App = () => {
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/payment-reconciliation" element={<PaymentReconciliation />} />
+                  
+                  {/* Promotional credits claim route */}
+                  <Route 
+                    path="/claim-credits" 
+                    element={
+                      <ProtectedRoute>
+                        <ClaimCredits />
+                      </ProtectedRoute>
+                    } 
+                  />
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
