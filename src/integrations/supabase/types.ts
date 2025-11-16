@@ -384,6 +384,68 @@ export type Database = {
         }
         Relationships: []
       }
+      promotional_credits: {
+        Row: {
+          claim_token: string
+          claimed_at: string | null
+          created_at: string | null
+          credit_type: string
+          credits_amount: number
+          email_attempts: number | null
+          email_delivery_status: string | null
+          email_error_message: string | null
+          email_sent_at: string | null
+          id: string
+          is_claimed: boolean | null
+          last_email_attempt_at: string | null
+          token_expires_at: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          claim_token: string
+          claimed_at?: string | null
+          created_at?: string | null
+          credit_type: string
+          credits_amount?: number
+          email_attempts?: number | null
+          email_delivery_status?: string | null
+          email_error_message?: string | null
+          email_sent_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          last_email_attempt_at?: string | null
+          token_expires_at: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          claim_token?: string
+          claimed_at?: string | null
+          created_at?: string | null
+          credit_type?: string
+          credits_amount?: number
+          email_attempts?: number | null
+          email_delivery_status?: string | null
+          email_error_message?: string | null
+          email_sent_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          last_email_attempt_at?: string | null
+          token_expires_at?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotional_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchases: {
         Row: {
           amount: number
@@ -831,6 +893,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      add_promotional_credits: {
+        Args: {
+          p_credits_amount: number
+          p_promotional_credit_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       analyze_existing_completed_sessions: { Args: never; Returns: undefined }
       calculate_session_duration: {
         Args: { p_session_created_at: string; p_session_ended_at: string }
@@ -843,6 +913,16 @@ export type Database = {
           p_user_id: string
         }
         Returns: boolean
+      }
+      get_inactive_users_for_promotion: {
+        Args: never
+        Returns: {
+          clerk_id: string
+          created_at: string
+          email: string
+          id: string
+          last_sign_in_at: string
+        }[]
       }
       increment_blog_post_views: {
         Args: { p_post_id: string }
