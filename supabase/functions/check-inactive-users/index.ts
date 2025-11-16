@@ -12,7 +12,8 @@ const corsHeaders = {
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const BATCH_SIZE = 20; // Max 20 emails per minute
 const BATCH_DELAY_MS = 60000; // 1 minute between batches
-const EMAIL_DELAY_MS = 3000; // 3 seconds between each email
+const EMAIL_DELAY_MS = 5000; // 5 seconds between each email (safer for rate limits)
+const MAX_EMAIL_ATTEMPTS = 3; // Maximum retry attempts
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') {
@@ -22,7 +23,108 @@ const handler = async (req: Request): Promise<Response> => {
   console.log('🔍 Starting inactive users check...');
 
   try {
-    // Find inactive users
+    let totalSuccess = 0;
+    let totalFailure = 0;
+
+    // STEP 1: Retry failed emails from previous runs
+    console.log('📧 Step 1: Checking for failed emails to retry...');
+    const { data: failedCredits, error: failedQueryError } = await supabase
+      .from('promotional_credits')
+      .select('id, user_id, claim_token, email_attempts, token_expires_at')
+      .eq('email_delivery_status', 'failed')
+      .lt('email_attempts', MAX_EMAIL_ATTEMPTS)
+      .gt('token_expires_at', new Date().toISOString()) // Only retry non-expired tokens
+      .eq('is_claimed', false)
+      .order('last_email_attempt_at', { ascending: true });
+
+    if (failedQueryError) {
+      console.error('❌ Error querying failed emails:', failedQueryError);
+    } else if (failedCredits && failedCredits.length > 0) {
+      console.log(`🔄 Found ${failedCredits.length} failed emails to retry`);
+
+      // Process retries sequentially with delays
+      for (let i = 0; i < failedCredits.length; i++) {
+        const credit = failedCredits[i];
+        
+        try {
+          // Get user email
+          const { data: user } = await supabase
+            .from('users')
+            .select('email')
+            .eq('id', credit.user_id)
+            .single();
+
+          if (!user) {
+            console.error(`❌ User not found for credit ${credit.id}`);
+            continue;
+          }
+
+          console.log(`🔄 Retrying email for ${user.email} (attempt ${credit.email_attempts + 1}/${MAX_EMAIL_ATTEMPTS})`);
+
+          // Attempt to send email
+          const emailResult = await supabase.functions.invoke('send-promotional-email', {
+            body: {
+              user_id: credit.user_id,
+              user_email: user.email,
+              promotional_credit_id: credit.id,
+              claim_token: credit.claim_token,
+            },
+          });
+
+          if (emailResult.error) {
+            console.error(`⚠️ Retry failed for ${user.email}:`, emailResult.error);
+            
+            // Check if max attempts reached
+            if (credit.email_attempts + 1 >= MAX_EMAIL_ATTEMPTS) {
+              await supabase
+                .from('promotional_credits')
+                .update({
+                  email_delivery_status: 'permanently_failed',
+                  email_attempts: credit.email_attempts + 1,
+                  last_email_attempt_at: new Date().toISOString(),
+                })
+                .eq('id', credit.id);
+              console.log(`❌ Marked as permanently_failed after ${MAX_EMAIL_ATTEMPTS} attempts`);
+            } else {
+              await supabase
+                .from('promotional_credits')
+                .update({
+                  email_attempts: credit.email_attempts + 1,
+                  last_email_attempt_at: new Date().toISOString(),
+                })
+                .eq('id', credit.id);
+            }
+            totalFailure++;
+          } else {
+            console.log(`✅ Retry successful for ${user.email}`);
+            totalSuccess++;
+          }
+
+        } catch (retryError: any) {
+          console.error(`💥 Error during retry:`, retryError.message);
+          totalFailure++;
+        }
+
+        // Add delay between retry emails
+        if (i < failedCredits.length - 1) {
+          console.log(`⏳ Waiting ${EMAIL_DELAY_MS / 1000} seconds before next retry...`);
+          await delay(EMAIL_DELAY_MS);
+        }
+      }
+
+      console.log(`✅ Retry phase complete: ${totalSuccess} success, ${totalFailure} failures`);
+      
+      // Wait before processing new users
+      if (failedCredits.length > 0) {
+        console.log(`⏳ Waiting ${BATCH_DELAY_MS / 1000} seconds before processing new users...`);
+        await delay(BATCH_DELAY_MS);
+      }
+    } else {
+      console.log('✅ No failed emails to retry');
+    }
+
+    // STEP 2: Find inactive users for new promotional credits
+    console.log('📧 Step 2: Checking for new inactive users...');
     const { data: inactiveUsers, error: queryError } = await supabase
       .rpc('get_inactive_users_for_promotion');
 
@@ -51,15 +153,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`📦 Processing ${batches.length} batches (max ${BATCH_SIZE} emails per batch)`);
 
-    let totalSuccess = 0;
-    let totalFailure = 0;
-
-    // Process each batch sequentially (with delay), but users within batch in parallel
+    // Process each batch sequentially (with delay)
     for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
       const batch = batches[batchIndex];
-      console.log(`📧 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} users)`);
+      console.log(`📧 Processing new users batch ${batchIndex + 1}/${batches.length} (${batch.length} users)`);
 
-      // Process each user sequentially with delay
+      // Process each user sequentially with delay to avoid rate limits
       const batchResults = [];
       for (let i = 0; i < batch.length; i++) {
         const user = batch[i];
