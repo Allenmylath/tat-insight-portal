@@ -31,6 +31,12 @@ verify_jwt = false
 [functions.claim-promotional-credits]
 verify_jwt = false
 
+[functions.send-first-test-completion-email]
+verify_jwt = false
+
+[functions.send-analysis-ready-email]
+verify_jwt = false
+
 [db.webhooks.analyze-story]
 enabled = true
 events = ["UPDATE"]
