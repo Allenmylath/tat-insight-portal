@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -39,6 +40,7 @@ interface CreateCampaignFormProps {
 export function CreateCampaignForm({ onSuccess }: CreateCampaignFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,14 +61,13 @@ export function CreateCampaignForm({ onSuccess }: CreateCampaignFormProps) {
     setIsSubmitting(true);
 
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      // Get current user from Clerk
+      if (!clerkUser) throw new Error("Not authenticated");
 
       const { data: userData } = await supabase
         .from('users')
         .select('id')
-        .eq('clerk_id', user.id)
+        .eq('clerk_id', clerkUser.id)
         .single();
 
       if (!userData) throw new Error("User not found");
