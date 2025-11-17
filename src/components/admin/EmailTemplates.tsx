@@ -130,6 +130,7 @@ export function EmailTemplates({ onSelectTemplate }: EmailTemplatesProps) {
               </div>
             </div>
             <Button 
+              type="button"
               onClick={() => onSelectTemplate({ subject: template.subject, body: template.body })}
               className="w-full"
             >
