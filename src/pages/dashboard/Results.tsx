@@ -69,9 +69,9 @@ const Results = () => {
       {!isSignedIn && <PreviewBanner />}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">Results & Analysis</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">Overall Summary</h1>
           <p className="text-base md:text-sm text-muted-foreground mt-1">
-            Comprehensive psychological assessment results and insights
+            Aggregate psychological profile across all completed tests
           </p>
         </div>
         <Button 

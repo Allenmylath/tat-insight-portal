@@ -141,10 +141,10 @@ const AttemptedTests = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-1 md:mb-2 break-words">
-                YOUR TEST JOURNEY 🚀
+                DETAILED TEST ANALYSIS 🔍
               </h1>
               <p className="text-white/90 text-sm sm:text-base md:text-lg">
-                Track your progress and conquer every challenge!
+                View comprehensive analysis for each test attempt
               </p>
             </div>
             <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-sm sm:text-base md:text-lg px-3 py-1.5 md:px-4 md:py-2 gap-1.5 md:gap-2 whitespace-nowrap flex-shrink-0">

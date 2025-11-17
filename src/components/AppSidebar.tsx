@@ -28,7 +28,7 @@ const navigationItems = [
     exact: true
   },
   { 
-    title: "Attempted Tests", 
+    title: "Detailed Test Analysis", 
     url: "/dashboard/attempted", 
     icon: CheckCircle2 
   },
@@ -43,7 +43,7 @@ const navigationItems = [
     icon: XCircle 
   },
   { 
-    title: "Results & Analysis", 
+    title: "Overall Summary", 
     url: "/dashboard/results", 
     icon: Trophy 
   },
