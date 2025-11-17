@@ -161,6 +161,32 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Admin Section */}
+        <AdminCheck>
+          <SidebarGroup>
+            {(!isCollapsed || isMobile) && (
+              <SidebarGroupLabel className="text-muted-foreground">
+                Admin
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to="/admin/campaigns" 
+                      className={() => getNavCls(isActive('/admin/campaigns'))}
+                    >
+                      <Mail className="mr-2 h-4 w-4" />
+                      {(!isCollapsed || isMobile) && <span>Campaign Manager</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </AdminCheck>
+
         {/* Settings */}
         <SidebarGroup>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
