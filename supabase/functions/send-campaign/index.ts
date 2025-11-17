@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
 
           // Send email via Resend
           const { data: emailData, error: emailError } = await resend.emails.send({
-            from: 'TAT Tests <noreply@tattests.me>',
+            from: 'TAT Tests <noreply@notifications.tattests.me>',
             to: [user.email],
             subject: personalizedSubject,
             html: finalBody,
