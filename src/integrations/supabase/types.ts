@@ -106,6 +106,13 @@ export type Database = {
             foreignKeyName: "analysis_results_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "analysis_results_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -177,6 +184,84 @@ export type Database = {
           {
             foreignKeyName: "blog_posts_author_id_fkey"
             columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_sends: {
+        Row: {
+          campaign_id: string
+          clicked_at: string | null
+          converted_at: string | null
+          error_message: string | null
+          id: string
+          opened_at: string | null
+          recipient_email: string
+          sent_at: string
+          status: string
+          user_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          clicked_at?: string | null
+          converted_at?: string | null
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          recipient_email: string
+          sent_at?: string
+          status?: string
+          user_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          clicked_at?: string | null
+          converted_at?: string | null
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          recipient_email?: string
+          sent_at?: string
+          status?: string
+          user_data?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_sends_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_sends_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "campaign_sends_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "campaign_sends_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -274,6 +359,165 @@ export type Database = {
             foreignKeyName: "credit_transactions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          campaign_type: string
+          cooldown_days: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          email_body: string
+          id: string
+          max_recipients: number | null
+          name: string
+          offer_code: string | null
+          offer_expires_at: string | null
+          offer_type: string | null
+          offer_value: number | null
+          preview_text: string | null
+          scheduled_for: string | null
+          sent_at: string | null
+          status: string
+          subject_line: string
+          target_audience: Json
+          total_clicked: number | null
+          total_converted: number | null
+          total_opened: number | null
+          total_sent: number | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_type?: string
+          cooldown_days?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email_body: string
+          id?: string
+          max_recipients?: number | null
+          name: string
+          offer_code?: string | null
+          offer_expires_at?: string | null
+          offer_type?: string | null
+          offer_value?: number | null
+          preview_text?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          subject_line: string
+          target_audience?: Json
+          total_clicked?: number | null
+          total_converted?: number | null
+          total_opened?: number | null
+          total_sent?: number | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_type?: string
+          cooldown_days?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email_body?: string
+          id?: string
+          max_recipients?: number | null
+          name?: string
+          offer_code?: string | null
+          offer_expires_at?: string | null
+          offer_type?: string | null
+          offer_value?: number | null
+          preview_text?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          subject_line?: string
+          target_audience?: Json
+          total_clicked?: number | null
+          total_converted?: number | null
+          total_opened?: number | null
+          total_sent?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaigns_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "email_campaigns_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "email_campaigns_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          unsubscribed_at: string | null
+          unsubscribed_from_marketing: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          unsubscribed_at?: string | null
+          unsubscribed_from_marketing?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          unsubscribed_at?: string | null
+          unsubscribed_from_marketing?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "email_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "email_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -469,6 +713,13 @@ export type Database = {
             foreignKeyName: "promotional_credits_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "promotional_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -529,6 +780,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
             referencedColumns: ["user_id"]
           },
           {
@@ -632,6 +890,13 @@ export type Database = {
             foreignKeyName: "test_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -719,6 +984,13 @@ export type Database = {
             foreignKeyName: "user_activity_summary_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_activity_summary_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -766,6 +1038,56 @@ export type Database = {
           },
           {
             foreignKeyName: "user_offers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_offers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -858,6 +1180,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
             referencedColumns: ["user_id"]
           },
           {
@@ -965,6 +1294,30 @@ export type Database = {
         }
         Relationships: []
       }
+      test_completers: {
+        Row: {
+          clerk_id: string | null
+          current_credit_balance: number | null
+          days_since_last_test: number | null
+          email: string | null
+          first_name: string | null
+          first_test_date: string | null
+          is_free_user: boolean | null
+          last_name: string | null
+          last_sign_in_at: string | null
+          last_test_date: string | null
+          lead_status: string | null
+          tests_last_30_days: number | null
+          tests_last_7_days: number | null
+          total_purchases: number | null
+          total_spent: number | null
+          total_tests_completed: number | null
+          user_created_at: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_credits_after_purchase: {
@@ -1008,6 +1361,13 @@ export type Database = {
           last_sign_in_at: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       increment_blog_post_views: {
         Args: { p_post_id: string }
         Returns: undefined
@@ -1018,6 +1378,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       membership_type: "free" | "pro"
       session_status: "active" | "completed" | "abandoned" | "paused"
     }
@@ -1147,6 +1508,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       membership_type: ["free", "pro"],
       session_status: ["active", "completed", "abandoned", "paused"],
     },

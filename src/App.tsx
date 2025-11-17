@@ -37,6 +37,8 @@ import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import UpdateBlog from "./pages/admin/UpdateBlog";
+import CampaignManager from "./pages/admin/CampaignManager";
+import CampaignAnalytics from "./components/admin/CampaignAnalytics";
 import NotFound from "./pages/NotFound";
 import ClaimCredits from "./pages/ClaimCredits";
 import { PaymentReconciliation } from "@/components/PaymentReconciliation";
@@ -368,6 +370,28 @@ const App = () => {
                         <ClaimCredits />
                       </ProtectedRoute>
                     } 
+                  />
+
+                  {/* Admin routes */}
+                  <Route
+                    path="/admin/campaigns"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardLayout>
+                          <CampaignManager />
+                        </DashboardLayout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/campaigns/:id"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardLayout>
+                          <CampaignAnalytics />
+                        </DashboardLayout>
+                      </ProtectedRoute>
+                    }
                   />
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

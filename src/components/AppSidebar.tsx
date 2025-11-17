@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt, Star, Zap } from "lucide-react";
+import { Settings, CreditCard, CheckCircle2, Clock, XCircle, BarChart3, Trophy, Crown, Lock, Image, Coins, LogOut, RefreshCw, Receipt, Star, Zap, Mail } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { useUserData } from "@/hooks/useUserData";
 import { useTestContext } from "@/contexts/TestContext";
 import { CreditHeader } from "@/components/CreditHeader";
+import { AdminCheck } from "@/components/AdminCheck";
 
 const navigationItems = [
   { 
