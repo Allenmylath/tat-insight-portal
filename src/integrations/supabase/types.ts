@@ -99,6 +99,13 @@ export type Database = {
             foreignKeyName: "analysis_results_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "analysis_results_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -160,6 +167,13 @@ export type Database = {
           views_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "blog_posts_author_id_fkey"
             columns: ["author_id"]
@@ -249,6 +263,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "credit_transactions_user_id_fkey"
             columns: ["user_id"]
@@ -441,6 +462,13 @@ export type Database = {
             foreignKeyName: "promotional_credits_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "promotional_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -496,6 +524,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "purchases_user_id_fkey"
             columns: ["user_id"]
@@ -590,6 +625,13 @@ export type Database = {
             foreignKeyName: "test_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -670,6 +712,13 @@ export type Database = {
             foreignKeyName: "user_activity_summary_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_activity_summary_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -707,6 +756,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "offers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_offers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "user_offers_user_id_fkey"
@@ -801,6 +857,13 @@ export type Database = {
             foreignKeyName: "user_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -880,7 +943,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      paying_customers: {
+        Row: {
+          clerk_id: string | null
+          current_credit_balance: number | null
+          days_since_last_purchase: number | null
+          email: string | null
+          failed_purchases_count: number | null
+          first_name: string | null
+          first_purchase_date: string | null
+          last_name: string | null
+          last_payment_method: string | null
+          last_purchase_date: string | null
+          last_sign_in_at: string | null
+          total_amount_spent: number | null
+          total_credits_purchased: number | null
+          total_purchases: number | null
+          user_created_at: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_credits_after_purchase: {
