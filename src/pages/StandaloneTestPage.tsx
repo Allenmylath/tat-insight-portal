@@ -53,7 +53,7 @@ const StandaloneTestPage = () => {
     if (window.opener) {
       window.close();
     } else {
-      window.location.href = "/dashboard/pending";
+      window.location.href = "/dashboard/attempted?success=true";
     }
   };
 
