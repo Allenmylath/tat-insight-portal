@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Shield, Lock } from "lucide-react";
 import { trackSignupConversion } from "@/utils/trackConversion";
 
 const SignUp = () => {
@@ -159,6 +159,12 @@ const SignUp = () => {
               <CardDescription>
                 Check your email and enter the 6-digit code
               </CardDescription>
+              <div className="flex items-start gap-2 p-3 bg-green-500/10 rounded-lg border border-green-500/20 mt-4">
+                <Lock className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  We sent a verification code to protect your account. This ensures only you can access your assessments.
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleVerification} className="space-y-4">
@@ -223,6 +229,15 @@ const SignUp = () => {
             <CardDescription>
               Create your account to access psychological assessments
             </CardDescription>
+            <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg border border-border/50 mt-4">
+              <Shield className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-foreground">Your data is secure</p>
+                <p className="text-xs text-muted-foreground">
+                  We never share your personal information. Your assessment data is encrypted and confidential.
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -329,6 +344,17 @@ const SignUp = () => {
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
+
+            <p className="text-xs text-center text-muted-foreground mt-4">
+              By signing up, you agree to our{" "}
+              <Link to="/terms" className="text-primary hover:underline">
+                Terms & Conditions
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy-policy" className="text-primary hover:underline">
+                Privacy Policy
+              </Link>
+            </p>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">

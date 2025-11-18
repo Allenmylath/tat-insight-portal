@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Shield, Lock } from "lucide-react";
 
 const SignIn = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -106,6 +106,12 @@ const SignIn = () => {
             <CardDescription>
               Enter your credentials to access your account
             </CardDescription>
+            <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg border border-border/50 mt-4">
+              <Lock className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                Your connection is encrypted and secure. We protect your assessment data with industry-standard security.
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -185,6 +191,16 @@ const SignIn = () => {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
+
+            <div className="mt-4 text-center">
+              <Link 
+                to="/privacy-policy" 
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              >
+                <Shield className="h-3 w-3" />
+                View our Privacy Policy
+              </Link>
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
