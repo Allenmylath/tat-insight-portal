@@ -103,7 +103,7 @@ interface AnalysisReportDialogProps {
 
 export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, score }: AnalysisReportDialogProps) => {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("traditional");
+  const [activeTab, setActiveTab] = useState("military");
 
   if (!analysis) return null;
 
