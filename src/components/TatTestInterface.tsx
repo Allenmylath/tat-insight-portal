@@ -668,7 +668,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Button>
         <Button
           onClick={() => submitStory()}
-          disabled={isSubmitting || !story.trim() || story.length < 250 || !isActive}
+          disabled={isSubmitting || !story.trim() || story.length < 500 || !isActive}
           className="flex-1 gap-2"
         >
           {isSubmitting ? (
@@ -685,7 +685,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Button>
       </div>
 
-      {story.length > 0 && story.length < 250 && !isSubmitting && (
+      {story.length > 0 && story.length < 500 && !isSubmitting && (
         <p className="text-sm text-center text-muted-foreground">Write at least 500 characters to enable submission</p>
       )}
 
