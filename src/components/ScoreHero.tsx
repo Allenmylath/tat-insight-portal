@@ -27,13 +27,13 @@ export const ScoreHero = ({ score, testTitle, onShare, militaryAssessment, selec
   useEffect(() => {
     const duration = 2000;
     const steps = 60;
-    const increment = score / steps;
+    const increment = effectiveRating / steps;
     let current = 0;
 
     const timer = setInterval(() => {
       current += increment;
-      if (current >= score) {
-        setDisplayScore(score);
+      if (current >= effectiveRating) {
+        setDisplayScore(Math.round(effectiveRating));
         clearInterval(timer);
         // Show confetti for high performers
         if (isHighlySuitable || isStronglyRecommended || effectiveRating >= 70) {
@@ -45,7 +45,7 @@ export const ScoreHero = ({ score, testTitle, onShare, militaryAssessment, selec
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [score, effectiveRating, isHighlySuitable, isStronglyRecommended]);
+  }, [effectiveRating, isHighlySuitable, isStronglyRecommended]);
 
   const getMedalIcon = () => {
     // Use military assessment for medal determination
