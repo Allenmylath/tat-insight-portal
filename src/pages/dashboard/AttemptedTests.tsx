@@ -8,15 +8,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
 import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
 import { GamificationPanel } from "@/components/GamificationPanel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button as LinkButton } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PreviewBanner } from "@/components/PreviewBanner";
 import { useUser } from "@clerk/clerk-react";
+import { useSearchParams } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const AttemptedTests = () => {
   const { isPro, userData, loading: userLoading } = useUserData();
   const { isSignedIn } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
   const [selectedAnalysis, setSelectedAnalysis] = useState<{
     analysis: any;
     title: string;
@@ -28,6 +32,18 @@ const AttemptedTests = () => {
     title: string;
     score: number;
   } | null>(null);
+
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast({
+        title: "Test Completed Successfully!",
+        description: "Your test has been submitted and is being analyzed. Results will appear shortly.",
+      });
+      // Remove the success parameter from URL
+      searchParams.delete('success');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, toast]);
 
   const { data: attemptedTests, isLoading } = useQuery({
     queryKey: ["attempted-tests", userData?.id],
