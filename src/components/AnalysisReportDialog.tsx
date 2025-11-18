@@ -201,7 +201,12 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
   const AnalysisContent = () => (
     <div className={isMobile ? "space-y-4 pb-6" : "space-y-6"}>
       {/* Score Hero Section */}
-      <ScoreHero score={score} testTitle={testTitle} />
+      <ScoreHero 
+        score={score} 
+        testTitle={testTitle} 
+        militaryAssessment={formattedMilitaryAssessment}
+        selectionRecommendation={selectionRecommendation}
+      />
 
       {/* Summary Card */}
       <Card className="glass-effect border-2 border-primary/20">
