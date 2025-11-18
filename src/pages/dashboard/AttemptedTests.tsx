@@ -115,7 +115,11 @@ const AttemptedTests = () => {
           duration: session.session_duration_seconds
             ? `${Math.round(session.session_duration_seconds / 60)} minutes`
             : "Unknown duration",
-          score: analysisResult?.confidence_score ? Math.round(analysisResult.confidence_score) : null,
+            score: analysisResult?.military_assessment?.overall_rating 
+              ? Math.round(analysisResult.military_assessment.overall_rating)
+              : analysisResult?.confidence_score 
+                ? Math.round(analysisResult.confidence_score) 
+                : null,
           analysis:
             analysisResult?.analysis_data?.summary ||
             "Our models are analysing the results.Will soon be available based on server traffic.Remember we run tests globally.",
