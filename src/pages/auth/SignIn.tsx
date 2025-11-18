@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, ArrowLeft, Shield, Lock } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Shield, Lock, CheckCircle2, Database } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const SignIn = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -106,13 +107,44 @@ const SignIn = () => {
             <CardDescription>
               Enter your credentials to access your account
             </CardDescription>
-            <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg border border-border/50 mt-4">
-              <Lock className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-muted-foreground">
-                Your connection is encrypted and secure. We protect your assessment data with industry-standard security.
-              </p>
-            </div>
           </CardHeader>
+          
+          {/* Trust Badge Strip */}
+          <div className="flex flex-wrap items-center justify-center gap-2 px-4 py-3 bg-green-50 dark:bg-green-950/20 border-y border-green-200 dark:border-green-900">
+            <Badge variant="secondary" className="gap-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
+              <Shield className="h-3 w-3" />
+              Private
+            </Badge>
+            <Badge variant="secondary" className="gap-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+              <Lock className="h-3 w-3" />
+              Encrypted
+            </Badge>
+            <Badge variant="secondary" className="gap-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800">
+              <Database className="h-3 w-3" />
+              Secure Storage
+            </Badge>
+            <Badge variant="secondary" className="gap-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+              <CheckCircle2 className="h-3 w-3" />
+              Verified
+            </Badge>
+          </div>
+          
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg border-2 border-blue-200 dark:border-blue-800 shadow-sm mb-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center">
+                <Lock className="h-5 w-5 text-white" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-foreground flex items-center gap-1">
+                  256-bit encrypted connection
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Your connection is secured with industry-standard encryption. All assessment data is protected and confidential.
+                </p>
+              </div>
+            </div>
+          </CardContent>
           <CardContent>
             <div className="space-y-4">
               {error && (
