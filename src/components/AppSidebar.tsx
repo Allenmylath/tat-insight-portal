@@ -74,7 +74,7 @@ const settingsItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const location = useLocation();
   const { isPro, loading, userData } = useUserData();
   const { activeTest, isTestActive } = useTestContext();
@@ -83,6 +83,12 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const isMobile = useIsMobile();
 
+  const handleNavClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   const isActive = (path: string, exact?: boolean) => {
     if (exact) {
       return currentPath === path;
@@ -90,10 +96,13 @@ export function AppSidebar() {
     return currentPath.startsWith(path);
   };
 
-  const getNavCls = (active: boolean) =>
-    active 
-      ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
-      : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
+  const getNavCls = (active: boolean) => {
+    const baseClasses = "flex items-center gap-2 w-full px-2 py-2 rounded-md transition-colors";
+    const activeClasses = "bg-primary/10 text-primary font-medium border-r-2 border-primary";
+    const inactiveClasses = "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
+    
+    return `${baseClasses} ${active ? activeClasses : inactiveClasses}`;
+  };
 
   return (
     <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
@@ -149,9 +158,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
-                      className={() => getNavCls(isActive(item.url, item.exact))}
+                      onClick={handleNavClick}
+                      className={getNavCls(isActive(item.url, item.exact))}
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      <item.icon className="h-4 w-4" />
                       {(!isCollapsed || isMobile) && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -175,9 +185,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to="/admin/campaigns" 
-                      className={() => getNavCls(isActive('/admin/campaigns'))}
+                      onClick={handleNavClick}
+                      className={getNavCls(isActive('/admin/campaigns'))}
                     >
-                      <Mail className="mr-2 h-4 w-4" />
+                      <Mail className="h-4 w-4" />
                       {(!isCollapsed || isMobile) && <span>Campaign Manager</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -197,9 +208,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
-                      className={() => getNavCls(isActive(item.url))}
+                      onClick={handleNavClick}
+                      className={getNavCls(isActive(item.url))}
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      <item.icon className="h-4 w-4" />
                       {(!isCollapsed || isMobile) && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
