@@ -4,16 +4,24 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { MilitaryAssessment, SelectionRecommendation } from "@/types/analysis";
 
 interface ScoreHeroProps {
   score: number;
   testTitle: string;
   onShare?: () => void;
+  militaryAssessment?: MilitaryAssessment;
+  selectionRecommendation?: SelectionRecommendation;
 }
 
-export const ScoreHero = ({ score, testTitle, onShare }: ScoreHeroProps) => {
+export const ScoreHero = ({ score, testTitle, onShare, militaryAssessment, selectionRecommendation }: ScoreHeroProps) => {
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  // Determine effective rating based on military assessment or score
+  const effectiveRating = militaryAssessment?.overall_rating ?? score;
+  const isHighlySuitable = militaryAssessment?.suitability === "Highly Suitable";
+  const isStronglyRecommended = selectionRecommendation?.overall_recommendation === "Strongly Recommend";
 
   // Animated counter effect
   useEffect(() => {
@@ -27,7 +35,8 @@ export const ScoreHero = ({ score, testTitle, onShare }: ScoreHeroProps) => {
       if (current >= score) {
         setDisplayScore(score);
         clearInterval(timer);
-        if (score >= 70) {
+        // Show confetti for high performers
+        if (isHighlySuitable || isStronglyRecommended || effectiveRating >= 70) {
           setShowConfetti(true);
         }
       } else {
@@ -36,33 +45,64 @@ export const ScoreHero = ({ score, testTitle, onShare }: ScoreHeroProps) => {
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [score]);
+  }, [score, effectiveRating, isHighlySuitable, isStronglyRecommended]);
 
   const getMedalIcon = () => {
-    if (score >= 85) return <Trophy className="h-16 w-16 md:h-20 md:w-20 animate-bounce-in" />;
-    if (score >= 70) return <Medal className="h-16 w-16 md:h-20 md:w-20 animate-bounce-in" />;
-    if (score >= 50) return <Award className="h-14 w-14 md:h-16 md:w-16 animate-bounce-in" />;
+    // Use military assessment for medal determination
+    if (isHighlySuitable && isStronglyRecommended) {
+      return <Trophy className="h-16 w-16 md:h-20 md:w-20 animate-bounce-in" />;
+    }
+    if (militaryAssessment?.suitability === "Suitable" || effectiveRating >= 80) {
+      return <Medal className="h-16 w-16 md:h-20 md:w-20 animate-bounce-in" />;
+    }
+    if (effectiveRating >= 60) {
+      return <Award className="h-14 w-14 md:h-16 md:w-16 animate-bounce-in" />;
+    }
     return <Target className="h-14 w-14 md:h-16 md:w-16 animate-bounce-in" />;
   };
 
   const getGradient = () => {
-    if (score >= 85) return "bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600";
-    if (score >= 70) return "bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600";
-    if (score >= 50) return "bg-gradient-to-br from-orange-400 via-orange-500 to-red-500";
+    // Match colors to military suitability
+    if (isHighlySuitable && isStronglyRecommended) {
+      return "bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600";
+    }
+    if (militaryAssessment?.suitability === "Suitable" || effectiveRating >= 75) {
+      return "bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600";
+    }
+    if (effectiveRating >= 60) {
+      return "bg-gradient-to-br from-orange-400 via-orange-500 to-red-500";
+    }
     return "bg-gradient-to-br from-purple-400 via-purple-500 to-pink-600";
   };
 
   const getMessage = () => {
-    if (score >= 85) return "YOU'RE A FUTURE OFFICER 💪";
-    if (score >= 70) return "OUTSTANDING PERFORMANCE! 🔥";
-    if (score >= 50) return "SOLID PROGRESS! 🚀";
+    // Primary: Use military assessment data
+    if (isHighlySuitable && isStronglyRecommended) {
+      return "YOU'RE A FUTURE OFFICER 💪";
+    }
+    if (militaryAssessment && militaryAssessment.overall_rating >= 85 && militaryAssessment.leadership_potential >= 80) {
+      return "EXCELLENT OFFICER POTENTIAL! 🎖️";
+    }
+    if (militaryAssessment?.suitability === "Suitable" || effectiveRating >= 75) {
+      return "OUTSTANDING PERFORMANCE! 🔥";
+    }
+    if (effectiveRating >= 60) {
+      return "SOLID PROGRESS! 🚀";
+    }
     return "KEEP PUSHING, CHAMPION! 💪";
   };
 
   const getPercentile = () => {
-    if (score >= 85) return "Top 10%";
-    if (score >= 70) return "Top 25%";
-    if (score >= 50) return "Top 50%";
+    // Use selection recommendation confidence if available
+    if (selectionRecommendation?.confidence_level) {
+      if (selectionRecommendation.confidence_level >= 90) return "Top 5%";
+      if (selectionRecommendation.confidence_level >= 80) return "Top 10%";
+      if (selectionRecommendation.confidence_level >= 70) return "Top 25%";
+    }
+    // Fallback to rating-based percentile
+    if (effectiveRating >= 85) return "Top 10%";
+    if (effectiveRating >= 70) return "Top 25%";
+    if (effectiveRating >= 50) return "Top 50%";
     return "Keep Training";
   };
 
