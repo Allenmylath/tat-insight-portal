@@ -686,7 +686,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
       </div>
 
       {story.length > 0 && story.length < 250 && !isSubmitting && (
-        <p className="text-sm text-center text-muted-foreground">Write at least 250 characters to enable submission</p>
+        <p className="text-sm text-center text-muted-foreground">Write at least 500 characters to enable submission</p>
       )}
 
       {/* Connection status indicator */}
