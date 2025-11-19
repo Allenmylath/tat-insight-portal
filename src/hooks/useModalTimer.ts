@@ -34,6 +34,7 @@ interface TimerState {
   containerId: string | null;
   isRecoveredSession: boolean;
   isCompleting: boolean;
+  recoveredStoryContent: string | null;
 }
 
 const INITIAL_STATE: TimerState = {
@@ -43,6 +44,7 @@ const INITIAL_STATE: TimerState = {
   containerId: null,
   isRecoveredSession: false,
   isCompleting: false,
+  recoveredStoryContent: null,
 };
 
 export const useModalTimer = ({ 
@@ -87,13 +89,13 @@ export const useModalTimer = ({
   }, []);
 
   // Session management functions
-  const checkExistingSession = useCallback(async (): Promise<{sessionId: string, timeRemaining: number} | null> => {
+  const checkExistingSession = useCallback(async (): Promise<{sessionId: string, timeRemaining: number, storyContent: string | null} | null> => {
     if (!userData?.id) return null;
 
     try {
       const { data, error } = await supabase
         .from('test_sessions')
-        .select('*')
+        .select('id, user_id, tattest_id, status, time_remaining, story_content, created_at')
         .eq('user_id', userData.id)
         .eq('tattest_id', tatTestId)
         .in('status', ['active', 'paused'])
@@ -113,8 +115,12 @@ export const useModalTimer = ({
         return null;
       }
 
-      console.log('Found existing session:', data.id, 'Status:', data.status, 'Time remaining:', timeRemaining);
-      return { sessionId: data.id, timeRemaining: Math.floor(timeRemaining) };
+      console.log('📝 Found existing session:', data.id, 'Status:', data.status, 'Time remaining:', timeRemaining, 'Story length:', data.story_content?.length || 0);
+      return { 
+        sessionId: data.id, 
+        timeRemaining: Math.floor(timeRemaining),
+        storyContent: data.story_content || null
+      };
     } catch (err) {
       console.error('Error checking existing session:', err);
       return null;
@@ -461,6 +467,7 @@ export const useModalTimer = ({
     containerId: timerState.containerId,
     error,
     isRecoveredSession: timerState.isRecoveredSession,
+    recoveredStoryContent: timerState.recoveredStoryContent,
 
     // Actions
     startTimer,
