@@ -33,6 +33,7 @@ import SignUp from "./pages/auth/SignUp";
 import RefundPolicy from "./pages/RefundPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import TatMethodology from "./pages/TatMethodology";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -236,6 +237,7 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/ssb-interview" element={<SSBInterview />} />
                   <Route path="/tat-test-info" element={<TatTestInfo />} />
+                  <Route path="/tat-methodology" element={<TatMethodology />} />
                   <Route path="/ssb-procedure" element={<SSBProcedure />} />
 
                   {/* Dashboard routes with layout */}
