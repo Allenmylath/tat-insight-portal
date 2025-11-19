@@ -44,6 +44,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
 
   // Create a ref to store the session ID that can be accessed by handlers
   const sessionIdRef = useRef<string | null>(null);
+  const storyRestoredRef = useRef<boolean>(false);
 
   const {
     timeRemaining,
@@ -52,6 +53,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     connectionStatus,
     error,
     isRecoveredSession,
+    recoveredStoryContent,
     startTimer,
     completeSession,
     abandonSession,
@@ -79,6 +81,21 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     sessionIdRef.current = sessionId;
     console.log("📌 Session ID updated in ref:", sessionId);
   }, [sessionId]);
+
+  // Restore story content when session is recovered
+  useEffect(() => {
+    if (isRecoveredSession && recoveredStoryContent && !storyRestoredRef.current) {
+      console.log("📝 Restoring story content:", recoveredStoryContent.length, "characters");
+      setStory(recoveredStoryContent);
+      storyRestoredRef.current = true;
+      
+      toast({
+        title: "Progress Restored",
+        description: `Your previous story (${recoveredStoryContent.length} characters) has been restored.`,
+        duration: 4000,
+      });
+    }
+  }, [isRecoveredSession, recoveredStoryContent, toast]);
 
   // Add useEffect to monitor state changes for debugging
   useEffect(() => {
