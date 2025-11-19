@@ -34,6 +34,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import TatMethodology from "./pages/TatMethodology";
+import ScorsGMethodology from "./pages/ScorsGMethodology";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -238,6 +239,7 @@ const App = () => {
                   <Route path="/ssb-interview" element={<SSBInterview />} />
                   <Route path="/tat-test-info" element={<TatTestInfo />} />
                   <Route path="/tat-methodology" element={<TatMethodology />} />
+                  <Route path="/scors-g-methodology" element={<ScorsGMethodology />} />
                   <Route path="/ssb-procedure" element={<SSBProcedure />} />
 
                   {/* Dashboard routes with layout */}
