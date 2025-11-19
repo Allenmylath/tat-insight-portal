@@ -10,7 +10,7 @@ const ScorsGMethodology = () => {
   const { isSignedIn } = useUser();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
         <title>SCORS-G Methodology: Complete Guide to Social Cognition and Object Relations Scale | TATTests.me</title>
         <meta
@@ -24,7 +24,7 @@ const ScorsGMethodology = () => {
         <link rel="canonical" href="https://www.tattests.me/thematic-apperception-test" />
       </Helmet>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-8 max-w-4xl flex-1 flex flex-col justify-center">
         {!isSignedIn && <PreviewBanner />}
 
         {/* Hero Section */}
