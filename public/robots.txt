@@ -31,4 +31,4 @@ Disallow: /auth/
 Disallow: /test/
 
 # Sitemap location
-Sitemap: https://tatpro.lovableproject.com/sitemap.xml
+Sitemap: https://www.tattests.me/sitemap.xml
