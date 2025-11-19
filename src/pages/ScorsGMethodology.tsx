@@ -21,7 +21,7 @@ const ScorsGMethodology = () => {
           name="keywords" 
           content="SCORS-G, social cognition, object relations scale, TAT scoring, personality assessment, psychological testing, narrative assessment, online TAT" 
         />
-        <link rel="canonical" href="https://www.tattests.me/scors-g-methodology" />
+        <link rel="canonical" href="https://www.tattests.me/thematic-apperception-test" />
       </Helmet>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">

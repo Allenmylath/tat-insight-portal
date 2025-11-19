@@ -239,7 +239,7 @@ const App = () => {
                   <Route path="/ssb-interview" element={<SSBInterview />} />
                   <Route path="/tat-test-info" element={<TatTestInfo />} />
                   <Route path="/tat-methodology" element={<TatMethodology />} />
-                  <Route path="/scors-g-methodology" element={<ScorsGMethodology />} />
+                  <Route path="/thematic-apperception-test" element={<ScorsGMethodology />} />
                   <Route path="/ssb-procedure" element={<SSBProcedure />} />
 
                   {/* Dashboard routes with layout */}
