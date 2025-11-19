@@ -325,7 +325,8 @@ export const useModalTimer = ({
           ...prev,
           sessionId: existingSession.sessionId,
           timeRemaining: existingSession.timeRemaining,
-          isRecoveredSession: true
+          isRecoveredSession: true,
+          recoveredStoryContent: existingSession.storyContent
         }));
         connectToModal(existingSession.sessionId, true, existingSession.timeRemaining);
         return existingSession.sessionId;
