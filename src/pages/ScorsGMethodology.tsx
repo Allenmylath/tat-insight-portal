@@ -24,27 +24,27 @@ const ScorsGMethodology = () => {
         <link rel="canonical" href="https://www.tattests.me/thematic-apperception-test" />
       </Helmet>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl flex-1 flex flex-col justify-center">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl flex-1 flex flex-col justify-center">
         {!isSignedIn && <PreviewBanner />}
 
         {/* Hero Section */}
-        <article className="prose prose-slate dark:prose-invert max-w-none">
-          <header className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+        <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:break-words">
+          <header className="mb-8 sm:mb-12 text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent leading-tight">
               The Narrative Mind: A Comprehensive Guide to SCORS-G and the Modernization of the Thematic Apperception
               Test
             </h1>
-            <p className="text-xl text-muted-foreground">By Allen</p>
+            <p className="text-lg sm:text-xl text-muted-foreground">By Allen</p>
           </header>
 
           {/* Download Section */}
-          <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 mb-8">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4 flex-wrap">
-                <FileText className="h-10 w-10 text-primary flex-shrink-0" />
+          <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 mb-6 sm:mb-8">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-primary flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold mb-1">SCORS-G Training Manual</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-base sm:text-lg font-semibold mb-1">SCORS-G Training Manual</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Download the complete SCORS-G manual for in-depth methodology
                   </p>
                 </div>
@@ -55,7 +55,7 @@ const ScorsGMethodology = () => {
                       "_blank",
                     );
                   }}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Download className="h-4 w-4" />
                   Download PDF
@@ -65,22 +65,22 @@ const ScorsGMethodology = () => {
           </Card>
 
           {/* Introduction */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Introduction: The Challenge of Projective Assessment</h2>
-            <p className="text-lg leading-relaxed mb-4">
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Introduction: The Challenge of Projective Assessment</h2>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               For decades, the Thematic Apperception Test (TAT) has stood as a titan in the field of psychological
               assessment. As the second most commonly used performance-based task, it offers a unique window into the
               human psyche through storytelling. However, the TAT has historically faced a "reliability problem." Unlike
               self-report questionnaires, narrative data is messy, complex, and subjective. How does a clinician
               objectively score a story about a boy and a violin?
             </p>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               Enter the <strong>Social Cognition and Object Relations Scale – Global Rating Method (SCORS-G)</strong>.
               Developed to bridge the gap between rich clinical intuition and empirical rigor, the SCORS-G provides a
               standardized framework for assessing the quality of a patient's object relations (how they relate to
               others) and social cognition (how they understand the social world).
             </p>
-            <p className="text-lg leading-relaxed">
+            <p className="text-base sm:text-lg leading-relaxed">
               This article explores the dimensions of the SCORS-G, its scoring criteria, and recent breakthroughs
               suggesting this method is robust enough to survive the transition from the consulting room to the digital
               realm.
@@ -88,17 +88,17 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* Chapter 1 */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Chapter 1: Origins and Evolution</h2>
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chapter 1: Origins and Evolution</h2>
 
-            <h3 className="text-2xl font-semibold mb-4">From Q-Sort to Global Ratings</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">From Q-Sort to Global Ratings</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               The SCORS-G is an evolution of the original Social Cognition and Object Relations Scale (SCORS-Q)
               developed by Drew Westen in 1995. The original method utilized a Q-sort procedure, which required raters
               to sort cards and complex criteria—a process that, while detailed, necessitated intensive training and
               significant time investment.
             </p>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               Recognizing the need for a more clinically practical tool, researchers developed the "Global" rating
               method (SCORS-G) in 1997. This adaptation allows clinicians to assign a single Likert-scale score (ranging
               from 1 to 7) to various dimensions of personality functioning based on the narrative data. This shift made
@@ -106,12 +106,12 @@ const ScorsGMethodology = () => {
               personality functioning.
             </p>
 
-            <h3 className="text-2xl font-semibold mb-4 mt-8">The Clinical Value</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8">The Clinical Value</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               The SCORS-G has demonstrated substantial reliability and validity in assessing narratives from diverse
               sources, including:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-lg mb-6">
+            <ul className="list-disc list-inside space-y-2 text-base sm:text-lg mb-4 sm:mb-6">
               <li>
                 <strong>TAT Narratives:</strong> Assessing college students, outpatients, and inpatients
               </li>
@@ -129,22 +129,22 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* Chapter 2 */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Chapter 2: The Eight Dimensions of SCORS-G</h2>
-            <p className="text-lg leading-relaxed mb-6">
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chapter 2: The Eight Dimensions of SCORS-G</h2>
+            <p className="text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
               The core of the SCORS-G system lies in its eight distinct dimensions. Each is scored on a scale of 1
               (pathological/maladaptive) to 7 (healthy/adaptive), with a score of 4 typically serving as a default for
               bland or limited information.
             </p>
 
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div>
-                <h3 className="text-2xl font-semibold mb-3">1. Complexity of Representation of People (COM)</h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">1. Complexity of Representation of People (COM)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   This dimension measures the ability to distinguish self from others and to view people as complex
                   beings with mixed motivations.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> The subject is egocentric or confused, blurring the lines between
                     their own thoughts and those of others
@@ -161,11 +161,11 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">2. Affective Quality of Representations (AFF)</h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">2. Affective Quality of Representations (AFF)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   AFF captures the emotional tone of the narrative and the subject's expectations of relationships.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> The relational world is viewed as malevolent, caustic, or abusive
                   </li>
@@ -181,11 +181,11 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">3. Emotional Investment in Relationships (EIR)</h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">3. Emotional Investment in Relationships (EIR)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   This scale assesses the depth and maturity of interpersonal connections.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> Focus is primarily on the self's needs; relationships are tumultuous
                     or nonexistent
@@ -202,13 +202,13 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">
                   4. Emotional Investment in Values and Moral Standards (EIM)
                 </h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   EIM evaluates the internalization of moral codes and conscience.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> Behavior is selfish, aggressive, or self-indulgent with no remorse
                     or guilt
@@ -225,11 +225,11 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">5. Understanding of Social Causality (SC)</h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">5. Understanding of Social Causality (SC)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   This dimension measures the logic and coherence of the subject's understanding of human behavior.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> Narratives are confused, distorted, or extremely sparse; it is
                     difficult to understand why people are doing what they are doing
@@ -246,13 +246,13 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">
                   6. Experience and Management of Aggressive Impulses (AGG)
                 </h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   AGG looks at how anger and aggression are processed and expressed.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> Physically assaultive, destructive, or sadistic behavior; loss of
                     control
@@ -269,9 +269,9 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">7. Self-Esteem (SE)</h3>
-                <p className="text-lg leading-relaxed mb-2">This measures the subjective value placed on the self.</p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">7. Self-Esteem (SE)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">This measures the subjective value placed on the self.</p>
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> The self is viewed as loathsome, evil, rotten, or contaminating
                   </li>
@@ -285,11 +285,11 @@ const ScorsGMethodology = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold mb-3">8. Identity and Coherence of Self (ICS)</h3>
-                <p className="text-lg leading-relaxed mb-2">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">8. Identity and Coherence of Self (ICS)</h3>
+                <p className="text-base sm:text-lg leading-relaxed mb-2">
                   ICS assesses the stability and integration of the personality.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-lg">
+                <ul className="list-disc list-inside space-y-2 text-sm sm:text-base">
                   <li>
                     <strong>Pathology (1):</strong> Fragmented sense of self; multiple personalities
                   </li>
@@ -305,17 +305,17 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* First Signup Nudge */}
-          <Card className="border-primary/50 bg-gradient-to-r from-primary/5 to-accent/5 my-12">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4 flex-col md:flex-row">
-                <Brain className="h-16 w-16 text-primary flex-shrink-0" />
+          <Card className="border-primary/50 bg-gradient-to-r from-primary/5 to-accent/5 my-8 sm:my-12">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4 flex-col md:flex-row">
+                <Brain className="h-12 w-12 sm:h-16 sm:w-16 text-primary flex-shrink-0" />
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-bold mb-2">Discover Your SCORS-G Profile</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2">Discover Your SCORS-G Profile</h3>
+                  <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
                     Take a professional TAT assessment and receive comprehensive SCORS-G analysis across all eight
                     dimensions of personality functioning
                   </p>
-                  <LoginRequiredButton returnUrl="/dashboard" className="bg-primary hover:bg-primary/90" size="lg">
+                  <LoginRequiredButton returnUrl="/dashboard" className="bg-primary hover:bg-primary/90 w-full sm:w-auto" size="lg">
                     Start Your Assessment →
                   </LoginRequiredButton>
                 </div>
@@ -324,27 +324,27 @@ const ScorsGMethodology = () => {
           </Card>
 
           {/* Chapter 3 */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Chapter 3: Modernizing the TAT – The Online Frontier</h2>
-            <p className="text-lg leading-relaxed mb-4">
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chapter 3: Modernizing the TAT – The Online Frontier</h2>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               While the dimensions of the SCORS-G are well-established, the administration of the TAT itself is
               undergoing a digital revolution. Traditional administration involves sitting face-to-face with an
               examiner, viewing hard copies of cards, and speaking stories aloud. This process is time-consuming and
               raises accessibility issues.
             </p>
 
-            <h3 className="text-2xl font-semibold mb-4 mt-8">The Digital Shift</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8">The Digital Shift</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               New research by Slavin-Mulford, Vincent, Coleman, et al. (2024), titled{" "}
               <em>"Moving Toward an Online Thematic Apperception Test (TAT),"</em> investigates whether the TAT can be
               moved out of the lab and onto the screen without sacrificing data quality.
             </p>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               Prior research in lab settings had already established that when participants <strong>type</strong> their
               own narratives, they produce richer responses than when they narrate stories out loud to an examiner. The
               current study extended this by comparing three specific conditions among 134 college students:
             </p>
-            <ol className="list-decimal list-inside space-y-2 text-lg mb-6">
+            <ol className="list-decimal list-inside space-y-2 text-sm sm:text-base mb-4 sm:mb-6">
               <li>
                 <strong>Lab/Hard Copy:</strong> Traditional viewing of cards in a lab
               </li>
@@ -356,13 +356,13 @@ const ScorsGMethodology = () => {
               </li>
             </ol>
 
-            <h3 className="text-2xl font-semibold mb-4 mt-8">The Verdict: Stability Across Mediums</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8">The Verdict: Stability Across Mediums</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               The results of this 2024 study are promising for the future of remote assessment. Using the SCORS-G method
               to score the typed narratives, researchers found that{" "}
               <strong>SCORS-G ratings were not affected by card presentation or setting</strong>.
             </p>
-            <p className="text-lg leading-relaxed">
+            <p className="text-base sm:text-lg leading-relaxed">
               Whether the participant held a physical card or looked at a screen, and whether they were in a controlled
               lab or taking the test online, the psychological richness (as measured by SCORS-G) remained stable. This
               suggests that the TAT can be administered online without a "diminution in the quality of SCORS-G ratings,"
@@ -371,32 +371,32 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* Chapter 4 */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Chapter 4: Scoring in Practice and Reliability</h2>
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chapter 4: Scoring in Practice and Reliability</h2>
 
-            <h3 className="text-2xl font-semibold mb-4">The "Addendum" Rules</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">The "Addendum" Rules</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               The SCORS-G manual provides an "Addendum" to help raters navigate ambiguity. For example, when scoring{" "}
               <strong>Affective Quality (AFF)</strong> or <strong>Self-Esteem (SE)</strong>, a score of 5 is considered
               the "beginning range of positive scores". However, if a story has significant "spoilage" (a mix of
               positive and negative elements where the negative dominates or ruins the positive), the score likely drops
               to a 3 or lower.
             </p>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               Similarly, for <strong>Identity (ICS)</strong>, if a character is contemplating suicide, the score is
               almost always in the pathological range (1, 2, or 3), regardless of other narrative elements.
             </p>
 
-            <h3 className="text-2xl font-semibold mb-4 mt-8">Achieving Reliability</h3>
-            <p className="text-lg leading-relaxed mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8">Achieving Reliability</h3>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               Reliability is the cornerstone of the SCORS-G method. The manual outlines a rigorous training protocol
               where trainees must score practice protocols to achieve an Intraclass Correlation Coefficient (ICC) of
               greater than .60.
             </p>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               To achieve this "Good" scoring reliability, trainees are encouraged to:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-lg mb-6">
+            <ul className="list-disc list-inside space-y-2 text-sm sm:text-base mb-4 sm:mb-6">
               <li>Train on the exact same card stimuli set (e.g., TAT cards 1, 2, 3BM, 4, & 13MF) used in research</li>
               <li>
                 Use "anchor" protocols—narratives that have been empirically identified as having low variance and high
@@ -410,17 +410,17 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* Second Signup Nudge */}
-          <Card className="border-primary/50 bg-gradient-to-r from-accent/5 to-primary/5 my-12">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4 flex-col md:flex-row">
-                <Target className="h-16 w-16 text-accent flex-shrink-0" />
+          <Card className="border-primary/50 bg-gradient-to-r from-accent/5 to-primary/5 my-8 sm:my-12">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4 flex-col md:flex-row">
+                <Target className="h-12 w-12 sm:h-16 sm:w-16 text-accent flex-shrink-0" />
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-bold mb-2">Ready for Professional Analysis?</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2">Ready for Professional Analysis?</h3>
+                  <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
                     Our AI-powered system uses SCORS-G methodology to provide detailed insights into your personality
                     structure and object relations
                   </p>
-                  <LoginRequiredButton returnUrl="/dashboard" className="bg-accent hover:bg-accent/90" size="lg">
+                  <LoginRequiredButton returnUrl="/dashboard" className="bg-accent hover:bg-accent/90 w-full sm:w-auto" size="lg">
                     Get Your Analysis →
                   </LoginRequiredButton>
                 </div>
@@ -429,9 +429,9 @@ const ScorsGMethodology = () => {
           </Card>
 
           {/* Conclusion */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Conclusion</h2>
-            <p className="text-lg leading-relaxed mb-4">
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Conclusion</h2>
+            <p className="text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
               The SCORS-G represents a critical intersection of psychodynamic theory and empirical methodology. By
               breaking down complex narrative data into eight quantifiable dimensions, it allows clinicians to assess
               the structural integrity of a patient's internal world. With the recent findings by Slavin-Mulford et al.
@@ -441,9 +441,9 @@ const ScorsGMethodology = () => {
           </section>
 
           {/* References */}
-          <section className="mb-12 bg-muted/30 p-6 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">References</h2>
-            <ol className="list-decimal list-inside space-y-3 text-base">
+          <section className="mb-8 sm:mb-12 bg-muted/30 p-4 sm:p-6 rounded-lg">
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">References</h2>
+            <ol className="list-decimal list-inside space-y-2 sm:space-y-3 text-sm sm:text-base">
               <li>
                 Stein, M., Hilsenroth, M., Slavin-Mulford, J., & Pinsker, J. (2011).{" "}
                 <em>Social Cognition and Object Relations Scale: Global Rating Method (SCORS-G; 4th ed.)</em>.
@@ -468,38 +468,38 @@ const ScorsGMethodology = () => {
 
           {/* Final CTA */}
           <Card className="border-primary bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 shadow-lg">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-3xl font-bold mb-4">Unlock Your Complete Psychological Profile</h2>
-              <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <CardContent className="p-6 sm:p-8 text-center">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Unlock Your Complete Psychological Profile</h2>
+              <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6 max-w-2xl mx-auto">
                 Experience the power of SCORS-G analysis combined with modern AI technology
               </p>
-              <ul className="text-left max-w-2xl mx-auto mb-8 space-y-3">
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold text-sm">✓</span>
+              <ul className="text-left max-w-2xl mx-auto mb-6 sm:mb-8 space-y-2 sm:space-y-3">
+                <li className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-bold text-xs sm:text-sm">✓</span>
                   </div>
-                  <span className="text-base">Comprehensive 8-dimension SCORS-G assessment</span>
+                  <span className="text-sm sm:text-base">Comprehensive 8-dimension SCORS-G assessment</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold text-sm">✓</span>
+                <li className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-bold text-xs sm:text-sm">✓</span>
                   </div>
-                  <span className="text-base">Online TAT administration validated by research</span>
+                  <span className="text-sm sm:text-base">Online TAT administration validated by research</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold text-sm">✓</span>
+                <li className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-bold text-xs sm:text-sm">✓</span>
                   </div>
-                  <span className="text-base">Detailed personality and object relations insights</span>
+                  <span className="text-sm sm:text-base">Detailed personality and object relations insights</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold text-sm">✓</span>
+                <li className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-bold text-xs sm:text-sm">✓</span>
                   </div>
-                  <span className="text-base">Military selection board assessment preparation</span>
+                  <span className="text-sm sm:text-base">Military selection board assessment preparation</span>
                 </li>
               </ul>
-              <LoginRequiredButton size="lg" className="text-lg px-8 py-6 h-auto" returnUrl="/dashboard">
+              <LoginRequiredButton size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto w-full sm:w-auto" returnUrl="/dashboard">
                 Create Free Account & Start Assessment
               </LoginRequiredButton>
             </CardContent>
