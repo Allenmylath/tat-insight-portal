@@ -6,6 +6,7 @@ import { Loader2, Target, RefreshCw, ChevronDown, ChevronUp, Lightbulb, AlertCir
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useUserData } from "@/hooks/useUserData";
 
 interface SSBQuestion {
   category: string;
@@ -25,8 +26,15 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const { userData } = useUserData();
 
   const fetchQuestions = async (forceRegenerate = false) => {
+    if (!userData?.id) {
+      setError('User not authenticated');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
@@ -35,7 +43,8 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
         body: { 
           test_session_id: testSessionId, 
           analysis_id: analysisId,
-          force_regenerate: forceRegenerate 
+          force_regenerate: forceRegenerate,
+          user_id: userData.id
         }
       });
 
@@ -63,8 +72,10 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
   };
 
   useEffect(() => {
-    fetchQuestions();
-  }, [testSessionId, analysisId]);
+    if (userData?.id) {
+      fetchQuestions();
+    }
+  }, [testSessionId, analysisId, userData?.id]);
 
   if (loading) {
     return (

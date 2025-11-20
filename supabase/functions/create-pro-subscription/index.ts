@@ -17,35 +17,22 @@ serve(async (req) => {
   }
 
   try {
-    const { plan_id } = await req.json();
+    const { plan_id, user_id } = await req.json();
 
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    if (!user_id) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'user_id is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     // Get user data
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('id, email')
-      .eq('clerk_id', user.id)
+      .eq('id', user_id)
       .single();
 
     if (userError || !userData) {

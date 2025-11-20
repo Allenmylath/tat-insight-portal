@@ -37,42 +37,22 @@ serve(async (req) => {
   }
 
   try {
-    const { test_session_id, analysis_id, force_regenerate } = await req.json();
+    const { test_session_id, analysis_id, force_regenerate, user_id } = await req.json();
 
-    if (!test_session_id || !analysis_id) {
+    if (!test_session_id || !analysis_id || !user_id) {
       return new Response(
-        JSON.stringify({ error: 'test_session_id and analysis_id are required' }),
+        JSON.stringify({ error: 'test_session_id, analysis_id, and user_id are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
-    // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error('Authentication error:', authError);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Check Pro status
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('membership_type, membership_expires_at')
-      .eq('clerk_id', user.id)
+      .eq('id', user_id)
       .single();
 
     if (userError || !userData) {
