@@ -29,7 +29,7 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
   const { userData } = useUserData();
 
   const fetchQuestions = async (forceRegenerate = false) => {
-    if (!userData?.id) {
+    if (!userData?.clerk_id) {
       setError('User not authenticated');
       setLoading(false);
       return;
@@ -44,7 +44,7 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
           test_session_id: testSessionId, 
           analysis_id: analysisId,
           force_regenerate: forceRegenerate,
-          user_id: userData.id
+          user_id: userData.clerk_id
         }
       });
 
@@ -72,10 +72,10 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCard
   };
 
   useEffect(() => {
-    if (userData?.id) {
+    if (userData?.clerk_id) {
       fetchQuestions();
     }
-  }, [testSessionId, analysisId, userData?.id]);
+  }, [testSessionId, analysisId, userData?.clerk_id]);
 
   if (loading) {
     return (
