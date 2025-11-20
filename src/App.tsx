@@ -38,6 +38,7 @@ import ScorsGMethodology from "./pages/ScorsGMethodology";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import LLMTatArticle from "./pages/LLMTatArticle";
 import UpdateBlog from "./pages/admin/UpdateBlog";
 import CampaignManager from "./pages/admin/CampaignManager";
 import CampaignAnalytics from "./components/admin/CampaignAnalytics";
@@ -336,6 +337,7 @@ const App = () => {
 
                   {/* Blog routes */}
                   <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/llm-tat-scoring" element={<LLMTatArticle />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route
                     path="/admin/update-blog"
