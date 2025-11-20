@@ -229,34 +229,49 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
       </Card>
 
       {/* Mobile Navigation Menu */}
-      {isMobile && (
-        <div className="grid grid-cols-2 gap-3">
-          <NavCard
-            icon={<FileText className="h-5 w-5" />}
-            title="Traditional"
-            active={activeTab === "traditional"}
-            onClick={() => setActiveTab("traditional")}
-          />
-          <NavCard
-            icon={<Activity className="h-5 w-5" />}
-            title="Murray TAT"
-            active={activeTab === "murray"}
-            onClick={() => setActiveTab("murray")}
-          />
-          <NavCard
-            icon={<Award className="h-5 w-5" />}
-            title="Military"
-            active={activeTab === "military"}
-            onClick={() => setActiveTab("military")}
-          />
-          <NavCard
-            icon={<Target className="h-5 w-5" />}
-            title="Recommendations"
-            active={activeTab === "recommendation"}
-            onClick={() => setActiveTab("recommendation")}
-          />
-        </div>
-      )}
+              {isMobile && (
+                <div className="grid grid-cols-2 gap-3">
+                  <NavCard
+                    icon={<FileText className="h-5 w-5" />}
+                    title="Traditional"
+                    active={activeTab === "traditional"}
+                    onClick={() => setActiveTab("traditional")}
+                  />
+                  <NavCard
+                    icon={<Activity className="h-5 w-5" />}
+                    title="Murray TAT"
+                    active={activeTab === "murray"}
+                    onClick={() => setActiveTab("murray")}
+                  />
+                  <NavCard
+                    icon={<Award className="h-5 w-5" />}
+                    title="Military"
+                    active={activeTab === "military"}
+                    onClick={() => setActiveTab("military")}
+                  />
+                  <NavCard
+                    icon={<Target className="h-5 w-5" />}
+                    title="Recommendations"
+                    active={activeTab === "recommendation"}
+                    onClick={() => setActiveTab("recommendation")}
+                  />
+                  <div className="col-span-2">
+                    <NavCard
+                      icon={<Sparkles className="h-5 w-5" />}
+                      title={
+                        <div className="flex items-center gap-2">
+                          <span>SSB Interview Prep</span>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                            Pro
+                          </Badge>
+                        </div>
+                      }
+                      active={activeTab === "ssb"}
+                      onClick={() => setActiveTab("ssb")}
+                    />
+                  </div>
+                </div>
+              )}
 
       {/* Content Area */}
       {isMobile ? (
@@ -272,6 +287,13 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
           )}
           {activeTab === "recommendation" && (
             <RecommendationAnalysis recommendation={selectionRecommendation} isMobile={isMobile} />
+          )}
+          {activeTab === "ssb" && (
+            <SSBQuestionsCard 
+              testSessionId={testSessionId}
+              analysisId={analysisId}
+              isPro={isPro}
+            />
           )}
         </div>
       ) : (
@@ -398,7 +420,13 @@ const NavCard = ({ icon, title, active, onClick }: any) => (
   >
     <div className={active ? "text-primary" : "text-muted-foreground"}>{icon}</div>
     <div className="flex-1 text-left">
-      <p className={`text-sm font-medium ${active ? "text-primary" : "text-foreground"}`}>{title}</p>
+      {typeof title === 'string' ? (
+        <p className={`text-sm font-medium ${active ? "text-primary" : "text-foreground"}`}>{title}</p>
+      ) : (
+        <div className={`text-sm font-medium ${active ? "text-primary" : "text-foreground"}`}>
+          {title}
+        </div>
+      )}
     </div>
     <ChevronRight className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
   </button>
