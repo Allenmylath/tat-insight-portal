@@ -99,7 +99,7 @@ serve(async (req) => {
 
     // Prepare PhonePe payment payload using v2 API format
     const callbackUrl = `${SUPABASE_URL}/functions/v1/process-subscription-payment`;
-    const redirectUrl = `${req.headers.get('origin') || 'https://tattests.me'}/dashboard/settings?subscription=success&order=${merchantOrderId}`;
+    const redirectUrl = `${req.headers.get('origin') || 'https://tattests.me'}/dashboard/pending?subscription=success&order=${merchantOrderId}`;
 
     const orderPayload = {
       merchantOrderId: merchantOrderId,
