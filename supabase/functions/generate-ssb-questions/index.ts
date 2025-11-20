@@ -52,7 +52,7 @@ serve(async (req) => {
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('membership_type, membership_expires_at')
-      .eq('id', user_id)
+      .eq('clerk_id', user_id)
       .single();
 
     if (userError || !userData) {
