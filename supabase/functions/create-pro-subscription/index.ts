@@ -97,33 +97,29 @@ serve(async (req) => {
 
     const accessToken = tokenData.access_token;
 
-    // Prepare PhonePe payment payload
+    // Prepare PhonePe payment payload using v2 API format
     const callbackUrl = `${SUPABASE_URL}/functions/v1/process-subscription-payment`;
     const redirectUrl = `${req.headers.get('origin') || 'https://tattests.me'}/dashboard/settings?subscription=success&order=${merchantOrderId}`;
 
     const orderPayload = {
-      merchantId: PHONEPE_CLIENT_ID,
-      merchantTransactionId: merchantOrderId,
+      merchantOrderId: merchantOrderId,
       amount: Math.round(plan.price * 100), // Convert to paise
-      expiresInMins: 30,
-      redirectUrl: redirectUrl,
-      callbackUrl: callbackUrl,
-      merchantUserId: userData.id,
-      paymentInstrument: {
-        type: 'PAY_PAGE'
+      paymentFlow: {
+        type: "PG_CHECKOUT",
+        merchantUrls: {
+          redirectUrl: redirectUrl
+        }
       }
     };
 
     console.log('PhonePe order payload:', JSON.stringify(orderPayload, null, 2));
 
     // Make payment request to PhonePe
-    const phonepeResponse = await fetch('https://smartgatewayuat.phonepay.com/checkout/v2/pay', {
+    const phonepeResponse = await fetch('https://api.phonepe.com/apis/pg/checkout/v2/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'X-Client-Id': PHONEPE_CLIENT_ID,
-        'X-Client-Secret': PHONEPE_CLIENT_SECRET
+        'Authorization': `O-Bearer ${accessToken}`,
       },
       body: JSON.stringify(orderPayload)
     });
@@ -131,19 +127,31 @@ serve(async (req) => {
     const phonepeData = await phonepeResponse.json();
     console.log('PhonePe response:', JSON.stringify(phonepeData, null, 2));
 
-    if (!phonepeResponse.ok || phonepeData.code !== 'SUCCESS') {
-      console.error('PhonePe error:', phonepeData);
+    if (!phonepeResponse.ok) {
+      const errorMessage = phonepeData.message || phonepeData.error || `HTTP ${phonepeResponse.status}`;
+      console.error('PhonePe API HTTP error:', errorMessage);
       return new Response(
         JSON.stringify({ 
           error: 'Payment gateway error',
-          details: phonepeData.message || 'Unknown error'
+          details: errorMessage
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const checkoutUrl = phonepeData.data?.redirectUrl;
-    const phonepeOrderId = phonepeData.data?.orderId;
+    if (phonepeData.code && (phonepeData.code === 'BAD_REQUEST' || phonepeData.code === 'INTERNAL_SERVER_ERROR')) {
+      console.error('PhonePe API business error:', phonepeData.code, phonepeData.message);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Payment gateway error',
+          details: phonepeData.message || phonepeData.code
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const checkoutUrl = phonepeData.redirectUrl;
+    const phonepeOrderId = phonepeData.orderId;
 
     if (!checkoutUrl) {
       console.error('No checkout URL in PhonePe response:', phonepeData);
