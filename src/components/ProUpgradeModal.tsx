@@ -6,6 +6,7 @@ import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import { useUserData } from "@/hooks/useUserData";
 
 interface ProUpgradeModalProps {
   open: boolean;
@@ -14,13 +15,21 @@ interface ProUpgradeModalProps {
 
 export const ProUpgradeModal = ({ open, onOpenChange }: ProUpgradeModalProps) => {
   const [loading, setLoading] = useState(false);
+  const { userData } = useUserData();
 
   const handleSubscribe = async () => {
+    if (!userData?.id) {
+      toast.error('Please sign in to continue');
+      return;
+    }
+
     setLoading(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('create-pro-subscription', {
-        body: {}
+        body: {
+          user_id: userData.id
+        }
       });
 
       if (error) {
