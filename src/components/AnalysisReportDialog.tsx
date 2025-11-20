@@ -8,12 +8,15 @@ import { MurrayNeedsChart } from "@/components/MurrayNeedsChart";
 import { MilitaryAssessmentCard } from "@/components/MilitaryAssessmentCard";
 import { SelectionRecommendationPanel } from "@/components/SelectionRecommendationPanel";
 import { ScoreHero } from "@/components/ScoreHero";
+import { SSBQuestionsCard } from "@/components/SSBQuestionsCard";
 import { EnhancedAnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink, ChevronRight, Activity, Award, Target, FileText, X } from "lucide-react";
+import { Copy, ExternalLink, ChevronRight, Activity, Award, Target, FileText, X, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { useUserData } from "@/hooks/useUserData";
+import { ProUpgradeModal } from "@/components/ProUpgradeModal";
 
 // Helper function to format analysis for ChatGPT
 const formatAnalysisForChatGPT = (testTitle: string, score: number, analysis: any): string => {
@@ -99,11 +102,15 @@ interface AnalysisReportDialogProps {
   analysis: EnhancedAnalysisData | any;
   testTitle: string;
   score: number;
+  testSessionId: string;
+  analysisId: string;
 }
 
-export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, score }: AnalysisReportDialogProps) => {
+export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, score, testSessionId, analysisId }: AnalysisReportDialogProps) => {
   const isMobile = useIsMobile();
+  const { isPro } = useUserData();
   const [activeTab, setActiveTab] = useState("military");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   if (!analysis) return null;
 
@@ -269,7 +276,7 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
         </div>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className={`grid w-full ${isPro ? 'grid-cols-5' : 'grid-cols-4'} h-auto`}>
             <TabsTrigger value="traditional" className="py-3">
               <span className="hidden lg:inline">Traditional Analysis</span>
               <span className="lg:hidden">Traditional</span>
@@ -286,6 +293,13 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
               <span className="hidden lg:inline">Recommendations</span>
               <span className="lg:hidden">Recommend</span>
             </TabsTrigger>
+            {isPro && (
+              <TabsTrigger value="ssb" className="py-3 gap-1">
+                <span className="hidden lg:inline">SSB Interview Prep</span>
+                <span className="lg:hidden">SSB Prep</span>
+                <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary">Pro</Badge>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="traditional" className="space-y-6 mt-6">
@@ -300,13 +314,42 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
 
           <TabsContent value="military" className="space-y-6 mt-6">
             <MilitaryAnalysis assessment={formattedMilitaryAssessment} isMobile={isMobile} />
+            {!isPro && (
+              <Card className="mt-6 border-dashed border-2 border-primary/20 bg-primary/5">
+                <CardContent className="p-6 text-center space-y-4">
+                  <Lock className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">SSB Interview Questions</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Unlock personalized SSB interview questions based on your TAT story. 
+                      Get 6-8 expert questions to help you prepare.
+                    </p>
+                  </div>
+                  <Button onClick={() => setShowUpgradeModal(true)} className="gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Upgrade to Pro - ₹500/month
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="recommendation" className="space-y-6 mt-6">
             <RecommendationAnalysis recommendation={selectionRecommendation} isMobile={isMobile} />
           </TabsContent>
+
+          {isPro && (
+            <TabsContent value="ssb" className="space-y-6 mt-6">
+              <SSBQuestionsCard 
+                testSessionId={testSessionId}
+                analysisId={analysisId}
+              />
+            </TabsContent>
+          )}
         </Tabs>
       )}
+      
+      <ProUpgradeModal open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
     </div>
   );
 

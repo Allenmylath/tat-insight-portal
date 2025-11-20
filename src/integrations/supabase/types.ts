@@ -56,6 +56,8 @@ export type Database = {
           murray_needs: Json | null
           murray_presses: Json | null
           selection_recommendation: Json | null
+          ssb_questions: Json | null
+          ssb_questions_generated_at: string | null
           test_session_id: string
           user_id: string
         }
@@ -70,6 +72,8 @@ export type Database = {
           murray_needs?: Json | null
           murray_presses?: Json | null
           selection_recommendation?: Json | null
+          ssb_questions?: Json | null
+          ssb_questions_generated_at?: string | null
           test_session_id: string
           user_id: string
         }
@@ -84,6 +88,8 @@ export type Database = {
           murray_needs?: Json | null
           murray_presses?: Json | null
           selection_recommendation?: Json | null
+          ssb_questions?: Json | null
+          ssb_questions_generated_at?: string | null
           test_session_id?: string
           user_id?: string
         }
@@ -853,6 +859,129 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscription_orders: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          expires_at: string | null
+          id: string
+          merchant_order_id: string
+          payment_completed_at: string | null
+          payment_metadata: Json | null
+          phonepe_order_id: string | null
+          plan_id: string
+          redirect_url: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          merchant_order_id: string
+          payment_completed_at?: string | null
+          payment_metadata?: Json | null
+          phonepe_order_id?: string | null
+          plan_id: string
+          redirect_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          merchant_order_id?: string
+          payment_completed_at?: string | null
+          payment_metadata?: Json | null
+          phonepe_order_id?: string | null
+          plan_id?: string
+          redirect_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_orders_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "abandoned_test_users"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "subscription_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "paying_customers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "subscription_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "test_completers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "subscription_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          duration_days: number | null
+          features: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          duration_days?: number | null
+          features: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          duration_days?: number | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       tattest: {
         Row: {
