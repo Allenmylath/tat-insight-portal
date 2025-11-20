@@ -26,6 +26,7 @@ interface SSBQuestionsCardProps {
 export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuestionsCardProps) => {
   const [questions, setQuestions] = useState<SSBQuestion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -85,7 +86,43 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
     );
   }
 
-  const fetchQuestions = async (forceRegenerate = false) => {
+  const startPolling = () => {
+    let pollCount = 0;
+    const maxPolls = 40; // 40 polls × 3 seconds = 2 minutes max
+    
+    const pollInterval = setInterval(async () => {
+      pollCount++;
+      
+      try {
+        const { data: analysisData, error } = await supabase
+          .from('analysis_results')
+          .select('ssb_questions, ssb_questions_generated_at')
+          .eq('id', analysisId)
+          .single();
+
+        if (error) throw error;
+
+        if (analysisData?.ssb_questions) {
+          setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
+          setGenerating(false);
+          setLoading(false);
+          clearInterval(pollInterval);
+          
+          toast.success('SSB questions are ready!');
+        } else if (pollCount >= maxPolls) {
+          clearInterval(pollInterval);
+          setGenerating(false);
+          setLoading(false);
+          setError('Question generation is taking longer than expected. Please try regenerating.');
+          toast.error('Generation timeout. Try regenerating.');
+        }
+      } catch (err: any) {
+        console.error('Polling error:', err);
+      }
+    }, 3000);
+  };
+
+  const fetchQuestions = async () => {
     if (!userData?.clerk_id) {
       setError('User not authenticated');
       setLoading(false);
@@ -96,33 +133,64 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
     setError(null);
     
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('generate-ssb-questions', {
-        body: { 
-          test_session_id: testSessionId, 
-          analysis_id: analysisId,
-          force_regenerate: forceRegenerate,
-          user_id: userData.clerk_id
-        }
-      });
+      const { data: analysisData, error: fetchError } = await supabase
+        .from('analysis_results')
+        .select('ssb_questions, ssb_questions_generated_at')
+        .eq('id', analysisId)
+        .single();
 
-      if (functionError) {
-        console.error('Function error:', functionError);
-        throw functionError;
+      if (fetchError) {
+        console.error('Error fetching SSB questions:', fetchError);
+        throw fetchError;
       }
 
+      if (analysisData?.ssb_questions && Array.isArray(analysisData.ssb_questions)) {
+        setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
+        setLoading(false);
+      } else {
+        console.log('Questions being generated, starting polling...');
+        setGenerating(true);
+        startPolling();
+      }
+    } catch (err: any) {
+      console.error('Error fetching SSB questions:', err);
+      setError(err.message || 'Failed to load SSB questions');
+      setLoading(false);
+    }
+  };
+
+  const regenerateQuestions = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error: functionError } = await supabase.functions.invoke(
+        'generate-ssb-questions',
+        {
+          body: {
+            test_session_id: testSessionId,
+            analysis_id: analysisId,
+            force_regenerate: true,
+            user_id: userData.clerk_id
+          }
+        }
+      );
+
+      if (functionError) {
+        console.error('Regenerate error:', functionError);
+        throw functionError;
+      }
+      
       if (data.error) {
         throw new Error(data.error);
       }
 
       setQuestions(data.questions);
-      if (forceRegenerate) {
-        toast.success('New SSB questions generated successfully!');
-      }
+      toast.success('New SSB questions generated!');
     } catch (err: any) {
-      console.error('Error fetching SSB questions:', err);
-      const errorMessage = err.message || 'Failed to load SSB questions';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      console.error('Error regenerating questions:', err);
+      setError(err.message || 'Failed to regenerate questions');
+      toast.error(err.message || 'Failed to regenerate questions');
     } finally {
       setLoading(false);
     }
@@ -134,15 +202,34 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
     }
   }, [testSessionId, analysisId, userData?.clerk_id]);
 
-  if (loading) {
+  if (loading && !generating) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <div className="text-center space-y-1">
-            <p className="font-medium">Generating personalized SSB questions...</p>
+            <p className="font-medium">Loading SSB questions...</p>
             <p className="text-sm text-muted-foreground">
-              Analyzing your psychological profile to create targeted questions
+              Fetching your personalized interview questions
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (generating) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <div className="text-center space-y-2">
+            <p className="font-semibold text-lg">Generating Your Personalized SSB Questions</p>
+            <p className="text-sm text-muted-foreground">
+              Our AI is analyzing your psychological profile to create tailored interview questions...
+            </p>
+            <p className="text-xs text-muted-foreground">
+              This usually takes 10-30 seconds
             </p>
           </div>
         </CardContent>
@@ -191,8 +278,8 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => fetchQuestions(true)}
-          disabled={loading}
+          onClick={regenerateQuestions}
+          disabled={loading || generating}
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Regenerate

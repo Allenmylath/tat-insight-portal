@@ -37,44 +37,111 @@ serve(async (req) => {
   }
 
   try {
-    const { test_session_id, analysis_id, force_regenerate, user_id } = await req.json();
+    const body = await req.json();
+    console.log('Request body:', JSON.stringify(body, null, 2));
 
-    if (!test_session_id || !analysis_id || !user_id) {
-      return new Response(
-        JSON.stringify({ error: 'test_session_id, analysis_id, and user_id are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Detect if this is a trigger call or manual call
+    const isTriggerCall = body.type === 'INSERT' && body.table === 'analysis_results';
+
+    let test_session_id: string;
+    let analysis_id: string;
+    let user_id: string;
+    let force_regenerate: boolean;
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Check Pro status
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('membership_type, membership_expires_at')
-      .eq('clerk_id', user_id)
-      .single();
+    if (isTriggerCall) {
+      // Mode A: Database trigger call
+      console.log('Trigger-initiated SSB generation');
+      
+      test_session_id = body.record.test_session_id;
+      analysis_id = body.record.id;
+      user_id = body.record.user_id;
+      force_regenerate = false;
+      
+      // Double-check Pro status (trigger already checked, but validate again)
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('membership_type, membership_expires_at')
+        .eq('id', user_id)
+        .single();
+      
+      if (userError || !userData) {
+        console.error('User fetch error:', userError);
+        return new Response(
+          JSON.stringify({ error: 'User not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      if (userData.membership_type !== 'pro') {
+        console.log('User is not Pro, skipping SSB generation');
+        return new Response(
+          JSON.stringify({ skipped: true, reason: 'not_pro' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      if (userData.membership_expires_at && new Date(userData.membership_expires_at) < new Date()) {
+        console.log('Pro membership expired, skipping SSB generation');
+        return new Response(
+          JSON.stringify({ skipped: true, reason: 'membership_expired' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+    } else {
+      // Mode B: Manual frontend call (regenerate button)
+      console.log('Manual SSB generation request');
+      
+      test_session_id = body.test_session_id;
+      analysis_id = body.analysis_id;
+      user_id = body.user_id;
+      force_regenerate = body.force_regenerate || false;
+      
+      if (!test_session_id || !analysis_id || !user_id) {
+        return new Response(
+          JSON.stringify({ error: 'test_session_id, analysis_id, and user_id are required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
-    if (userError || !userData) {
-      console.error('User fetch error:', userError);
-      return new Response(
-        JSON.stringify({ error: 'User not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      // Check Pro status for manual calls
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('membership_type, membership_expires_at')
+        .eq('clerk_id', user_id)
+        .single();
+
+      if (userError || !userData) {
+        console.error('User fetch error:', userError);
+        return new Response(
+          JSON.stringify({ error: 'User not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const isPro = userData.membership_type === 'pro' && 
+                    new Date(userData.membership_expires_at) > new Date();
+
+      if (!isPro) {
+        console.log('User is not Pro or subscription expired');
+        return new Response(
+          JSON.stringify({ error: 'Pro membership required to access SSB questions' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
-    const isPro = userData.membership_type === 'pro' && 
-                  new Date(userData.membership_expires_at) > new Date();
+    console.log('Processing SSB generation:', {
+      test_session_id,
+      analysis_id,
+      user_id,
+      force_regenerate,
+      mode: isTriggerCall ? 'trigger' : 'manual'
+    });
 
-    if (!isPro) {
-      console.log('User is not Pro or subscription expired');
-      return new Response(
-        JSON.stringify({ error: 'Pro membership required to access SSB questions' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Check if questions already exist (cache)
+    // Check if questions already exist (unless force regenerate)
     if (!force_regenerate) {
       const { data: existingAnalysis, error: cacheError } = await supabase
         .from('analysis_results')
@@ -85,7 +152,11 @@ serve(async (req) => {
       if (!cacheError && existingAnalysis?.ssb_questions) {
         console.log('Returning cached SSB questions');
         return new Response(
-          JSON.stringify({ questions: existingAnalysis.ssb_questions }),
+          JSON.stringify({ 
+            questions: existingAnalysis.ssb_questions,
+            generated_at: existingAnalysis.ssb_questions_generated_at,
+            cached: true
+          }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
