@@ -27,7 +27,6 @@ import {
   MessageCircle,
   Calendar,
   Shield,
-  Zap,
   ThumbsUp,
   ThumbsDown,
   CheckSquare,
@@ -36,9 +35,12 @@ import {
   Trophy,
   Star,
   Flame,
-  Timer,
   Eye,
   Play,
+  UserPlus,
+  Lightbulb,
+  Crosshair,
+  AlertTriangle,
 } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -101,9 +103,6 @@ const SSBInterview = () => {
   const tatSection = useScrollAnimation({
     threshold: 0.2,
   });
-  const olqsSection = useScrollAnimation({
-    threshold: 0.2,
-  });
   const featuresSection = useScrollAnimation({
     threshold: 0.2,
   });
@@ -148,22 +147,33 @@ const SSBInterview = () => {
     },
   ];
 
-  const olqs = [
-    "Effective Intelligence",
-    "Reasoning Ability",
-    "Organizing Ability",
-    "Power of Expression",
-    "Social Adjustment",
-    "Cooperation",
-    "Sense of Responsibility",
-    "Initiative",
-    "Self Confidence",
-    "Speed of Decision",
-    "Influence Group",
-    "Liveliness",
-    "Determination",
-    "Courage",
-    "Stamina",
+  const workflowSteps = [
+    {
+      number: "1",
+      icon: UserPlus,
+      title: "Sign Up Free",
+      description: "Create your free account in 30 seconds. No payment required.",
+    },
+    {
+      number: "2",
+      icon: Image,
+      title: "Take TAT Test",
+      description: "Practice with authentic military-themed TAT images. 30-second viewing, 4-minute writing.",
+    },
+    {
+      number: "3",
+      icon: Brain,
+      title: "Get AI Analysis",
+      description: "Instant psychological analysis using Murray's TAT framework. Understand your personality patterns.",
+    },
+    {
+      number: "4",
+      icon: MessageCircle,
+      title: "Receive Personalized SSB Questions",
+      description: "Get 6-8 interview questions tailored to YOUR psychological profile. Know exactly what interviewers will ask based on your TAT responses.",
+      highlight: true,
+      proBadge: true,
+    },
   ];
 
   const platformFeatures = [
@@ -176,17 +186,18 @@ const SSBInterview = () => {
     },
     {
       icon: Brain,
-      title: "AI-Powered Analysis",
+      title: "Murray's Psychological Analysis",
       description:
-        "Get instant feedback on your stories. Our AI detects OLQs, analyzes themes, and provides improvement suggestions.",
-      benefit: "Know your weak spots instantly",
+        "Get scientific analysis using Henry Murray's TAT framework - the same method used in actual SSB. Understand your needs, presses, and inner states that interviewers will probe.",
+      benefit: "Deep insights, not just OLQ scoring",
     },
     {
-      icon: TrendingUp,
-      title: "Track Your Progress",
+      icon: Crosshair,
+      title: "Personalized SSB Interview Prep",
       description:
-        "Monitor improvement over time, identify weak OLQs, build consistency, and boost confidence before SSB.",
-      benefit: "Watch yourself improve daily",
+        "Pro members get 6-8 personalized SSB questions for every TAT test. Practice answers before the real interview.",
+      benefit: "Know your questions in advance",
+      proBadge: true,
     },
   ];
 
@@ -255,7 +266,7 @@ const SSBInterview = () => {
     },
     {
       week: "Final Week",
-      focus: "Build Confidence with Mock Tests",
+      focus: "Mock Tests & Review Personalized SSB Questions (Pro)",
       icon: Award,
     },
   ];
@@ -497,6 +508,248 @@ const SSBInterview = () => {
           </div>
         </section>
 
+        {/* How It Works - Workflow Section */}
+        <section className="py-12 sm:py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-8 sm:mb-12">
+              <Badge
+                className="mb-3 sm:mb-4 bg-primary/10 text-primary border-primary/20 font-bold px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
+                variant="outline"
+              >
+                ⚡ How It Works
+              </Badge>
+              <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-foreground leading-tight font-display px-2">
+                From Signup to <span className="text-primary">SSB Success</span> 🎯
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+                Your complete journey to cracking the SSB interview
+              </p>
+            </div>
+
+            {/* Workflow Cards */}
+            <div className="max-w-6xl mx-auto">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative">
+                {/* Connection Line - Desktop Only */}
+                <div className="hidden lg:block absolute top-[80px] left-0 right-0 h-1 bg-border mx-auto" style={{ width: "calc(100% - 120px)", marginLeft: "60px" }}>
+                  <div className="h-full bg-gradient-to-r from-primary via-accent to-champion-gold w-full"></div>
+                </div>
+
+                {workflowSteps.map((step, index) => (
+                  <div key={index} className="relative">
+                    {/* Connector Dot */}
+                    <div className={`hidden lg:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 z-10 transition-all duration-500 ${step.highlight ? "bg-primary border-primary shadow-lg shadow-primary/50 scale-125 animate-pulse" : "bg-background border-border"}`}>
+                      {step.highlight && (
+                        <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+                      )}
+                    </div>
+
+                    <Card className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${step.highlight ? "border-2 border-primary bg-gradient-to-br from-primary/10 via-accent/5 to-background shadow-glow" : "border border-border hover:border-primary/50"}`}>
+                      <CardHeader className="pb-2 sm:pb-3 pt-4 sm:pt-6">
+                        {/* Step Number Badge */}
+                        <div className={`inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full mx-auto mb-2 sm:mb-3 font-black text-sm sm:text-base ${step.highlight ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground"}`}>
+                          {step.number}
+                        </div>
+                        
+                        {/* Icon */}
+                        <div className="mx-auto mb-2 sm:mb-3">
+                          <step.icon className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto ${step.highlight ? "text-primary animate-bounce" : "text-muted-foreground"}`} style={step.highlight ? { animationDuration: "2s" } : {}} />
+                        </div>
+
+                        {/* Title with Pro Badge */}
+                        <CardTitle className="text-sm sm:text-base md:text-lg mb-2 flex items-center justify-center gap-2 flex-wrap">
+                          <span>{step.title}</span>
+                          {step.proBadge && (
+                            <Badge className="bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/30 text-[10px] px-2 py-0.5">
+                              PRO
+                            </Badge>
+                          )}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0 pb-3 sm:pb-4">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                          {step.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    {/* Mobile Arrow */}
+                    {index < workflowSteps.length - 1 && (
+                      <div className="sm:hidden flex justify-center py-2">
+                        <ArrowRight className={`h-5 w-5 ${step.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA below workflow */}
+              {!isSignedIn && (
+                <div className="text-center mt-8 sm:mt-12">
+                  <Link to="/auth/signup">
+                    <Button size="lg" className="px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-black shadow-action hover:scale-105 transition-all">
+                      Start Your Journey - FREE 🚀
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Deep Dive - SSB Questions Feature (THE MOAT) */}
+        <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-champion-gold/5 to-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              {/* Section Header */}
+              <div className="text-center mb-8 sm:mb-12">
+                <Badge className="mb-3 sm:mb-4 bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/30 font-bold px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm" variant="outline">
+                  🎯 Our Competitive Advantage
+                </Badge>
+                <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-foreground leading-tight font-display px-2">
+                  Why Personalized SSB Questions Are Your <span className="bg-gradient-to-r from-primary via-accent to-champion-gold bg-clip-text text-transparent">Secret Weapon</span> 🎯
+                </h2>
+              </div>
+
+              {/* The Problem */}
+              <Card className="border-red-500/30 bg-red-500/5 mb-6 sm:mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400 text-lg sm:text-xl">
+                    <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6" />
+                    The Problem with Generic SSB Prep
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm sm:text-base text-muted-foreground flex items-start gap-2">
+                    <span className="text-red-500 font-bold flex-shrink-0">❌</span>
+                    <span>SSB Interviewers probe psychological patterns revealed in YOUR TAT stories</span>
+                  </p>
+                  <p className="text-sm sm:text-base text-muted-foreground flex items-start gap-2">
+                    <span className="text-red-500 font-bold flex-shrink-0">❌</span>
+                    <span>Generic interview prep won't help - they'll ask questions specific to YOUR responses</span>
+                  </p>
+                  <p className="text-sm sm:text-base text-muted-foreground flex items-start gap-2">
+                    <span className="text-red-500 font-bold flex-shrink-0">❌</span>
+                    <span>Most candidates are blindsided by unexpected questions targeting their weaknesses</span>
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Our Solution */}
+              <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-accent/5 to-background shadow-glow mb-6 sm:mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-primary text-lg sm:text-xl md:text-2xl">
+                    <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+                    Our Solution: AI-Powered Personalized Questions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 sm:space-y-6">
+                  <p className="text-sm sm:text-base md:text-lg text-foreground font-semibold">
+                    Our AI analyzes your TAT story and predicts 6-8 questions interviewers are likely to ask YOU based on your psychological profile.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <p className="font-semibold text-foreground text-sm sm:text-base">Each question comes with:</p>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
+                        <span><strong className="text-foreground">Psychological basis</strong> (why they're asking)</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
+                        <span><strong className="text-foreground">What they're listening for</strong></span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
+                        <span><strong className="text-foreground">Follow-up questions</strong> if you're evasive</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
+                        <span><strong className="text-foreground">Preparation tips</strong> for strong answers</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Example */}
+                  <div className="bg-background border-2 border-primary/20 rounded-xl p-4 sm:p-6 space-y-3">
+                    <Badge className="bg-accent/10 text-accent-foreground border-accent/30 text-xs">Example</Badge>
+                    
+                    <div className="space-y-2">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        <strong className="text-foreground">Your TAT Story revealed:</strong> "Tendency to seek external validation"
+                      </p>
+                      
+                      <div className="bg-primary/5 border-l-4 border-primary p-3 sm:p-4 rounded space-y-2">
+                        <p className="font-semibold text-foreground text-sm sm:text-base">
+                          Predicted SSB Question:
+                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic">
+                          "Tell me about a time when you had to make a difficult decision without consulting others."
+                        </p>
+                      </div>
+
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        <strong className="text-accent">Why this question:</strong> The interviewer wants to test if you can demonstrate independent decision-making or if you rely too heavily on others' opinions.
+                      </p>
+                      
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        <strong className="text-secondary">What to prepare:</strong> Think of specific examples showing autonomous decision-making with positive outcomes.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pro Upgrade CTA */}
+              <Card className="border-2 border-champion-gold/30 bg-gradient-to-br from-champion-gold/10 via-primary/5 to-background shadow-glow">
+                <CardHeader className="text-center">
+                  <Badge className="mx-auto mb-3 bg-champion-gold/20 text-champion-gold-foreground border-champion-gold/40 font-bold px-4 py-2 text-sm">
+                    ⭐ PRO FEATURE
+                  </Badge>
+                  <CardTitle className="text-xl sm:text-2xl md:text-3xl font-black mb-2">
+                    Get Personalized SSB Questions
+                  </CardTitle>
+                  <CardDescription className="text-sm sm:text-base">
+                    Available with Pro Membership - ₹500/month
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid sm:grid-cols-3 gap-3 text-center">
+                    <div className="bg-background/50 rounded-lg p-3">
+                      <div className="text-2xl sm:text-3xl font-black text-primary mb-1">6-8</div>
+                      <p className="text-xs text-muted-foreground">Questions Per Test</p>
+                    </div>
+                    <div className="bg-background/50 rounded-lg p-3">
+                      <div className="text-2xl sm:text-3xl font-black text-accent mb-1">∞</div>
+                      <p className="text-xs text-muted-foreground">Unlimited Tests</p>
+                    </div>
+                    <div className="bg-background/50 rounded-lg p-3">
+                      <div className="text-2xl sm:text-3xl font-black text-secondary mb-1">24/7</div>
+                      <p className="text-xs text-muted-foreground">Priority Analysis</p>
+                    </div>
+                  </div>
+
+                  {!isSignedIn ? (
+                    <div className="space-y-2">
+                      <Link to="/auth/signup">
+                        <Button size="lg" className="w-full px-6 py-6 text-base sm:text-lg font-black shadow-action">
+                          Start Free & Upgrade to Pro 🚀
+                        </Button>
+                      </Link>
+                      <p className="text-xs text-center text-muted-foreground">Free trial available • Upgrade anytime</p>
+                    </div>
+                  ) : (
+                    <Link to="/dashboard/pricing">
+                      <Button size="lg" className="w-full px-6 py-6 text-base sm:text-lg font-black shadow-action">
+                        Upgrade to Pro - ₹500/month 🚀
+                      </Button>
+                    </Link>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Social Proof Section - NEW - Moved Up */}
         <section className="py-12 sm:py-16 bg-gradient-to-br from-background via-accent/5 to-background">
           <div className="container mx-auto px-4">
@@ -647,16 +900,21 @@ const SSBInterview = () => {
               {platformFeatures.map((feature, index) => (
                 <Card
                   key={index}
-                  className="border-primary/20 hover:border-primary hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+                  className={`hover:shadow-xl hover:scale-105 transition-all duration-300 group ${feature.proBadge ? "border-2 border-champion-gold/30 bg-gradient-to-br from-champion-gold/5 to-background" : "border-primary/20 hover:border-primary"}`}
                 >
                   <CardHeader className="text-center pb-3 sm:pb-4">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
-                      <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors ${feature.proBadge ? "bg-champion-gold/10" : "bg-primary/10"}`}>
+                      <feature.icon className={`h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 ${feature.proBadge ? "text-champion-gold-foreground" : "text-primary"}`} />
                     </div>
-                    <CardTitle className="text-base sm:text-lg md:text-xl text-foreground mb-2">
-                      {feature.title}
+                    <CardTitle className="text-base sm:text-lg md:text-xl text-foreground mb-2 flex items-center justify-center gap-2 flex-wrap">
+                      <span>{feature.title}</span>
+                      {feature.proBadge && (
+                        <Badge className="bg-champion-gold/10 text-champion-gold-foreground border-champion-gold/30 text-[10px] px-2 py-0.5">
+                          PRO
+                        </Badge>
+                      )}
                     </CardTitle>
-                    <Badge variant="outline" className="text-[10px] sm:text-xs text-accent border-accent/30">
+                    <Badge variant="outline" className={`text-[10px] sm:text-xs border-accent/30 ${feature.proBadge ? "text-champion-gold-foreground bg-champion-gold/5" : "text-accent"}`}>
                       {feature.benefit}
                     </Badge>
                   </CardHeader>
@@ -757,6 +1015,11 @@ const SSBInterview = () => {
                         </CardHeader>
                         <CardContent className="pt-0 pb-3 sm:pb-4">
                           <p className="text-xs sm:text-sm text-muted-foreground">{day.content}</p>
+                          {day.highlight && (
+                            <Badge className="mt-2 bg-primary/10 text-primary border-primary/30 text-[10px]">
+                              This is where our platform helps you shine ⭐
+                            </Badge>
+                          )}
                         </CardContent>
                       </Card>
 
@@ -856,7 +1119,7 @@ const SSBInterview = () => {
 
                 <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <h4 className="font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
-                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-destructive flex-shrink-0" />
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-destructive flex-shrink-0" />
                     Common Challenges
                   </h4>
                   <div className="grid sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-muted-foreground">
@@ -883,33 +1146,6 @@ const SSBInterview = () => {
           </div>
         </section>
 
-        {/* OLQs Section - Compact Grid */}
-        <section className="py-12 sm:py-16 bg-muted/30" ref={olqsSection.ref}>
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-8 sm:mb-12">
-                <h3 className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-foreground px-2 leading-tight">
-                  15 Officer Like Qualities <span className="text-primary">(OLQs)</span>
-                </h3>
-                <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
-                  TAT reveals these traits through your stories
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-                {olqs.map((olq, index) => (
-                  <div
-                    key={index}
-                    className="bg-card border border-primary/20 rounded-lg p-3 sm:p-4 text-center hover:border-primary hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  >
-                    <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-1.5 sm:mb-2" />
-                    <p className="text-[10px] xs:text-xs sm:text-sm font-medium text-foreground leading-tight">{olq}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Guidelines Section - Simplified */}
         <section className="py-12 sm:py-16 bg-background" ref={guidelinesSection.ref}>
