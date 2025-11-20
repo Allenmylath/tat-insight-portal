@@ -14,10 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { PreviewBanner } from "@/components/PreviewBanner";
 import { LoginRequiredButton } from "@/components/LoginRequiredButton";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 const Dashboard = () => {
   const { isSignedIn, isLoaded } = useUser();
-  const { userData, loading, isPro } = useUserData();
+  const { userData, loading, isPro, updateOnboardingStatus } = useUserData();
   const navigate = useNavigate();
   const [tests, setTests] = useState<any[]>([]);
   const [completedTests, setCompletedTests] = useState<any[]>([]);
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [testsLoading, setTestsLoading] = useState(true);
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
+  const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
     console.log('Dashboard: useEffect triggered', { 
@@ -174,6 +176,35 @@ const Dashboard = () => {
 
     fetchTests();
   }, [userData?.id, isSignedIn]);
+
+  // Check if user needs onboarding tour
+  useEffect(() => {
+    if (!loading && userData && !userData.has_completed_onboarding && isSignedIn) {
+      // Wait 1 second for the page to fully render
+      const timer = setTimeout(() => {
+        setRunTour(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, userData, isSignedIn]);
+
+  const handleTourComplete = async () => {
+    setRunTour(false);
+    try {
+      await updateOnboardingStatus(true);
+    } catch (error) {
+      console.error('Error updating onboarding status:', error);
+    }
+  };
+
+  const handleTourSkip = async () => {
+    setRunTour(false);
+    try {
+      await updateOnboardingStatus(true);
+    } catch (error) {
+      console.error('Error updating onboarding status:', error);
+    }
+  };
 
   // Always use real data (tests from database)
   const displayTests = tests;
@@ -365,7 +396,7 @@ const Dashboard = () => {
                 </div>
               )}
               {isSignedIn && (
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-4" data-tour="credit-balance">
                   <CreditHeader />
                 </div>
               )}
@@ -414,7 +445,7 @@ const Dashboard = () => {
 
           {/* Completed Tests */}
           {availableCompletedTests.length > 0 && (
-            <Card className="shadow-elegant border-primary/10">
+            <Card className="shadow-elegant border-primary/10" data-tour="results-tab">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
@@ -576,7 +607,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-elegant border-primary/10">
+          <Card className="shadow-elegant border-primary/10" data-tour="pending-tab">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Clock className="h-5 w-5 text-primary" />
@@ -594,6 +625,7 @@ const Dashboard = () => {
                       variant="hero" 
                       className="w-full"
                       onClick={() => isSignedIn && navigate('/dashboard/pending')}
+                      data-tour="start-test-button"
                     >
                       Continue Assessment
                     </LoginRequiredButton>
@@ -638,6 +670,12 @@ const Dashboard = () => {
         </div>
       </div>
       </div>
+
+      <OnboardingTour
+        run={runTour}
+        onComplete={handleTourComplete}
+        onSkip={handleTourSkip}
+      />
     </>
   );
 };
