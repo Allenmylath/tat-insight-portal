@@ -13,6 +13,8 @@ export interface UserData {
   total_credits_spent: number;
   created_at: string;
   updated_at: string;
+  has_completed_onboarding: boolean;
+  onboarding_completed_at: string | null;
 }
 
 export const useUserData = () => {
@@ -206,6 +208,29 @@ export const useUserData = () => {
     return userData ? userData.credit_balance >= creditsNeeded : false;
   };
 
+  const updateOnboardingStatus = async (completed: boolean = true) => {
+    if (!userData) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update({
+          has_completed_onboarding: completed,
+          onboarding_completed_at: new Date().toISOString()
+        })
+        .eq('id', userData.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setUserData(data);
+    } catch (err) {
+      console.error('Error updating onboarding status:', err);
+      throw err;
+    }
+  };
+
   return {
     userData,
     loading,
@@ -214,6 +239,7 @@ export const useUserData = () => {
     deductCredits,
     deductCreditsAfterCompletion,
     hasEnoughCredits,
+    updateOnboardingStatus,
     isPro: userData?.membership_type === 'pro'
   };
 };

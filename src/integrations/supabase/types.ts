@@ -1297,6 +1297,7 @@ export type Database = {
           credit_balance: number
           email: string
           first_name: string | null
+          has_completed_onboarding: boolean | null
           has_password: boolean | null
           has_two_factor: boolean | null
           id: string
@@ -1306,6 +1307,7 @@ export type Database = {
           last_sign_in_at: string | null
           membership_expires_at: string | null
           membership_type: Database["public"]["Enums"]["membership_type"]
+          onboarding_completed_at: string | null
           primary_email_id: string | null
           profile_image_url: string | null
           total_credits_purchased: number
@@ -1320,6 +1322,7 @@ export type Database = {
           credit_balance?: number
           email: string
           first_name?: string | null
+          has_completed_onboarding?: boolean | null
           has_password?: boolean | null
           has_two_factor?: boolean | null
           id?: string
@@ -1329,6 +1332,7 @@ export type Database = {
           last_sign_in_at?: string | null
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          onboarding_completed_at?: string | null
           primary_email_id?: string | null
           profile_image_url?: string | null
           total_credits_purchased?: number
@@ -1343,6 +1347,7 @@ export type Database = {
           credit_balance?: number
           email?: string
           first_name?: string | null
+          has_completed_onboarding?: boolean | null
           has_password?: boolean | null
           has_two_factor?: boolean | null
           id?: string
@@ -1352,6 +1357,7 @@ export type Database = {
           last_sign_in_at?: string | null
           membership_expires_at?: string | null
           membership_type?: Database["public"]["Enums"]["membership_type"]
+          onboarding_completed_at?: string | null
           primary_email_id?: string | null
           profile_image_url?: string | null
           total_credits_purchased?: number
