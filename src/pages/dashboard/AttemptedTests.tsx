@@ -25,12 +25,16 @@ const AttemptedTests = () => {
     analysis: any;
     title: string;
     score: number;
+    testSessionId: string;
+    analysisId: string;
   } | null>(null);
   const [showValuationLogic, setShowValuationLogic] = useState(false);
   const [pendingAnalysis, setPendingAnalysis] = useState<{
     analysis: any;
     title: string;
     score: number;
+    testSessionId: string;
+    analysisId: string;
   } | null>(null);
 
   useEffect(() => {
@@ -65,6 +69,7 @@ const AttemptedTests = () => {
             description
           ),
           analysis_results!test_session_id (
+            id,
             confidence_score,
             analysis_data,
             murray_needs,
@@ -137,6 +142,7 @@ const AttemptedTests = () => {
             : null,
           isPremium: false,
           sessionId: session.id,
+          analysisId: analysisResult?.id || "",
         };
       });
     },
@@ -311,6 +317,8 @@ const AttemptedTests = () => {
                                 analysis: test.fullAnalysis,
                                 title: test.title,
                                 score: test.score || 0,
+                                testSessionId: test.sessionId,
+                                analysisId: test.analysisId,
                               });
                               setShowValuationLogic(true);
                             }
@@ -357,6 +365,8 @@ const AttemptedTests = () => {
           analysis={selectedAnalysis?.analysis}
           testTitle={selectedAnalysis?.title || ""}
           score={selectedAnalysis?.score || 0}
+          testSessionId={selectedAnalysis?.testSessionId || ""}
+          analysisId={selectedAnalysis?.analysisId || ""}
         />
       </div>
     </TooltipProvider>
