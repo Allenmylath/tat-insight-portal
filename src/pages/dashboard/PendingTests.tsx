@@ -40,6 +40,18 @@ const PendingTests = () => {
   const [showDeviceSwitchDialog, setShowDeviceSwitchDialog] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('subscription') === 'success') {
+      toast({
+        title: "🎉 Welcome to Pro!",
+        description: "You now have unlimited access to all TAT tests",
+        duration: 5000,
+      });
+      window.history.replaceState({}, '', '/dashboard/pending');
+    }
+  }, []);
+
+  useEffect(() => {
     console.log("PendingTests - useEffect triggered", {
       isSignedIn,
       hasUserId: !!userData?.id,
