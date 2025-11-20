@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +12,9 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// Initialize Resend for email notifications
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 // Webhook authentication
 const webhookUsername = Deno.env.get('PHONEPE_WEBHOOK_USERNAME')!;
@@ -92,11 +96,25 @@ serve(async (req) => {
       console.error('Failed to log callback:', callbackError);
     }
 
-    // Process the webhook based on event type
+    // Detect payment type based on merchant order ID
+    const merchantOrderId = webhookData.payload.merchantOrderId;
+    const isSubscription = merchantOrderId?.startsWith('PRO_');
+    
+    console.log('Payment type:', isSubscription ? 'SUBSCRIPTION' : 'CREDIT_PURCHASE');
+
+    // Process the webhook based on event type and payment type
     if (webhookData.event === 'checkout.order.completed' && webhookData.payload.state === 'COMPLETED') {
-      await processSuccessfulPayment(webhookData);
+      if (isSubscription) {
+        await processSubscriptionPayment(webhookData);
+      } else {
+        await processSuccessfulPayment(webhookData);
+      }
     } else if (webhookData.event === 'checkout.order.failed' || webhookData.payload.state === 'FAILED') {
-      await processFailedPayment(webhookData);
+      if (isSubscription) {
+        await processFailedSubscription(webhookData);
+      } else {
+        await processFailedPayment(webhookData);
+      }
     }
 
     // Update callback as processed
@@ -278,4 +296,143 @@ async function processFailedPayment(webhookData: PhonePeWebhookPayload) {
     console.log(`Failure reason - Error Code: ${errorCode}, Detailed Code: ${detailedErrorCode}`);
   }
   console.log(`Payment method: ${paymentMode}, Transaction ID: ${transactionId}`);
+}
+
+async function processSubscriptionPayment(webhookData: PhonePeWebhookPayload) {
+  const { merchantOrderId, orderId, paymentDetails } = webhookData.payload;
+  
+  console.log('Processing subscription payment for order:', merchantOrderId);
+  console.log('Payment details:', JSON.stringify(paymentDetails, null, 2));
+
+  // Get subscription order
+  const { data: orderData, error: orderError } = await supabase
+    .from('subscription_orders')
+    .select('*')
+    .eq('merchant_order_id', merchantOrderId)
+    .single();
+
+  if (orderError || !orderData) {
+    console.error('Subscription order not found:', orderError);
+    throw new Error('Subscription order not found');
+  }
+
+  // Extract payment info
+  const paymentInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0] : null;
+
+  // Update subscription order
+  const { error: updateOrderError } = await supabase
+    .from('subscription_orders')
+    .update({
+      status: 'COMPLETED',
+      phonepe_order_id: orderId,
+      payment_completed_at: new Date().toISOString(),
+      payment_metadata: {
+        transactionId: paymentInfo?.transactionId,
+        paymentMode: paymentInfo?.paymentMode,
+        timestamp: paymentInfo?.timestamp,
+      },
+    })
+    .eq('merchant_order_id', merchantOrderId);
+
+  if (updateOrderError) {
+    console.error('Error updating subscription order:', updateOrderError);
+    throw updateOrderError;
+  }
+
+  // Get user data
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('email, first_name')
+    .eq('id', orderData.user_id)
+    .single();
+
+  if (userError || !userData) {
+    console.error('User not found:', userError);
+    throw new Error('User not found');
+  }
+
+  // Get plan data
+  const { data: planData, error: planError } = await supabase
+    .from('subscription_plans')
+    .select('duration_days')
+    .eq('id', orderData.plan_id)
+    .single();
+
+  if (planError || !planData) {
+    console.error('Plan not found:', planError);
+    throw new Error('Plan not found');
+  }
+
+  // Update user membership
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + planData.duration_days);
+
+  const { error: membershipError } = await supabase
+    .from('users')
+    .update({
+      membership_type: 'pro',
+      membership_expires_at: expiryDate.toISOString(),
+    })
+    .eq('id', orderData.user_id);
+
+  if (membershipError) {
+    console.error('Error updating user membership:', membershipError);
+    throw membershipError;
+  }
+
+  // Send confirmation email
+  try {
+    await resend.emails.send({
+      from: 'TAT Tests <noreply@tattests.me>',
+      to: [userData.email],
+      subject: 'Welcome to TAT Tests Pro! 🎉',
+      html: `
+        <h1>Welcome to TAT Tests Pro!</h1>
+        <p>Hi ${userData.first_name || 'there'},</p>
+        <p>Your Pro subscription is now active! You now have unlimited access to:</p>
+        <ul>
+          <li>Unlimited TAT test attempts</li>
+          <li>Advanced psychometric analysis</li>
+          <li>SSB interview preparation questions</li>
+          <li>Priority support</li>
+        </ul>
+        <p>Your subscription is valid until ${expiryDate.toLocaleDateString()}.</p>
+        <p><a href="https://www.tattests.me/dashboard">Go to Dashboard</a></p>
+        <p>Best regards,<br>The TAT Tests Team</p>
+      `,
+    });
+    console.log('Pro subscription confirmation email sent to:', userData.email);
+  } catch (emailError) {
+    console.error('Error sending confirmation email:', emailError);
+    // Don't throw - subscription is already activated
+  }
+
+  console.log('Subscription payment processed successfully for user:', orderData.user_id);
+}
+
+async function processFailedSubscription(webhookData: PhonePeWebhookPayload) {
+  const { merchantOrderId, orderId, paymentDetails } = webhookData.payload;
+  
+  console.log('Processing failed subscription for order:', merchantOrderId);
+
+  const paymentInfo = paymentDetails && paymentDetails.length > 0 ? paymentDetails[0] : null;
+
+  const { error: updateError } = await supabase
+    .from('subscription_orders')
+    .update({
+      status: 'FAILED',
+      phonepe_order_id: orderId,
+      payment_metadata: {
+        errorCode: paymentInfo?.errorCode,
+        detailedErrorCode: paymentInfo?.detailedErrorCode,
+        timestamp: paymentInfo?.timestamp,
+      },
+    })
+    .eq('merchant_order_id', merchantOrderId);
+
+  if (updateError) {
+    console.error('Error updating failed subscription:', updateError);
+  }
+
+  console.log('Failed subscription processed:', merchantOrderId);
 }
