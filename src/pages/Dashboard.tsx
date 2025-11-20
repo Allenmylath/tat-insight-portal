@@ -15,6 +15,8 @@ import { useUser } from "@clerk/clerk-react";
 import { PreviewBanner } from "@/components/PreviewBanner";
 import { LoginRequiredButton } from "@/components/LoginRequiredButton";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { ProUpgradeBanner } from "@/components/ProUpgradeBanner";
+import { ProUpgradeModal } from "@/components/ProUpgradeModal";
 
 const Dashboard = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -27,6 +29,7 @@ const Dashboard = () => {
   const [showNoTestDialog, setShowNoTestDialog] = useState(false);
   const [hasAnyTestSessions, setHasAnyTestSessions] = useState(false);
   const [runTour, setRunTour] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     console.log('Dashboard: useEffect triggered', { 
@@ -246,6 +249,9 @@ const Dashboard = () => {
       </Dialog>
 
       <div className="space-y-6">
+      {/* Pro Upgrade Banner */}
+      <ProUpgradeBanner onUpgrade={() => setShowUpgradeModal(true)} />
+      
       {/* Preview Banner for unauthenticated users */}
       {!isSignedIn && <PreviewBanner />}
       

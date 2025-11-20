@@ -5,10 +5,14 @@ import { Check, Crown, Zap, Star, Users, BarChart3, Coins } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useState } from "react";
 import { CreditPurchaseModal } from "@/components/CreditPurchaseModal";
+import { ProPricingCard } from "@/components/ProPricingCard";
+import { ProUpgradeModal } from "@/components/ProUpgradeModal";
 
 const Pricing = () => {
-  const { userData } = useUserData();
+  const { userData, isPro } = useUserData();
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [viewMode, setViewMode] = useState<'subscription' | 'credits'>('subscription');
 
   const creditPackages = [
     {
@@ -100,11 +104,25 @@ const Pricing = () => {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-foreground">Credit Packages</h1>
+        <h1 className="text-3xl font-bold text-foreground">Choose Your Plan</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Purchase credits to access our comprehensive TAT psychological assessments. 
-          Each test costs 100 credits (₹100). Pay only for what you use!
+          Subscribe for unlimited access or purchase credits for pay-per-use testing
         </p>
+        
+        <div className="flex justify-center gap-2 mt-4">
+          <Button 
+            variant={viewMode === 'subscription' ? 'default' : 'outline'}
+            onClick={() => setViewMode('subscription')}
+          >
+            Subscription
+          </Button>
+          <Button 
+            variant={viewMode === 'credits' ? 'default' : 'outline'}
+            onClick={() => setViewMode('credits')}
+          >
+            One-Time Credits
+          </Button>
+        </div>
       </div>
 
       {/* Current Credit Balance */}
@@ -134,8 +152,16 @@ const Pricing = () => {
         </Card>
       )}
 
+      {/* Pro Subscription */}
+      {viewMode === 'subscription' && !isPro && (
+        <div className="max-w-md mx-auto">
+          <ProPricingCard onUpgrade={() => setShowUpgradeModal(true)} />
+        </div>
+      )}
+
       {/* Credit Packages */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      {viewMode === 'credits' && (
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {creditPackages.map((pack, index) => (
           <Card 
             key={index} 
@@ -191,7 +217,8 @@ const Pricing = () => {
             </CardContent>
           </Card>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* Benefits Section */}
       <div className="space-y-6">
@@ -229,6 +256,10 @@ const Pricing = () => {
       <CreditPurchaseModal 
         open={showCreditModal} 
         onOpenChange={setShowCreditModal} 
+      />
+      <ProUpgradeModal 
+        open={showUpgradeModal} 
+        onOpenChange={setShowUpgradeModal} 
       />
     </div>
   );
