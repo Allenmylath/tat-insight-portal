@@ -113,13 +113,58 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
           clearInterval(pollInterval);
           setGenerating(false);
           setLoading(false);
-          setError('Question generation is taking longer than expected. Please try regenerating.');
-          toast.error('Generation timeout. Try regenerating.');
+          setError('Generation is taking longer than expected. Click "Regenerate" to try again.');
+          toast.error('Generation timeout. Please use the Regenerate button.');
         }
       } catch (err: any) {
         console.error('Polling error:', err);
       }
     }, 3000);
+  };
+
+  const triggerGeneration = async () => {
+    setGenerating(true);
+    setLoading(false);
+    
+    try {
+      const { data, error: functionError } = await supabase.functions.invoke(
+        'generate-ssb-questions',
+        {
+          body: {
+            test_session_id: testSessionId,
+            analysis_id: analysisId,
+            user_id: userData.clerk_id,
+            force_regenerate: false
+          }
+        }
+      );
+
+      if (functionError) {
+        console.error('Generation trigger error:', functionError);
+        throw functionError;
+      }
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      if (data?.questions) {
+        setQuestions(data.questions);
+        setGenerating(false);
+        toast.success('SSB questions are ready!');
+        return;
+      }
+
+      console.log('Generation started, polling for results...');
+      startPolling();
+      
+    } catch (err: any) {
+      console.error('Error triggering SSB generation:', err);
+      setError(err.message || 'Failed to generate questions');
+      setGenerating(false);
+      
+      toast.error('Failed to generate questions. Try regenerating.');
+    }
   };
 
   const fetchQuestions = async () => {
@@ -148,9 +193,8 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
         setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
         setLoading(false);
       } else {
-        console.log('Questions being generated, starting polling...');
-        setGenerating(true);
-        startPolling();
+        console.log('No questions found. Triggering generation for Pro user...');
+        await triggerGeneration();
       }
     } catch (err: any) {
       console.error('Error fetching SSB questions:', err);
@@ -231,6 +275,15 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
             <p className="text-xs text-muted-foreground">
               This usually takes 10-30 seconds
             </p>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={regenerateQuestions}
+              className="mt-4"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry Now
+            </Button>
           </div>
         </CardContent>
       </Card>
