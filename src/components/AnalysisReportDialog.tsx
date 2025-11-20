@@ -276,7 +276,7 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
         </div>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${isPro ? 'grid-cols-5' : 'grid-cols-4'} h-auto`}>
+          <TabsList className="grid w-full grid-cols-5 h-auto">
             <TabsTrigger value="traditional" className="py-3">
               <span className="hidden lg:inline">Traditional Analysis</span>
               <span className="lg:hidden">Traditional</span>
@@ -293,13 +293,11 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
               <span className="hidden lg:inline">Recommendations</span>
               <span className="lg:hidden">Recommend</span>
             </TabsTrigger>
-            {isPro && (
-              <TabsTrigger value="ssb" className="py-3 gap-1">
-                <span className="hidden lg:inline">SSB Interview Prep</span>
-                <span className="lg:hidden">SSB Prep</span>
-                <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary">Pro</Badge>
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="ssb" className="py-3 gap-1">
+              <span className="hidden lg:inline">SSB Interview Prep</span>
+              <span className="lg:hidden">SSB Prep</span>
+              <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary">Pro</Badge>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="traditional" className="space-y-6 mt-6">
@@ -314,38 +312,19 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
 
           <TabsContent value="military" className="space-y-6 mt-6">
             <MilitaryAnalysis assessment={formattedMilitaryAssessment} isMobile={isMobile} />
-            {!isPro && (
-              <Card className="mt-6 border-dashed border-2 border-primary/20 bg-primary/5">
-                <CardContent className="p-6 text-center space-y-4">
-                  <Lock className="h-12 w-12 mx-auto text-muted-foreground" />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">SSB Interview Questions</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Unlock personalized SSB interview questions based on your TAT story. 
-                      Get 6-8 expert questions to help you prepare.
-                    </p>
-                  </div>
-                  <Button onClick={() => setShowUpgradeModal(true)} className="gap-2">
-                    <Sparkles className="h-4 w-4" />
-                    Upgrade to Pro - ₹500/month
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
 
           <TabsContent value="recommendation" className="space-y-6 mt-6">
             <RecommendationAnalysis recommendation={selectionRecommendation} isMobile={isMobile} />
           </TabsContent>
 
-          {isPro && (
-            <TabsContent value="ssb" className="space-y-6 mt-6">
-              <SSBQuestionsCard 
-                testSessionId={testSessionId}
-                analysisId={analysisId}
-              />
-            </TabsContent>
-          )}
+          <TabsContent value="ssb" className="space-y-6 mt-6">
+            <SSBQuestionsCard 
+              testSessionId={testSessionId}
+              analysisId={analysisId}
+              isPro={isPro}
+            />
+          </TabsContent>
         </Tabs>
       )}
       

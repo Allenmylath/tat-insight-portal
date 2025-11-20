@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Target, RefreshCw, ChevronDown, ChevronUp, Lightbulb, AlertCircle } from "lucide-react";
+import { Loader2, Target, RefreshCw, ChevronDown, ChevronUp, Lightbulb, AlertCircle, Lock, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUserData } from "@/hooks/useUserData";
+import { ProUpgradeModal } from "@/components/ProUpgradeModal";
 
 interface SSBQuestion {
   category: string;
@@ -19,14 +20,70 @@ interface SSBQuestion {
 interface SSBQuestionsCardProps {
   testSessionId: string;
   analysisId: string;
+  isPro: boolean;
 }
 
-export const SSBQuestionsCard = ({ testSessionId, analysisId }: SSBQuestionsCardProps) => {
+export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuestionsCardProps) => {
   const [questions, setQuestions] = useState<SSBQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { userData } = useUserData();
+
+  // If not Pro, show upgrade UI
+  if (!isPro) {
+    return (
+      <>
+        <Card className="border-dashed border-2 border-primary/20 bg-primary/5">
+          <CardHeader className="text-center pb-4">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Lock className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">SSB Interview Questions</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Get 6-8 personalized SSB interview questions based on your psychological profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <h4 className="font-semibold mb-2 text-sm">🎯 Leadership</h4>
+                <p className="text-xs text-muted-foreground">Questions tailored to assess your leadership potential and decision-making abilities</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <h4 className="font-semibold mb-2 text-sm">🧠 Psychological Basis</h4>
+                <p className="text-xs text-muted-foreground">Each question comes with psychological reasoning for the interviewer's focus</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <h4 className="font-semibold mb-2 text-sm">💡 Preparation Tips</h4>
+                <p className="text-xs text-muted-foreground">Detailed guidance on what the interviewer is looking for in your answers</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <h4 className="font-semibold mb-2 text-sm">🔄 Follow-ups</h4>
+                <p className="text-xs text-muted-foreground">Potential follow-up questions to help you prepare comprehensively</p>
+              </div>
+            </div>
+
+            <div className="text-center pt-2">
+              <Button 
+                onClick={() => setShowUpgradeModal(true)} 
+                size="lg"
+                className="gap-2 px-8"
+              >
+                <Sparkles className="h-5 w-5" />
+                Upgrade to Pro - ₹500/month
+              </Button>
+              <p className="text-xs text-muted-foreground mt-3">
+                Join over 500+ Pro members preparing for their SSB interviews
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <ProUpgradeModal open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
+      </>
+    );
+  }
 
   const fetchQuestions = async (forceRegenerate = false) => {
     if (!userData?.clerk_id) {
