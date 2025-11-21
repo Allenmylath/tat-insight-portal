@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
 import App from "./App.tsx";
 import "./index.css";
+import { onLCP, onINP, onCLS } from 'web-vitals';
+import { reportWebVitals } from './utils/performanceMonitoring';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -29,3 +31,8 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </ClerkProvider>
 );
+
+// Monitor Web Vitals
+onLCP(reportWebVitals);
+onINP(reportWebVitals);
+onCLS(reportWebVitals);

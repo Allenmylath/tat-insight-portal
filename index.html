@@ -7,9 +7,22 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="/favicon.png" type="image/png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" as="image" href="/src/assets/army-hero.jpeg" fetchpriority="high">
+    <link rel="preload" as="image" href="/src/assets/henry-murray.jpg">
+    
+    <!-- DNS prefetch for third parties -->
+    <link rel="dns-prefetch" href="https://prodregistryv2.org">
+    <link rel="dns-prefetch" href="https://featureassets.org">
+    <link rel="preconnect" href="https://clerk.tattests.me">
+    <link rel="dns-prefetch" href="https://clerk.tattests.me">
     <title>tat-insight-portal</title>
     <meta name="description" content="thematic aperception test">
     <meta name="author" content="Lovable" />
@@ -24,6 +37,7 @@
     <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/TfKdq5nZ89Zh3XR3TgKx2PfvoMI3/social-images/social-1758125347652-whitekitty.png">
     
     <!-- Google tag (gtag.js) -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17694663727"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -35,7 +49,7 @@
 
   <body>
     <div id="root"></div>
-    <script src="https://mercury.phonepe.com/web/bundle/checkout.js" async></script>
+    <script defer src="https://mercury.phonepe.com/web/bundle/checkout.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

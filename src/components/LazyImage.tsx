@@ -4,20 +4,32 @@ import { Image as ImageIcon } from 'lucide-react';
 
 interface LazyImageProps {
   src: string;
+  webpSrc?: string;
+  srcSet?: string;
+  webpSrcSet?: string;
+  sizes?: string;
   alt: string;
   className?: string;
   placeholderClassName?: string;
   onError?: () => void;
   priority?: boolean;
+  width?: number;
+  height?: number;
 }
 
 export const LazyImage = ({ 
-  src, 
+  src,
+  webpSrc,
+  srcSet,
+  webpSrcSet,
+  sizes,
   alt, 
   className = '', 
   placeholderClassName = '',
   onError,
-  priority = false 
+  priority = false,
+  width,
+  height
 }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -73,18 +85,62 @@ export const LazyImage = ({
       )}
 
       {isInView && (
-        <img
-          src={src}
-          alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          className={`${className} transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={handleLoad}
-          onError={handleError}
-          style={{ display: 'block' }}
-        />
+        <>
+          {webpSrc || webpSrcSet ? (
+            <picture>
+              {webpSrcSet && (
+                <source 
+                  srcSet={webpSrcSet}
+                  type="image/webp"
+                  sizes={sizes}
+                />
+              )}
+              {webpSrc && (
+                <source 
+                  src={webpSrc}
+                  type="image/webp"
+                />
+              )}
+              {srcSet && (
+                <source 
+                  srcSet={srcSet}
+                  sizes={sizes}
+                />
+              )}
+              <img
+                src={src}
+                alt={alt}
+                loading={priority ? 'eager' : 'lazy'}
+                decoding="async"
+                width={width}
+                height={height}
+                className={`${className} transition-opacity duration-300 ${
+                  isLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onLoad={handleLoad}
+                onError={handleError}
+                style={{ display: 'block' }}
+              />
+            </picture>
+          ) : (
+            <img
+              src={src}
+              alt={alt}
+              loading={priority ? 'eager' : 'lazy'}
+              decoding="async"
+              width={width}
+              height={height}
+              srcSet={srcSet}
+              sizes={sizes}
+              className={`${className} transition-opacity duration-300 ${
+                isLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={handleLoad}
+              onError={handleError}
+              style={{ display: 'block' }}
+            />
+          )}
+        </>
       )}
     </div>
   );
