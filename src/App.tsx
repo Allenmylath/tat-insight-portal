@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { trackSignupConversion } from "@/utils/trackConversion";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -15,7 +15,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { useEffect, useState } from "react";
 import Index from "./pages/Index";
 
 // Lazy load non-critical routes
@@ -108,70 +107,43 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   const { user, isLoaded: isClerkLoaded } = useUser();
-  const [statsigClient, setStatsigClient] = useState<any>(null);
 
-  // Get persistent user data
+  // Initialize Statsig with persistent identity
   const statsigUserId = getPersistentUserId();
   const statsigEmail = getPersistedEmail();
 
-  // Defer Statsig initialization to not block initial render
+  const { client } = useClientAsyncInit(
+    import.meta.env.VITE_STATSIG_CLIENT_KEY,
+    {
+      userID: statsigUserId,
+      email: statsigEmail,
+      custom: {
+        wasIdentified: !!localStorage.getItem(STATSIG_USER_ID_KEY),
+        hasEmail: !!statsigEmail,
+      },
+    },
+    {
+      plugins: [new StatsigAutoCapturePlugin(), new StatsigSessionReplayPlugin()],
+    },
+  );
+
+  // Completely async identity resolution
   useEffect(() => {
-    const initStatsig = async () => {
-      const { useClientAsyncInit: initClient } = await import("@statsig/react-bindings");
-      const { StatsigAutoCapturePlugin: AutoCapture } = await import("@statsig/web-analytics");
-      const { StatsigSessionReplayPlugin: SessionReplay } = await import("@statsig/session-replay");
-      
-      const { client } = initClient(
-        import.meta.env.VITE_STATSIG_CLIENT_KEY,
-        {
-          userID: statsigUserId,
-          email: statsigEmail,
-          custom: {
-            wasIdentified: !!localStorage.getItem(STATSIG_USER_ID_KEY),
-            hasEmail: !!statsigEmail,
-          },
-        },
-        {
-          plugins: [new AutoCapture(), new SessionReplay()],
-        },
-      );
-      
-      setStatsigClient(client);
-    };
-
-    // Defer initialization
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(() => initStatsig());
-    } else {
-      setTimeout(initStatsig, 1);
-    }
-  }, []);
-
-  // Completely async identity resolution - zero impact on UI
-  useEffect(() => {
-    if (!statsigClient) return;
-
-    // Async function that runs independently
     const syncIdentityInBackground = async () => {
-      // Wait for Clerk to be ready (but app already rendered)
       if (!isClerkLoaded) return;
 
       try {
         if (user?.id) {
-          // User is authenticated - fetch real ID from Supabase
           const { data, error } = await supabase.from("users").select("id").eq("clerk_id", user.id).single();
 
-          if (data?.id) {
+          if (data?.id && client) {
             const currentEmail = user.primaryEmailAddress?.emailAddress;
-
-            // Only update if the ID actually changed (avoid redundant updates)
             const currentPersistedId = localStorage.getItem(STATSIG_USER_ID_KEY);
+            
             if (currentPersistedId !== data.id) {
-              // Persist the identified user
               persistIdentifiedUser(data.id, currentEmail);
 
-              // Update Statsig asynchronously
-              statsigClient
+              client
                 .updateUserAsync({
                   userID: data.id,
                   email: currentEmail,
@@ -184,16 +156,13 @@ const App = () => {
                     hasEmail: !!currentEmail,
                   },
                 })
-                .catch((err: any) => {
-                  console.warn("Statsig update failed (non-critical):", err);
-                });
+                .catch((err) => console.warn("Statsig update failed:", err));
             }
           } else if (error) {
-            console.warn("Supabase user fetch failed (non-critical):", error);
+            console.warn("Supabase user fetch failed:", error);
           }
-        } else {
-          // User logged out - update metadata
-          statsigClient
+        } else if (client) {
+          client
             .updateUserAsync({
               userID: getPersistentUserId(),
               email: getPersistedEmail(),
@@ -204,18 +173,15 @@ const App = () => {
                 hasEmail: !!getPersistedEmail(),
               },
             })
-            .catch((err: any) => {
-              console.warn("Statsig update failed (non-critical):", err);
-            });
+            .catch((err) => console.warn("Statsig update failed:", err));
         }
       } catch (error) {
-        console.warn("Identity sync failed (non-critical):", error);
+        console.warn("Identity sync failed:", error);
       }
     };
 
-    // Run async without awaiting
     syncIdentityInBackground();
-  }, [user?.id, isClerkLoaded, statsigClient]);
+  }, [user?.id, isClerkLoaded, client]);
 
   // Track Google OAuth signup conversion
   useEffect(() => {
@@ -247,10 +213,10 @@ const App = () => {
     }
   }, [user, isClerkLoaded]);
 
-  // Render immediately - no waiting for anything
+  // Render immediately
   return (
     <ErrorBoundary>
-      <StatsigProvider client={statsigClient}>
+      <StatsigProvider client={client}>
         <QueryClientProvider client={queryClient}>
           <TestProvider>
             <TooltipProvider>
