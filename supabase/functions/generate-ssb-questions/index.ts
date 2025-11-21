@@ -319,12 +319,14 @@ Generate 6-8 SSB interview questions that probe these psychological patterns WIT
     // Validate with Zod
     const validatedQuestions = SSBQuestionsResponseSchema.parse(questionsData);
 
-    // Store in database
+    // Store in database and clear generation flag
     const { error: updateError } = await supabase
       .from('analysis_results')
       .update({
         ssb_questions: validatedQuestions.questions,
-        ssb_questions_generated_at: new Date().toISOString()
+        ssb_questions_generated_at: new Date().toISOString(),
+        ssb_generation_in_progress: false,
+        ssb_generation_started_at: null
       })
       .eq('id', analysis_id);
 

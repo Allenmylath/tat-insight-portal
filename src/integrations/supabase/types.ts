@@ -56,6 +56,8 @@ export type Database = {
           murray_needs: Json | null
           murray_presses: Json | null
           selection_recommendation: Json | null
+          ssb_generation_in_progress: boolean | null
+          ssb_generation_started_at: string | null
           ssb_questions: Json | null
           ssb_questions_generated_at: string | null
           test_session_id: string
@@ -72,6 +74,8 @@ export type Database = {
           murray_needs?: Json | null
           murray_presses?: Json | null
           selection_recommendation?: Json | null
+          ssb_generation_in_progress?: boolean | null
+          ssb_generation_started_at?: string | null
           ssb_questions?: Json | null
           ssb_questions_generated_at?: string | null
           test_session_id: string
@@ -88,6 +92,8 @@ export type Database = {
           murray_needs?: Json | null
           murray_presses?: Json | null
           selection_recommendation?: Json | null
+          ssb_generation_in_progress?: boolean | null
+          ssb_generation_started_at?: string | null
           ssb_questions?: Json | null
           ssb_questions_generated_at?: string | null
           test_session_id?: string
@@ -1626,6 +1632,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      reset_stuck_ssb_generations: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

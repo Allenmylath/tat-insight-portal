@@ -88,7 +88,7 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
 
   const startPolling = () => {
     let pollCount = 0;
-    const maxPolls = 40; // 40 polls × 3 seconds = 2 minutes max
+    const maxPolls = 40; // 40 polls * 3 seconds = 2 minutes max
     
     const pollInterval = setInterval(async () => {
       pollCount++;
@@ -103,30 +103,67 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
         if (error) throw error;
 
         if (analysisData?.ssb_questions) {
+          console.log('SSB questions received via polling');
           setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
           setGenerating(false);
           setLoading(false);
           clearInterval(pollInterval);
           
+          // Clear the generation flag
+          await supabase
+            .from('analysis_results')
+            .update({
+              ssb_generation_in_progress: false,
+              ssb_generation_started_at: null
+            })
+            .eq('id', analysisId);
+          
           toast.success('SSB questions are ready!');
         } else if (pollCount >= maxPolls) {
+          console.warn('Polling timeout reached');
           clearInterval(pollInterval);
           setGenerating(false);
           setLoading(false);
+          
+          // Clear the generation flag on timeout
+          await supabase
+            .from('analysis_results')
+            .update({
+              ssb_generation_in_progress: false,
+              ssb_generation_started_at: null
+            })
+            .eq('id', analysisId);
+          
           setError('Generation is taking longer than expected. Click "Regenerate" to try again.');
           toast.error('Generation timeout. Please use the Regenerate button.');
         }
       } catch (err: any) {
         console.error('Polling error:', err);
+        // Don't clear the interval on polling errors, just log and continue
       }
     }, 3000);
   };
 
   const triggerGeneration = async () => {
-    setGenerating(true);
-    setLoading(false);
-    
     try {
+      // First, set the flag in the database to indicate generation has started
+      const { error: updateError } = await supabase
+        .from('analysis_results')
+        .update({
+          ssb_generation_in_progress: true,
+          ssb_generation_started_at: new Date().toISOString()
+        })
+        .eq('id', analysisId);
+
+      if (updateError) {
+        console.error('Error setting generation flag:', updateError);
+        throw updateError;
+      }
+
+      console.log('SSB generation flag set, invoking edge function...');
+      setGenerating(true);
+      setLoading(false);
+      
       const { data, error: functionError } = await supabase.functions.invoke(
         'generate-ssb-questions',
         {
@@ -141,10 +178,26 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
 
       if (functionError) {
         console.error('Generation trigger error:', functionError);
+        // Clear the flag on error
+        await supabase
+          .from('analysis_results')
+          .update({
+            ssb_generation_in_progress: false,
+            ssb_generation_started_at: null
+          })
+          .eq('id', analysisId);
         throw functionError;
       }
       
       if (data?.error) {
+        // Clear the flag on error
+        await supabase
+          .from('analysis_results')
+          .update({
+            ssb_generation_in_progress: false,
+            ssb_generation_started_at: null
+          })
+          .eq('id', analysisId);
         throw new Error(data.error);
       }
 
@@ -163,14 +216,101 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
       setError(err.message || 'Failed to generate questions');
       setGenerating(false);
       
+      // Make sure to clear the flag on any error
+      await supabase
+        .from('analysis_results')
+        .update({
+          ssb_generation_in_progress: false,
+          ssb_generation_started_at: null
+        })
+        .eq('id', analysisId);
+      
       toast.error('Failed to generate questions. Try regenerating.');
     }
   };
 
   const fetchQuestions = async () => {
-    if (!userData?.clerk_id) {
-      setError('User not authenticated');
+    if (!userData?.clerk_id || !analysisId) {
+      console.log('Missing user data or analysis ID');
       setLoading(false);
+      return;
+    }
+
+    try {
+      console.log('Fetching SSB questions for analysis:', analysisId);
+      
+      // Fetch analysis result with generation state
+      const { data: analysisData, error } = await supabase
+        .from('analysis_results')
+        .select('ssb_questions, ssb_questions_generated_at, ssb_generation_in_progress, ssb_generation_started_at')
+        .eq('id', analysisId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching analysis:', error);
+        throw error;
+      }
+
+      // Check if generation is already in progress
+      if (analysisData?.ssb_generation_in_progress) {
+        console.log('SSB generation already in progress, starting polling...');
+        
+        // Check if it's been running for too long (more than 5 minutes)
+        const startedAt = analysisData.ssb_generation_started_at 
+          ? new Date(analysisData.ssb_generation_started_at) 
+          : null;
+        
+        if (startedAt && (Date.now() - startedAt.getTime()) > 5 * 60 * 1000) {
+          // Reset the stuck generation
+          console.warn('SSB generation appears stuck, resetting...');
+          await supabase
+            .from('analysis_results')
+            .update({
+              ssb_generation_in_progress: false,
+              ssb_generation_started_at: null
+            })
+            .eq('id', analysisId);
+          
+          toast.info('Previous generation timed out. Starting fresh...');
+          await triggerGeneration();
+          return;
+        }
+        
+        toast.info('SSB questions are being generated...');
+        setLoading(false);
+        startPolling();
+        return;
+      }
+
+      // Check if questions already exist
+      if (analysisData?.ssb_questions && Array.isArray(analysisData.ssb_questions)) {
+        console.log('SSB questions found:', analysisData.ssb_questions.length);
+        setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
+        setLoading(false);
+        return;
+      }
+
+      // No questions and not generating - trigger generation
+      console.log('No SSB questions found, triggering generation...');
+      await triggerGeneration();
+      
+    } catch (err: any) {
+      console.error('Error in fetchQuestions:', err);
+      setError(err.message || 'Failed to load questions');
+      setLoading(false);
+    }
+  };
+
+  const regenerateQuestions = async () => {
+    // Check if generation is already in progress
+    const { data: currentState } = await supabase
+      .from('analysis_results')
+      .select('ssb_generation_in_progress')
+      .eq('id', analysisId)
+      .single();
+
+    if (currentState?.ssb_generation_in_progress) {
+      toast.info('SSB questions are already being generated. Please wait...');
       return;
     }
 
@@ -178,36 +318,22 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
     setError(null);
     
     try {
-      const { data: analysisData, error: fetchError } = await supabase
+      // Set the flag in the database
+      const { error: updateError } = await supabase
         .from('analysis_results')
-        .select('ssb_questions, ssb_questions_generated_at')
-        .eq('id', analysisId)
-        .single();
+        .update({
+          ssb_generation_in_progress: true,
+          ssb_generation_started_at: new Date().toISOString()
+        })
+        .eq('id', analysisId);
 
-      if (fetchError) {
-        console.error('Error fetching SSB questions:', fetchError);
-        throw fetchError;
+      if (updateError) {
+        console.error('Error setting generation flag:', updateError);
+        throw updateError;
       }
 
-      if (analysisData?.ssb_questions && Array.isArray(analysisData.ssb_questions)) {
-        setQuestions(analysisData.ssb_questions as unknown as SSBQuestion[]);
-        setLoading(false);
-      } else {
-        console.log('No questions found. Triggering generation for Pro user...');
-        await triggerGeneration();
-      }
-    } catch (err: any) {
-      console.error('Error fetching SSB questions:', err);
-      setError(err.message || 'Failed to load SSB questions');
-      setLoading(false);
-    }
-  };
-
-  const regenerateQuestions = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
+      console.log('Regenerating SSB questions with force_regenerate=true');
+      
       const { data, error: functionError } = await supabase.functions.invoke(
         'generate-ssb-questions',
         {
@@ -222,10 +348,24 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
 
       if (functionError) {
         console.error('Regenerate error:', functionError);
+        await supabase
+          .from('analysis_results')
+          .update({
+            ssb_generation_in_progress: false,
+            ssb_generation_started_at: null
+          })
+          .eq('id', analysisId);
         throw functionError;
       }
       
       if (data.error) {
+        await supabase
+          .from('analysis_results')
+          .update({
+            ssb_generation_in_progress: false,
+            ssb_generation_started_at: null
+          })
+          .eq('id', analysisId);
         throw new Error(data.error);
       }
 
@@ -234,6 +374,16 @@ export const SSBQuestionsCard = ({ testSessionId, analysisId, isPro }: SSBQuesti
     } catch (err: any) {
       console.error('Error regenerating questions:', err);
       setError(err.message || 'Failed to regenerate questions');
+      
+      // Clear flag on error
+      await supabase
+        .from('analysis_results')
+        .update({
+          ssb_generation_in_progress: false,
+          ssb_generation_started_at: null
+        })
+        .eq('id', analysisId);
+      
       toast.error(err.message || 'Failed to regenerate questions');
     } finally {
       setLoading(false);
