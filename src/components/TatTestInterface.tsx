@@ -647,7 +647,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
                 disabled={isSubmitting || !isActive}
               />
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>{story.length} characters</span>
+                <span>{story.trim().length} characters</span>
                 <span>
                   {
                     story
@@ -659,11 +659,11 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
                 </span>
               </div>
 
-              {story.length > 0 && story.length < 500 && (
+              {story.trim().length > 0 && story.trim().length < 500 && (
                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 text-sm bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
                   <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <p>
-                    <strong>Minimum 500 characters required</strong> for proper analysis. You need {500 - story.length}{" "}
+                    <strong>Minimum 500 characters required</strong> for proper analysis. You need {500 - story.trim().length}{" "}
                     more characters.
                   </p>
                 </div>
@@ -685,7 +685,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Button>
         <Button
           onClick={() => submitStory()}
-          disabled={isSubmitting || !story.trim() || story.length < 500 || !isActive}
+          disabled={isSubmitting || !story.trim() || story.trim().length < 500 || !isActive}
           className="flex-1 gap-2"
         >
           {isSubmitting ? (
@@ -702,7 +702,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Button>
       </div>
 
-      {story.length > 0 && story.length < 500 && !isSubmitting && (
+      {story.trim().length > 0 && story.trim().length < 500 && !isSubmitting && (
         <p className="text-sm text-center text-muted-foreground">Write at least 500 characters to enable submission</p>
       )}
 
