@@ -469,9 +469,9 @@ const TatMethodology = () => {
                   variant="outline"
                   size="lg"
                   className="text-lg px-8 py-6 h-auto"
-                  onClick={() => window.location.href = '/about-tat'}
+                  onClick={() => window.location.href = '/thematic-apperception-test'}
                 >
-                  Learn More About TAT
+                  Explore TAT Research Framework
                 </Button>
               </div>
 

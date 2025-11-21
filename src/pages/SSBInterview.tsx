@@ -1293,8 +1293,8 @@ const SSBInterview = () => {
               <h4 className="font-semibold mb-3 sm:mb-4 text-foreground text-sm sm:text-base">Quick Links</h4>
               <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
                 <li>
-                  <Link to="/about-tat" className="hover:text-primary transition-colors">
-                    About TAT
+                  <Link to="/tat-methodology" className="hover:text-primary transition-colors">
+                    TAT Methodology
                   </Link>
                 </li>
                 <li>

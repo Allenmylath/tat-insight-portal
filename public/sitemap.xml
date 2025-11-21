@@ -30,14 +30,6 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- TAT Information -->
-  <url>
-    <loc>https://www.tattests.me/about-tat</loc>
-    <lastmod>2025-11-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
   <!-- TAT Methodology Blog -->
   <url>
     <loc>https://www.tattests.me/tat-methodology</loc>
