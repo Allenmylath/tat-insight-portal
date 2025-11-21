@@ -137,9 +137,14 @@ const Index = () => {
           {/* Animated gradient background */}
           <div className="absolute inset-0 animate-gradient" 
                style={{background: 'var(--gradient-hero)', backgroundSize: '200% 200%'}}></div>
-          <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{
-          backgroundImage: `url(${heroImage})`
-        }}></div>
+          <img 
+            src={heroImage}
+            alt=""
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover opacity-10"
+          />
           
           {/* Floating elements */}
           <div className="absolute top-20 left-10 w-20 h-20 bg-accent/20 rounded-full blur-xl animate-float"></div>
@@ -244,7 +249,10 @@ const Index = () => {
                     src={henryMurrayImage} 
                     alt="Dr. Henry Murray, founder of the Thematic Apperception Test" 
                     loading="eager"
+                    fetchPriority="high"
                     decoding="async"
+                    width="384"
+                    height="384"
                     className="w-full max-w-sm mx-auto rounded-3xl shadow-float border-4 border-primary/30 hover:scale-105 transition-transform" 
                   />
                   <div className="mt-6 text-center glass-effect p-4 rounded-2xl max-w-sm mx-auto">
