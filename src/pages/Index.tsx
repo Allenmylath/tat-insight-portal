@@ -538,7 +538,7 @@ const Index = () => {
               <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p><a href="/about-us" className="hover:text-foreground transition-colors">About Us</a></p>
-                <p><a href="/about-tat" className="hover:text-foreground transition-colors">About TAT</a></p>
+                <p><a href="/tat-methodology" className="hover:text-foreground transition-colors">TAT Methodology</a></p>
                 <p><a href="/5-day-ssb-interview-procedure" className="hover:text-foreground transition-colors">SSB Procedure</a></p>
                 <p><a href="/refund-policy" className="hover:text-foreground transition-colors">Refund Policy</a></p>
                 <p><a href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</a></p>
@@ -556,7 +556,7 @@ const Index = () => {
               <a href="/privacy-policy" className="hover:text-primary transition-colors font-medium">Privacy</a>
               <a href="/refund-policy" className="hover:text-primary transition-colors font-medium">Refund</a>
               <a href="/terms-and-conditions" className="hover:text-primary transition-colors font-medium">Terms</a>
-              <a href="/about-tat" className="hover:text-primary transition-colors font-medium">About</a>
+              <a href="/about-us" className="hover:text-primary transition-colors font-medium">About</a>
             </div>
           </div>
         </div>
