@@ -76,7 +76,7 @@ const Index = () => {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">TAT Pro</h1>
+              <div className="text-xl font-bold text-foreground">TAT Pro</div>
               <p className="text-xs text-primary font-semibold">Elite SSB Prep 🎯</p>
             </div>
           </div>
