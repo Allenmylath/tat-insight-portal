@@ -619,10 +619,10 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   }
 
   return (
-    <div className={isMobile ? "" : "space-y-6"}>
-      {/* Timer Header - Mobile: Sticky, Desktop: Card */}
+    <div className={isMobile ? "pt-20 space-y-4" : "space-y-6"}>
+      {/* Timer Header - Mobile: Fixed, Desktop: Card */}
       {isMobile ? (
-        <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b shadow-md">
+        <div className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b shadow-md">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <Clock className="h-4 w-4 text-primary flex-shrink-0" />
@@ -681,7 +681,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
           </CardHeader>
         </Card>
       )}
-
+ 
       {/* Main Test Interface - Responsive Layout */}
       <Card className={`shadow-elegant ${isMobile ? "mt-0" : "mt-6"}`}>
         <div className={`${isMobile ? "space-y-6 pt-4" : "grid grid-cols-5 gap-6"} p-6`}>
