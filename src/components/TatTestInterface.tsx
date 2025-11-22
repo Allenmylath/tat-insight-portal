@@ -97,6 +97,33 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     }
   }, [isRecoveredSession, recoveredStoryContent, toast]);
 
+  // Time warning notifications
+  useEffect(() => {
+    if (!isActive) return;
+    
+    if (timeRemaining === 120) {
+      toast({ 
+        title: "⏰ 2 minutes remaining!", 
+        description: "Keep writing your story",
+        duration: 3000 
+      });
+    } else if (timeRemaining === 60) {
+      toast({ 
+        title: "⚠️ 1 minute left!", 
+        description: "Finish up your story soon",
+        variant: "destructive",
+        duration: 3000 
+      });
+    } else if (timeRemaining === 30) {
+      toast({ 
+        title: "🚨 30 seconds!", 
+        description: "Your story will be auto-submitted",
+        variant: "destructive",
+        duration: 3000 
+      });
+    }
+  }, [timeRemaining, isActive, toast]);
+
   // Add useEffect to monitor state changes for debugging
   useEffect(() => {
     console.log("🔍 State changes detected:");
@@ -349,6 +376,12 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
     return "text-destructive"; // < 1 minute: red
   };
 
+  const getProgressBarColor = () => {
+    if (timeRemaining < 60) return "rgb(239 68 68)"; // red
+    if (timeRemaining < 120) return "rgb(245 158 11)"; // amber
+    return "hsl(var(--primary))"; // primary
+  };
+
   const getConnectionStatusBadge = () => {
     switch (connectionStatus) {
       case "idle":
@@ -586,34 +619,72 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   }
 
   return (
-    <div className="space-y-6">
-      {/* Timer Header */}
-      <Card className="shadow-elegant border-primary/20">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-primary" />
-              {test.title}
+    <div className={isMobile ? "" : "space-y-6"}>
+      {/* Timer Header - Mobile: Sticky, Desktop: Card */}
+      {isMobile ? (
+        <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b shadow-md">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+              <span className="font-semibold text-sm truncate">
+                {test.title}
+              </span>
               {isRecoveredSession && (
-                <Badge variant="outline" className="text-xs">
-                  Resumed
-                </Badge>
+                <Badge variant="outline" className="text-xs flex-shrink-0">Resumed</Badge>
               )}
-            </CardTitle>
-            <div className="flex items-center gap-3">
+            </div>
+            
+            <div className="flex items-center gap-2 flex-shrink-0">
               {getConnectionStatusBadge()}
-              <Badge variant="secondary" className={`gap-2 ${getTimerColor()}`}>
-                <Clock className="h-4 w-4" />
-                {timeFormatted}
+              <Badge 
+                variant="secondary" 
+                className={`gap-2 ${getTimerColor()} text-base font-bold px-3 py-1.5`}
+              >
+                <Clock className="h-5 w-5" />
+                <span className="tabular-nums">{timeFormatted}</span>
               </Badge>
             </div>
           </div>
-        </CardHeader>
-      </Card>
+          
+          {/* Progress bar */}
+          <div className="h-1 bg-muted">
+            <div 
+              className="h-full transition-all duration-1000 ease-linear"
+              style={{ 
+                width: `${(timeRemaining / (6 * 60)) * 100}%`,
+                backgroundColor: getProgressBarColor()
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <Card className="shadow-elegant border-primary/20">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                {test.title}
+                {isRecoveredSession && (
+                  <Badge variant="outline" className="text-xs">
+                    Resumed
+                  </Badge>
+                )}
+              </CardTitle>
+              <div className="flex items-center gap-3">
+                {getConnectionStatusBadge()}
+                <Badge variant="secondary" className={`gap-2 ${getTimerColor()}`}>
+                  <Clock className="h-4 w-4" />
+                  {timeFormatted}
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+      )}
 
       {/* Main Test Interface - Responsive Layout */}
-      <Card className="shadow-elegant">
-        <div className={`${isMobile ? "space-y-6" : "grid grid-cols-5 gap-6"} p-6`}>
+      <Card className={`shadow-elegant ${isMobile ? "mt-0" : "mt-6"}`}>
+        <div className={`${isMobile ? "space-y-6 pt-4" : "grid grid-cols-5 gap-6"} p-6`}>
           {/* Left Column: Instructions + Image */}
           <div className={`${isMobile ? "" : "col-span-2"} space-y-4`}>
             <div>
