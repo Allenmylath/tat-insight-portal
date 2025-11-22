@@ -791,6 +791,28 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         </Card>
       )}
 
+      {/* Floating Timer Bubble - Mobile Only */}
+      {isMobile && isActive && (
+        <div className="fixed bottom-24 right-4 z-40 animate-scale-in">
+          <div 
+            className={`
+              rounded-full shadow-2xl backdrop-blur-sm border-2 border-background
+              transition-all duration-300 
+              ${timeRemaining < 60 ? 'animate-pulse bg-red-500/90' : 
+                timeRemaining < 120 ? 'bg-amber-500/90' : 
+                'bg-primary/90'}
+            `}
+          >
+            <div className="flex flex-col items-center justify-center p-4 min-w-[72px]">
+              <Clock className="h-5 w-5 text-white mb-1" />
+              <span className="text-lg font-bold text-white tabular-nums leading-none">
+                {timeFormatted}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CreditPurchaseModal open={showCreditModal} onOpenChange={setShowCreditModal} />
     </div>
   );
