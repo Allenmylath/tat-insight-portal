@@ -112,8 +112,10 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
   ];
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, action } = data;
+    const { status, action, type, index } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
+
+    console.log('Tour callback:', { status, action, type, index });
 
     if (finishedStatuses.includes(status)) {
       if (action === 'skip') {
@@ -131,6 +133,8 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
       continuous
       showProgress
       showSkipButton
+      scrollToFirstStep={false}
+      disableScrolling={false}
       callback={handleJoyrideCallback}
       styles={{
         options: {
