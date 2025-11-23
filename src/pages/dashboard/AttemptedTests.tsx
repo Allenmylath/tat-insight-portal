@@ -38,18 +38,14 @@ const AttemptedTests = () => {
     analysisId: string;
   } | null>(null);
   const [runAnalysisTour, setRunAnalysisTour] = useState(false);
-  const [shouldTriggerTour, setShouldTriggerTour] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      // Mark that we should trigger tour
-      setShouldTriggerTour(true);
-      
       toast({
         title: "Test Completed Successfully!",
         description: "Your test has been submitted and is being analyzed. Results will appear shortly.",
       });
-      
+
       // Remove the success parameter from URL
       searchParams.delete('success');
       setSearchParams(searchParams, { replace: true });
@@ -164,24 +160,23 @@ const AttemptedTests = () => {
       ? Math.round(visibleTests.reduce((sum, test) => sum + (test.score || 0), 0) / visibleTests.length)
       : 0;
 
-  // Trigger analysis tour for first-time users after completing first test
+  // Trigger analysis tour for first-time users when they have at least one completed test
   useEffect(() => {
     if (
-      !userLoading && 
-      userData && 
-      !userData.has_completed_analysis_tour && 
-      attemptedTests && 
-      attemptedTests.length > 0 && 
-      shouldTriggerTour
+      !userLoading &&
+      userData &&
+      !userData.has_completed_analysis_tour &&
+      attemptedTests &&
+      attemptedTests.length > 0 &&
+      !runAnalysisTour
     ) {
-      // Wait 2 seconds for success toast to be read and page to settle
+      // Wait 1.5 seconds for the page to settle
       const timer = setTimeout(() => {
         setRunAnalysisTour(true);
-        setShouldTriggerTour(false); // Reset flag
-      }, 2000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [userLoading, userData, attemptedTests, shouldTriggerTour]);
+  }, [userLoading, userData, attemptedTests, runAnalysisTour]);
 
   const handleAnalysisTourComplete = async () => {
     setRunAnalysisTour(false);
