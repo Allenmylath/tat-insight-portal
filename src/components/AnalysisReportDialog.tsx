@@ -9,12 +9,13 @@ import { MilitaryAssessmentCard } from "@/components/MilitaryAssessmentCard";
 import { SelectionRecommendationPanel } from "@/components/SelectionRecommendationPanel";
 import { ScoreHero } from "@/components/ScoreHero";
 import { SSBQuestionsCard } from "@/components/SSBQuestionsCard";
+import { AnalysisReportTour } from "@/components/AnalysisReportTour";
 import { EnhancedAnalysisData } from "@/types/analysis";
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, ChevronRight, Activity, Award, Target, FileText, X, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { ProUpgradeModal } from "@/components/ProUpgradeModal";
 
@@ -108,9 +109,45 @@ interface AnalysisReportDialogProps {
 
 export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, score, testSessionId, analysisId }: AnalysisReportDialogProps) => {
   const isMobile = useIsMobile();
-  const { isPro } = useUserData();
+  const { isPro, userData, updateReportTourStatus } = useUserData();
   const [activeTab, setActiveTab] = useState("military");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [runReportTour, setRunReportTour] = useState(false);
+
+  // Trigger report tour for first-time users
+  useEffect(() => {
+    if (
+      open && 
+      userData &&
+      !userData.has_completed_report_tour && 
+      analysis
+    ) {
+      // Wait 1 second for dialog to fully render
+      const timer = setTimeout(() => {
+        setRunReportTour(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [open, userData, analysis]);
+
+  const handleReportTourComplete = async () => {
+    setRunReportTour(false);
+    try {
+      await updateReportTourStatus(true);
+      toast.success("Tutorial complete! Explore your analysis at your own pace.");
+    } catch (error) {
+      console.error('Error updating report tour status:', error);
+    }
+  };
+
+  const handleReportTourSkip = async () => {
+    setRunReportTour(false);
+    try {
+      await updateReportTourStatus(true);
+    } catch (error) {
+      console.error('Error updating report tour status:', error);
+    }
+  };
 
   if (!analysis) return null;
 
@@ -208,12 +245,14 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
   const AnalysisContent = () => (
     <div className={isMobile ? "space-y-4 pb-6" : "space-y-6"}>
       {/* Score Hero Section */}
-      <ScoreHero 
-        score={score} 
-        testTitle={testTitle} 
-        militaryAssessment={formattedMilitaryAssessment}
-        selectionRecommendation={selectionRecommendation}
-      />
+      <div data-tour="score-hero">
+        <ScoreHero 
+          score={score} 
+          testTitle={testTitle} 
+          militaryAssessment={formattedMilitaryAssessment}
+          selectionRecommendation={selectionRecommendation}
+        />
+      </div>
 
       {/* Summary Card */}
       <Card className="glass-effect border-2 border-primary/20">
@@ -230,30 +269,34 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
 
       {/* Mobile Navigation Menu */}
               {isMobile && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3" data-tour="nav-cards">
                   <NavCard
                     icon={<FileText className="h-5 w-5" />}
                     title="Traditional"
                     active={activeTab === "traditional"}
                     onClick={() => setActiveTab("traditional")}
+                    data-tour="traditional-tab"
                   />
                   <NavCard
                     icon={<Activity className="h-5 w-5" />}
                     title="Murray TAT"
                     active={activeTab === "murray"}
                     onClick={() => setActiveTab("murray")}
+                    data-tour="murray-tab"
                   />
                   <NavCard
                     icon={<Award className="h-5 w-5" />}
                     title="Military"
                     active={activeTab === "military"}
                     onClick={() => setActiveTab("military")}
+                    data-tour="military-tab"
                   />
                   <NavCard
                     icon={<Target className="h-5 w-5" />}
                     title="Recommendations"
                     active={activeTab === "recommendation"}
                     onClick={() => setActiveTab("recommendation")}
+                    data-tour="recommendation-tab"
                   />
                   <div className="col-span-2">
                     <NavCard
@@ -268,6 +311,7 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
                       }
                       active={activeTab === "ssb"}
                       onClick={() => setActiveTab("ssb")}
+                      data-tour="ssb-tab"
                     />
                   </div>
                 </div>
@@ -297,25 +341,25 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
           )}
         </div>
       ) : (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" data-tour="tabs">
           <TabsList className="grid w-full grid-cols-5 h-auto">
-            <TabsTrigger value="traditional" className="py-3">
+            <TabsTrigger value="traditional" className="py-3" data-tour="traditional-tab">
               <span className="hidden lg:inline">Traditional Analysis</span>
               <span className="lg:hidden">Traditional</span>
             </TabsTrigger>
-            <TabsTrigger value="murray" className="py-3">
+            <TabsTrigger value="murray" className="py-3" data-tour="murray-tab">
               <span className="hidden lg:inline">Murray TAT</span>
               <span className="lg:hidden">Murray</span>
             </TabsTrigger>
-            <TabsTrigger value="military" className="py-3">
+            <TabsTrigger value="military" className="py-3" data-tour="military-tab">
               <span className="hidden lg:inline">Military Assessment</span>
               <span className="lg:hidden">Military</span>
             </TabsTrigger>
-            <TabsTrigger value="recommendation" className="py-3">
+            <TabsTrigger value="recommendation" className="py-3" data-tour="recommendation-tab">
               <span className="hidden lg:inline">Recommendations</span>
               <span className="lg:hidden">Recommend</span>
             </TabsTrigger>
-            <TabsTrigger value="ssb" className="py-3 gap-1">
+            <TabsTrigger value="ssb" className="py-3 gap-1" data-tour="ssb-tab">
               <span className="hidden lg:inline">SSB Interview Prep</span>
               <span className="lg:hidden">SSB Prep</span>
               <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary">Pro</Badge>
@@ -351,6 +395,13 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
       )}
       
       <ProUpgradeModal open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
+      
+      <AnalysisReportTour
+        run={runReportTour}
+        onComplete={handleReportTourComplete}
+        onSkip={handleReportTourSkip}
+        isMobile={isMobile}
+      />
     </div>
   );
 
@@ -410,13 +461,14 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
 };
 
 // Navigation Card Component for Mobile
-const NavCard = ({ icon, title, active, onClick }: any) => (
+const NavCard = ({ icon, title, active, onClick, ...rest }: any) => (
   <button
     onClick={onClick}
     className={`
       flex items-center gap-3 p-4 rounded-lg border-2 transition-all
       ${active ? "border-primary bg-primary/10 shadow-sm" : "border-border bg-card hover:border-primary/50"}
     `}
+    {...rest}
   >
     <div className={active ? "text-primary" : "text-muted-foreground"}>{icon}</div>
     <div className="flex-1 text-left">
