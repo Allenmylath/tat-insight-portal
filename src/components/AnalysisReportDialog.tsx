@@ -122,13 +122,20 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
       !userData.has_completed_report_tour && 
       analysis
     ) {
-      // Wait 1 second for dialog to fully render
+      // Wait longer for dialog/sheet to fully render and content to be visible
       const timer = setTimeout(() => {
         setRunReportTour(true);
-      }, 1000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [open, userData, analysis]);
+
+  // Reset tour when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setRunReportTour(false);
+    }
+  }, [open]);
 
   const handleReportTourComplete = async () => {
     setRunReportTour(false);
