@@ -1427,12 +1427,15 @@ export type Database = {
       users: {
         Row: {
           account_created_at: string | null
+          analysis_tour_completed_at: string | null
           clerk_id: string
           created_at: string
           credit_balance: number
           email: string
           first_name: string | null
+          has_completed_analysis_tour: boolean | null
           has_completed_onboarding: boolean | null
+          has_completed_report_tour: boolean | null
           has_password: boolean | null
           has_two_factor: boolean | null
           id: string
@@ -1445,6 +1448,7 @@ export type Database = {
           onboarding_completed_at: string | null
           primary_email_id: string | null
           profile_image_url: string | null
+          report_tour_completed_at: string | null
           total_credits_purchased: number
           total_credits_spent: number
           updated_at: string
@@ -1452,12 +1456,15 @@ export type Database = {
         }
         Insert: {
           account_created_at?: string | null
+          analysis_tour_completed_at?: string | null
           clerk_id: string
           created_at?: string
           credit_balance?: number
           email: string
           first_name?: string | null
+          has_completed_analysis_tour?: boolean | null
           has_completed_onboarding?: boolean | null
+          has_completed_report_tour?: boolean | null
           has_password?: boolean | null
           has_two_factor?: boolean | null
           id?: string
@@ -1470,6 +1477,7 @@ export type Database = {
           onboarding_completed_at?: string | null
           primary_email_id?: string | null
           profile_image_url?: string | null
+          report_tour_completed_at?: string | null
           total_credits_purchased?: number
           total_credits_spent?: number
           updated_at?: string
@@ -1477,12 +1485,15 @@ export type Database = {
         }
         Update: {
           account_created_at?: string | null
+          analysis_tour_completed_at?: string | null
           clerk_id?: string
           created_at?: string
           credit_balance?: number
           email?: string
           first_name?: string | null
+          has_completed_analysis_tour?: boolean | null
           has_completed_onboarding?: boolean | null
+          has_completed_report_tour?: boolean | null
           has_password?: boolean | null
           has_two_factor?: boolean | null
           id?: string
@@ -1495,6 +1506,7 @@ export type Database = {
           onboarding_completed_at?: string | null
           primary_email_id?: string | null
           profile_image_url?: string | null
+          report_tour_completed_at?: string | null
           total_credits_purchased?: number
           total_credits_spent?: number
           updated_at?: string

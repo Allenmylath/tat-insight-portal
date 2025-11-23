@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AnalysisReportDialog } from "@/components/AnalysisReportDialog";
 import { ValuationLogicDialog } from "@/components/ValuationLogicDialog";
 import { GamificationPanel } from "@/components/GamificationPanel";
+import { AnalysisPageTour } from "@/components/AnalysisPageTour";
 import { useState, useEffect } from "react";
 import { Button as LinkButton } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -17,7 +18,7 @@ import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const AttemptedTests = () => {
-  const { isPro, userData, loading: userLoading } = useUserData();
+  const { isPro, userData, loading: userLoading, updateAnalysisTourStatus } = useUserData();
   const { isSignedIn } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -36,6 +37,7 @@ const AttemptedTests = () => {
     testSessionId: string;
     analysisId: string;
   } | null>(null);
+  const [runAnalysisTour, setRunAnalysisTour] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -157,6 +159,46 @@ const AttemptedTests = () => {
       ? Math.round(visibleTests.reduce((sum, test) => sum + (test.score || 0), 0) / visibleTests.length)
       : 0;
 
+  // Trigger analysis tour for first-time users after completing first test
+  useEffect(() => {
+    if (
+      !userLoading && 
+      userData && 
+      !userData.has_completed_analysis_tour && 
+      attemptedTests && 
+      attemptedTests.length > 0 && 
+      searchParams.get('success') === 'true'
+    ) {
+      // Wait 2 seconds for success toast to be read and page to settle
+      const timer = setTimeout(() => {
+        setRunAnalysisTour(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [userLoading, userData, attemptedTests, searchParams]);
+
+  const handleAnalysisTourComplete = async () => {
+    setRunAnalysisTour(false);
+    try {
+      await updateAnalysisTourStatus(true);
+      toast({
+        title: "Tutorial Complete! 🎓",
+        description: "You're now ready to explore your psychological insights.",
+      });
+    } catch (error) {
+      console.error('Error updating analysis tour status:', error);
+    }
+  };
+
+  const handleAnalysisTourSkip = async () => {
+    setRunAnalysisTour(false);
+    try {
+      await updateAnalysisTourStatus(true);
+    } catch (error) {
+      console.error('Error updating analysis tour status:', error);
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="space-y-4 md:space-y-6 max-w-full overflow-hidden px-2 sm:px-4 md:px-0">
@@ -182,12 +224,14 @@ const AttemptedTests = () => {
 
         {/* Gamification Stats */}
         {visibleTests.length > 0 && (
-          <GamificationPanel
-            testsCompleted={visibleTests.length}
-            averageScore={averageScore}
-            streak={5}
-            achievements={["first_test"]}
-          />
+          <div data-tour="gamification-panel">
+            <GamificationPanel
+              testsCompleted={visibleTests.length}
+              averageScore={averageScore}
+              streak={5}
+              achievements={["first_test"]}
+            />
+          </div>
         )}
 
         {isLoading ? (
@@ -231,6 +275,7 @@ const AttemptedTests = () => {
                 return (
                   <Card
                     key={test.id}
+                    data-tour={index === 0 ? "test-card" : undefined}
                     className={`glass-effect border-2 bg-gradient-to-r ${scoreGradient} hover:scale-[1.01] md:hover:scale-[1.02] transition-all`}
                   >
                     <CardHeader className="p-4 md:p-6">
@@ -257,7 +302,12 @@ const AttemptedTests = () => {
                         <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto justify-between sm:justify-start">
                           {test.score !== null ? (
                             <>
-                              <div className="text-3xl md:text-4xl font-black text-primary">{test.score}%</div>
+                              <div 
+                                className="text-3xl md:text-4xl font-black text-primary"
+                                data-tour={index === 0 ? "confidence-score" : undefined}
+                              >
+                                {test.score}%
+                              </div>
                               <Badge className="bg-gradient-to-r from-primary to-accent text-white px-2 py-1 md:px-3 text-xs md:text-sm whitespace-nowrap">
                                 {test.score >= 80
                                   ? "EXCELLENT! 🏆"
@@ -309,6 +359,7 @@ const AttemptedTests = () => {
                       )}
                       <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                         <Button
+                          data-tour={index === 0 ? "view-analysis-button" : undefined}
                           className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-bold gap-2 shadow-action text-sm md:text-base"
                           size="lg"
                           onClick={() => {
@@ -367,6 +418,12 @@ const AttemptedTests = () => {
           score={selectedAnalysis?.score || 0}
           testSessionId={selectedAnalysis?.testSessionId || ""}
           analysisId={selectedAnalysis?.analysisId || ""}
+        />
+
+        <AnalysisPageTour
+          run={runAnalysisTour}
+          onComplete={handleAnalysisTourComplete}
+          onSkip={handleAnalysisTourSkip}
         />
       </div>
     </TooltipProvider>

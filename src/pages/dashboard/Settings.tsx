@@ -19,7 +19,7 @@ import { PreviewBanner } from "@/components/PreviewBanner";
 import { LoginRequiredButton } from "@/components/LoginRequiredButton";
 
 const Settings = () => {
-  const { userData, isPro } = useUserData();
+  const { userData, isPro, updateAnalysisTourStatus, updateReportTourStatus } = useUserData();
   const { user, isSignedIn } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -505,6 +505,45 @@ const Settings = () => {
               </p>
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Tutorial Settings */}
+      <Card className="shadow-elegant">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <SettingsIcon className="h-5 w-5 text-primary" />
+            Tutorial Settings
+          </CardTitle>
+          <CardDescription>
+            Replay helpful tutorials to refresh your knowledge
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button 
+            variant="outline" 
+            className="w-full gap-2"
+            onClick={async () => {
+              await updateAnalysisTourStatus(false);
+              navigate('/dashboard/attempted?success=true');
+            }}
+          >
+            🎓 Replay Analysis Page Tour
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="w-full gap-2"
+            onClick={async () => {
+              await updateReportTourStatus(false);
+              toast({
+                title: "Report tour will show next time you open an analysis",
+                description: "Open any test result to see the tutorial again.",
+              });
+            }}
+          >
+            📊 Replay Report Tour
+          </Button>
         </CardContent>
       </Card>
 

@@ -15,6 +15,10 @@ export interface UserData {
   updated_at: string;
   has_completed_onboarding: boolean;
   onboarding_completed_at: string | null;
+  has_completed_analysis_tour: boolean;
+  analysis_tour_completed_at: string | null;
+  has_completed_report_tour: boolean;
+  report_tour_completed_at: string | null;
 }
 
 export const useUserData = () => {
@@ -231,6 +235,52 @@ export const useUserData = () => {
     }
   };
 
+  const updateAnalysisTourStatus = async (completed: boolean = true) => {
+    if (!userData) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update({
+          has_completed_analysis_tour: completed,
+          analysis_tour_completed_at: new Date().toISOString()
+        })
+        .eq('id', userData.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setUserData(data);
+    } catch (err) {
+      console.error('Error updating analysis tour status:', err);
+      throw err;
+    }
+  };
+
+  const updateReportTourStatus = async (completed: boolean = true) => {
+    if (!userData) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update({
+          has_completed_report_tour: completed,
+          report_tour_completed_at: new Date().toISOString()
+        })
+        .eq('id', userData.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setUserData(data);
+    } catch (err) {
+      console.error('Error updating report tour status:', err);
+      throw err;
+    }
+  };
+
   return {
     userData,
     loading,
@@ -240,6 +290,8 @@ export const useUserData = () => {
     deductCreditsAfterCompletion,
     hasEnoughCredits,
     updateOnboardingStatus,
+    updateAnalysisTourStatus,
+    updateReportTourStatus,
     isPro: userData?.membership_type === 'pro'
   };
 };
