@@ -10,27 +10,16 @@ interface AnalysisReportTourProps {
 export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: AnalysisReportTourProps) => {
   const steps: Step[] = [
     {
-      target: 'body',
+      target: '[data-tour="score-hero"]',
       content: (
         <div className="space-y-3">
           <h3 className="text-lg font-bold">Welcome to Your Detailed Report! 🎓</h3>
-          <p>Welcome to your comprehensive psychological analysis!</p>
-          <p>Let's take a quick tour to understand each section of your report.</p>
-        </div>
-      ),
-      placement: 'center',
-      disableBeacon: true,
-    },
-    {
-      target: '[data-tour="score-hero"]',
-      content: (
-        <div className="space-y-2">
-          <h3 className="font-bold">Score Hero Section</h3>
           <p>This is your overall assessment score with key highlights.</p>
           <p>Higher scores indicate stronger psychological patterns detected.</p>
         </div>
       ),
       placement: 'bottom',
+      disableBeacon: true,
     },
     {
       target: isMobile ? '[data-tour="nav-cards"]' : '[data-tour="tabs"]',
@@ -42,6 +31,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: 'bottom',
+      disableBeacon: true,
     },
     {
       target: '[data-tour="traditional-tab"]',
@@ -53,6 +43,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: isMobile ? 'bottom' : 'right',
+      disableBeacon: true,
     },
     {
       target: '[data-tour="murray-tab"]',
@@ -64,6 +55,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: isMobile ? 'bottom' : 'right',
+      disableBeacon: true,
     },
     {
       target: '[data-tour="military-tab"]',
@@ -75,6 +67,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: isMobile ? 'bottom' : 'right',
+      disableBeacon: true,
     },
     {
       target: '[data-tour="recommendation-tab"]',
@@ -86,6 +79,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: isMobile ? 'bottom' : 'right',
+      disableBeacon: true,
     },
     {
       target: '[data-tour="ssb-tab"]',
@@ -97,6 +91,7 @@ export const AnalysisReportTour = ({ run, onComplete, onSkip, isMobile }: Analys
         </div>
       ),
       placement: isMobile ? 'bottom' : 'right',
+      disableBeacon: true,
     },
     {
       target: 'body',
