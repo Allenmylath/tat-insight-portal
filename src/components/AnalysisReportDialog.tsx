@@ -122,10 +122,10 @@ export const AnalysisReportDialog = ({ open, onOpenChange, analysis, testTitle, 
       !userData.has_completed_report_tour && 
       analysis
     ) {
-      // Wait longer for dialog/sheet to fully render and content to be visible
+      // Wait for dialog/sheet to fully render and content to be visible
       const timer = setTimeout(() => {
         setRunReportTour(true);
-      }, 1500);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [open, userData, analysis]);
