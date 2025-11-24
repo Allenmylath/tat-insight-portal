@@ -30,5 +30,25 @@ Disallow: /dashboard/
 Disallow: /auth/
 Disallow: /test/
 
+# AI Assistants - Browsing only
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /test/
+
+# AI Training crawlers - Blocked
+User-agent: GPTBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
 # Sitemap location
 Sitemap: https://www.tattests.me/sitemap.xml
