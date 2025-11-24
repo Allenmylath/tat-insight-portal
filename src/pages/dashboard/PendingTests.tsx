@@ -38,6 +38,7 @@ const PendingTests = () => {
   const [activeSession, setActiveSession] = useState<any>(null);
   const [showMobileWarningDialog, setShowMobileWarningDialog] = useState(false);
   const [showDeviceSwitchDialog, setShowDeviceSwitchDialog] = useState(false);
+  const [startingTestId, setStartingTestId] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -207,9 +208,12 @@ const PendingTests = () => {
   };
 
   const startTest = async (test: any) => {
+    setStartingTestId(test.id);
+    
     // Check authentication first
     if (!isSignedIn) {
       navigate("/auth/signup?returnUrl=/dashboard/pending");
+      setStartingTestId(null);
       return;
     }
 
@@ -220,6 +224,7 @@ const PendingTests = () => {
         description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
         variant: "destructive",
       });
+      setStartingTestId(null);
       return;
     }
 
@@ -231,12 +236,14 @@ const PendingTests = () => {
         setActiveSession(existingActiveSession);
         setSelectedTest(test);
         setShowActiveSessionDialog(true);
+        setStartingTestId(null);
         return;
       }
 
       // Show confirmation dialog
       setSelectedTest(test);
       setShowConfirmDialog(true);
+      setStartingTestId(null);
       return;
     }
 
@@ -246,12 +253,14 @@ const PendingTests = () => {
       setActiveSession(existingActiveSession);
       setSelectedTest(test);
       setShowActiveSessionDialog(true);
+      setStartingTestId(null);
       return;
     }
 
     // Show confirmation dialog before starting
     setSelectedTest(test);
     setShowConfirmDialog(true);
+    setStartingTestId(null);
   };
 
   const confirmStartTest = async () => {
@@ -463,9 +472,14 @@ const PendingTests = () => {
                     variant={!isSignedIn || !hasEnoughCredits(100) ? "outline" : "hero"}
                     className="w-full gap-2 min-h-[44px] text-sm sm:text-base active:scale-95 transition-transform"
                     onClick={() => startTest(test)}
-                    disabled={isSignedIn && !hasEnoughCredits(100)}
+                    disabled={startingTestId === test.id || (isSignedIn && !hasEnoughCredits(100))}
                   >
-                    {!isSignedIn ? (
+                    {startingTestId === test.id ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        Starting...
+                      </>
+                    ) : !isSignedIn ? (
                       <>
                         <Lock className="h-4 w-4" />
                         Login to Continue
