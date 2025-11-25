@@ -545,7 +545,7 @@ const SSBInterview = () => {
                         
                         {/* Icon */}
                         <div className="mx-auto mb-2 sm:mb-3">
-                          <step.icon className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto ${step.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                          <step.icon className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto transition-all duration-500 ${step.highlight ? "text-primary scale-110 animate-pulse" : "text-muted-foreground hover:scale-105"}`} />
                         </div>
 
                         {/* Title with Pro Badge */}
