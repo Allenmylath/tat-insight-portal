@@ -536,10 +536,6 @@ const SSBInterview = () => {
 
                 {workflowSteps.map((step, index) => (
                   <div key={index} className="relative">
-                    {/* Connector Dot */}
-                    <div className={`hidden lg:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 z-10 transition-all duration-500 ${step.highlight ? "bg-primary border-primary shadow-lg shadow-primary/50 scale-125" : "bg-background border-border"}`}>
-                    </div>
-
                     <Card className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${step.highlight ? "border-2 border-primary bg-gradient-to-br from-primary/10 via-accent/5 to-background shadow-glow" : "border border-border hover:border-primary/50"}`}>
                       <CardHeader className="pb-2 sm:pb-3 pt-4 sm:pt-6">
                         {/* Step Number Badge */}
