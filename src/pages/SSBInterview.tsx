@@ -443,7 +443,7 @@ const SSBInterview = () => {
                     <Quote className="h-6 w-6 text-yellow-300 flex-shrink-0 mt-1" />
                     <div>
                       <p className="text-white text-sm sm:text-base italic mb-2">
-                        "The predicted interview questions were spot-on! 8 out of 10 questions they asked me were on my preparation list. This platform is a game-changer."
+                        "The predicted interview questions were incredibly accurate! Most questions they asked me were on my preparation list. This platform is a game-changer."
                       </p>
                       <p className="text-yellow-300 font-bold text-sm">- Capt. Rajesh Kumar, Selected at Allahabad SSB</p>
                     </div>
