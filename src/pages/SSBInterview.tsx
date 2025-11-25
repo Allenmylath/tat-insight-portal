@@ -537,10 +537,7 @@ const SSBInterview = () => {
                 {workflowSteps.map((step, index) => (
                   <div key={index} className="relative">
                     {/* Connector Dot */}
-                    <div className={`hidden lg:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 z-10 transition-all duration-500 ${step.highlight ? "bg-primary border-primary shadow-lg shadow-primary/50 scale-125 animate-pulse" : "bg-background border-border"}`}>
-                      {step.highlight && (
-                        <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
-                      )}
+                    <div className={`hidden lg:flex absolute top-[68px] left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 z-10 transition-all duration-500 ${step.highlight ? "bg-primary border-primary shadow-lg shadow-primary/50 scale-125" : "bg-background border-border"}`}>
                     </div>
 
                     <Card className={`text-center transition-all duration-500 hover:scale-105 hover:shadow-xl ${step.highlight ? "border-2 border-primary bg-gradient-to-br from-primary/10 via-accent/5 to-background shadow-glow" : "border border-border hover:border-primary/50"}`}>
@@ -552,7 +549,7 @@ const SSBInterview = () => {
                         
                         {/* Icon */}
                         <div className="mx-auto mb-2 sm:mb-3">
-                          <step.icon className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto ${step.highlight ? "text-primary animate-bounce" : "text-muted-foreground"}`} style={step.highlight ? { animationDuration: "2s" } : {}} />
+                          <step.icon className={`h-8 w-8 sm:h-10 sm:w-10 mx-auto ${step.highlight ? "text-primary" : "text-muted-foreground"}`} />
                         </div>
 
                         {/* Title with Pro Badge */}
