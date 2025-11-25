@@ -400,17 +400,18 @@ const SSBInterview = () => {
 
               {/* Main Headline - Mobile First */}
               <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 md:mb-8 text-white leading-[1.1] sm:leading-tight font-display">
-                <span className="block">CRUSH YOUR</span>
-                <span className="block mt-1 sm:mt-2">SSB TAT 🔥</span>
+                <span className="block">PREDICT YOUR</span>
+                <span className="block mt-1 sm:mt-2">SSB INTERVIEW 🎯</span>
                 <span className="block bg-gradient-to-r from-accent via-secondary to-champion-gold bg-clip-text text-transparent mt-1.5 sm:mt-2 md:mt-3 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-                  Like A Champion
+                  Questions Before They Ask
                 </span>
               </h1>
 
               {/* Subheadline - Concise for Mobile */}
               <p className="text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-2">
-                <span className="hidden sm:inline">Get AI-Powered Instant Feedback on Day 2 TAT Tests. </span>
-                Master The Psychology Game & <span className="text-accent font-bold">Dominate Your SSB</span> 💪
+                <span className="font-bold text-yellow-300">Most candidates don't know:</span> Interviewers ask questions based on your TAT & WAT responses. 
+                <span className="hidden sm:inline"> We analyze your stories to </span>
+                <span className="text-accent font-bold">predict exactly what they'll ask you</span> 💡
               </p>
 
               {/* CTA Buttons - Mobile Optimized */}
