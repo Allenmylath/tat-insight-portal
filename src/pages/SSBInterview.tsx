@@ -359,22 +359,24 @@ const SSBInterview = () => {
       <main>
         {/* Hero Section - Redesigned for Mobile */}
         <section className="relative py-12 sm:py-16 md:py-20 lg:py-28 overflow-hidden">
-          {/* Animated gradient background */}
+          {/* Modern gradient background - Deep Blue to Navy */}
           <div
-            className="absolute inset-0 animate-gradient opacity-70"
-            style={{ background: "var(--gradient-hero)" }}
+            className="absolute inset-0"
+            style={{ 
+              background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 50%, #1e293b 100%)"
+            }}
           ></div>
           <div
-            className="absolute inset-0 opacity-5 bg-cover bg-center"
+            className="absolute inset-0 opacity-10 bg-cover bg-center"
             style={{
               backgroundImage: `url(${heroImage})`,
             }}
           ></div>
 
           {/* Floating elements */}
-          <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-16 sm:w-20 h-16 sm:h-20 bg-accent/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-16 sm:w-20 h-16 sm:h-20 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
           <div
-            className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-24 sm:w-32 h-24 sm:h-32 bg-primary/20 rounded-full blur-3xl animate-float"
+            className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-24 sm:w-32 h-24 sm:h-32 bg-indigo-500/20 rounded-full blur-3xl animate-float"
             style={{ animationDelay: "1s" }}
           ></div>
 
@@ -424,13 +426,6 @@ const SSBInterview = () => {
                     <div className="text-left">
                       <div className="text-lg sm:text-xl font-black">2,500+</div>
                       <div className="text-xs opacity-90">Candidates Trained</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
-                    <Award className="h-5 w-5 text-yellow-400" />
-                    <div className="text-left">
-                      <div className="text-lg sm:text-xl font-black">94%</div>
-                      <div className="text-xs opacity-90">Success Rate</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
