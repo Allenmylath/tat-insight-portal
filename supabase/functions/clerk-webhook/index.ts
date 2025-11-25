@@ -169,27 +169,77 @@ Deno.serve(async (req) => {
       
       console.log('Deleting user record for:', userData.id);
 
-      const { data, error } = await supabase
-        .from('users')
-        .delete()
-        .eq('clerk_id', userData.id)
-        .select()
-        .single();
+      try {
+        // First check if user exists
+        const { data: existingUser, error: checkError } = await supabase
+          .from('users')
+          .select('id, email')
+          .eq('clerk_id', userData.id)
+          .maybeSingle();
 
-      if (error) {
-        console.error('Error deleting user:', error);
+        if (checkError) {
+          console.error('Error checking user existence:', checkError);
+          throw checkError;
+        }
+
+        if (!existingUser) {
+          console.log('⚠️ User not found, already deleted or never created');
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              message: 'User not found in database, already deleted or never created' 
+            }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        console.log('Deleting user:', existingUser.email, 'with ID:', existingUser.id);
+
+        // Delete the user - cascade will handle related records
+        const { data, error } = await supabase
+          .from('users')
+          .delete()
+          .eq('clerk_id', userData.id)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error deleting user:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          throw error;
+        }
+
+        console.log('✅ User deleted successfully:', existingUser.email);
+        
         return new Response(
-          JSON.stringify({ error: 'Failed to delete user record' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ success: true, deletedUser: data }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (error) {
+        console.error('Failed to delete user:', error);
+        // Log detailed error information
+        if (error instanceof Error) {
+          console.error('Delete error details:', {
+            message: error.message,
+            stack: error.stack
+          });
+        }
+        
+        // Return success anyway since user is already deleted in Clerk
+        // We don't want to block Clerk webhook processing
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            warning: 'User deleted from Clerk but database deletion failed',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-
-      console.log('✅ User deleted successfully:', data);
-      
-      return new Response(
-        JSON.stringify({ success: true, deletedUser: data }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     // Handle session.created events
