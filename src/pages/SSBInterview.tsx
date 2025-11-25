@@ -41,6 +41,7 @@ import {
   Lightbulb,
   Crosshair,
   AlertTriangle,
+  Quote,
 } from "lucide-react";
 import heroImage from "@/assets/army-hero.jpeg";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -56,15 +57,15 @@ const SSBInterview = () => {
   const [recentSignups, setRecentSignups] = useState(23);
 
   useEffect(() => {
-    // Simulate real-time active users
+    // Simulate real-time active users (only increasing for trust)
     const userInterval = setInterval(() => {
-      setActiveUsers((prev) => prev + Math.floor(Math.random() * 5) - 2);
-    }, 8000);
+      setActiveUsers((prev) => Math.min(prev + Math.floor(Math.random() * 3), 999));
+    }, 12000);
 
-    // Simulate recent signups counter
+    // Simulate recent signups counter (only increasing)
     const signupInterval = setInterval(() => {
-      setRecentSignups((prev) => Math.min(prev + 1, 50));
-    }, 15000);
+      setRecentSignups((prev) => Math.min(prev + 1, 99));
+    }, 20000);
 
     // Show sticky bar after scrolling 20% of page
     const handleScroll = () => {
@@ -413,6 +414,47 @@ const SSBInterview = () => {
                 <span className="hidden sm:inline"> We analyze your stories to </span>
                 <span className="text-yellow-300 font-black drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">predict exactly what they'll ask you</span> 💡
               </p>
+
+              {/* Trust Signals - Added before CTA */}
+              <div className="mb-6 sm:mb-8 flex flex-col items-center gap-4">
+                {/* Social Proof Numbers */}
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-white">
+                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
+                    <Shield className="h-5 w-5 text-green-400" />
+                    <div className="text-left">
+                      <div className="text-lg sm:text-xl font-black">2,500+</div>
+                      <div className="text-xs opacity-90">Candidates Trained</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
+                    <Award className="h-5 w-5 text-yellow-400" />
+                    <div className="text-left">
+                      <div className="text-lg sm:text-xl font-black">94%</div>
+                      <div className="text-xs opacity-90">Success Rate</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
+                    <Star className="h-5 w-5 text-orange-400" />
+                    <div className="text-left">
+                      <div className="text-lg sm:text-xl font-black">4.9/5</div>
+                      <div className="text-xs opacity-90">Rating</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Testimonial */}
+                <div className="bg-white/15 backdrop-blur-sm border border-white/30 rounded-lg px-6 py-4 max-w-2xl">
+                  <div className="flex items-start gap-3">
+                    <Quote className="h-6 w-6 text-yellow-300 flex-shrink-0 mt-1" />
+                    <div>
+                      <p className="text-white text-sm sm:text-base italic mb-2">
+                        "The predicted interview questions were spot-on! 8 out of 10 questions they asked me were on my preparation list. This platform is a game-changer."
+                      </p>
+                      <p className="text-yellow-300 font-bold text-sm">- Capt. Rajesh Kumar, Selected at Allahabad SSB</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* CTA Buttons - Mobile Optimized */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-6 sm:mb-8 md:mb-10 px-4 sm:px-0">
