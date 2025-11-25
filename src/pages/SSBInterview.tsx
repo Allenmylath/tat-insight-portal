@@ -359,24 +359,24 @@ const SSBInterview = () => {
       <main>
         {/* Hero Section - Redesigned for Mobile */}
         <section className="relative py-12 sm:py-16 md:py-20 lg:py-28 overflow-hidden">
-          {/* Modern gradient background - Deep Blue to Navy */}
+          {/* Clean light gradient background */}
           <div
             className="absolute inset-0"
             style={{ 
-              background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 50%, #1e293b 100%)"
+              background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)"
             }}
           ></div>
           <div
-            className="absolute inset-0 opacity-10 bg-cover bg-center"
+            className="absolute inset-0 opacity-5 bg-cover bg-center"
             style={{
               backgroundImage: `url(${heroImage})`,
             }}
           ></div>
 
           {/* Floating elements */}
-          <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-16 sm:w-20 h-16 sm:h-20 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-16 sm:w-20 h-16 sm:h-20 bg-blue-400/10 rounded-full blur-3xl animate-float"></div>
           <div
-            className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-24 sm:w-32 h-24 sm:h-32 bg-indigo-500/20 rounded-full blur-3xl animate-float"
+            className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-24 sm:w-32 h-24 sm:h-32 bg-indigo-400/10 rounded-full blur-3xl animate-float"
             style={{ animationDelay: "1s" }}
           ></div>
 
@@ -384,68 +384,68 @@ const SSBInterview = () => {
             <div className="max-w-5xl mx-auto text-center">
               {/* Live Activity Badge - Mobile Optimized */}
               <Badge
-                className="mb-4 sm:mb-6 md:mb-8 px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base bg-white/20 backdrop-blur-md border-2 border-white/40 font-bold animate-pulse-glow inline-flex items-center gap-2 text-white shadow-xl"
+                className="mb-4 sm:mb-6 md:mb-8 px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base bg-blue-600 backdrop-blur-md border-2 border-blue-700 font-bold animate-pulse-glow inline-flex items-center gap-2 text-white shadow-xl"
                 variant="outline"
               >
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-400 animate-pulse drop-shadow-lg" />
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-300 animate-pulse drop-shadow-lg" />
                   <span className="hidden xs:inline drop-shadow-lg">
-                    <span className="text-orange-300 font-black">{activeUsers}</span> Officers Training Now
+                    <span className="text-orange-200 font-black">{activeUsers}</span> Officers Training Now
                   </span>
-                  <span className="xs:hidden text-orange-300 font-black drop-shadow-lg">{activeUsers} Live</span>
+                  <span className="xs:hidden text-orange-200 font-black drop-shadow-lg">{activeUsers} Live</span>
                   <span className="hidden sm:inline">•</span>
-                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400 drop-shadow-lg" />
-                  <span className="text-green-300 font-black drop-shadow-lg">{recentSignups}</span>
+                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-300 drop-shadow-lg" />
+                  <span className="text-green-200 font-black drop-shadow-lg">{recentSignups}</span>
                   <span className="hidden sm:inline drop-shadow-lg">joined today</span>
                   <span className="sm:hidden drop-shadow-lg">today</span>
                 </div>
               </Badge>
 
               {/* Main Headline - Mobile First */}
-              <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 md:mb-8 text-white leading-[1.1] sm:leading-tight font-display drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-                <span className="block drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">PREDICT YOUR</span>
-                <span className="block mt-1 sm:mt-2 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">SSB INTERVIEW 🎯</span>
-                <span className="block bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 bg-clip-text text-transparent mt-1.5 sm:mt-2 md:mt-3 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl drop-shadow-[0_4px_20px_rgba(255,200,0,0.6)] animate-pulse">
+              <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 md:mb-8 text-slate-900 leading-[1.1] sm:leading-tight font-display drop-shadow-sm">
+                <span className="block">PREDICT YOUR</span>
+                <span className="block mt-1 sm:mt-2">SSB INTERVIEW 🎯</span>
+                <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1.5 sm:mt-2 md:mt-3 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl animate-pulse">
                   Questions Before They Ask
                 </span>
               </h1>
 
               {/* Subheadline - Concise for Mobile */}
-              <p className="text-base xs:text-lg sm:text-xl md:text-2xl text-white mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-bold px-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              <p className="text-base xs:text-lg sm:text-xl md:text-2xl text-slate-700 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed font-bold px-2">
                 <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-lg shadow-lg animate-pulse">⚠️ SECRET:</span> Interviewers ask questions based on your TAT & WAT responses. 
                 <span className="hidden sm:inline"> We analyze your stories to </span>
-                <span className="text-yellow-300 font-black drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">predict exactly what they'll ask you</span> 💡
+                <span className="text-blue-700 font-black">predict exactly what they'll ask you</span> 💡
               </p>
 
               {/* Trust Signals - Added before CTA */}
               <div className="mb-6 sm:mb-8 flex flex-col items-center gap-4">
                 {/* Social Proof Numbers */}
-                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-white">
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
-                    <Shield className="h-5 w-5 text-green-400" />
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-2 bg-white backdrop-blur-sm px-4 py-2 rounded-lg border-2 border-slate-200 shadow-lg">
+                    <Shield className="h-5 w-5 text-green-600" />
                     <div className="text-left">
-                      <div className="text-lg sm:text-xl font-black">2,500+</div>
-                      <div className="text-xs opacity-90">Candidates Trained</div>
+                      <div className="text-lg sm:text-xl font-black text-slate-900">2,500+</div>
+                      <div className="text-xs text-slate-600">Candidates Trained</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
-                    <Star className="h-5 w-5 text-orange-400" />
+                  <div className="flex items-center gap-2 bg-white backdrop-blur-sm px-4 py-2 rounded-lg border-2 border-slate-200 shadow-lg">
+                    <Star className="h-5 w-5 text-orange-500" />
                     <div className="text-left">
-                      <div className="text-lg sm:text-xl font-black">4.9/5</div>
-                      <div className="text-xs opacity-90">Rating</div>
+                      <div className="text-lg sm:text-xl font-black text-slate-900">4.9/5</div>
+                      <div className="text-xs text-slate-600">Rating</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Quick Testimonial */}
-                <div className="bg-white/15 backdrop-blur-sm border border-white/30 rounded-lg px-6 py-4 max-w-2xl">
+                <div className="bg-white border-2 border-slate-200 rounded-lg px-6 py-4 max-w-2xl shadow-lg">
                   <div className="flex items-start gap-3">
-                    <Quote className="h-6 w-6 text-yellow-300 flex-shrink-0 mt-1" />
+                    <Quote className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
                     <div>
-                      <p className="text-white text-sm sm:text-base italic mb-2">
+                      <p className="text-slate-700 text-sm sm:text-base italic mb-2">
                         "The predicted interview questions were incredibly accurate! Most questions they asked me were on my preparation list. This platform is a game-changer."
                       </p>
-                      <p className="text-yellow-300 font-bold text-sm">- Capt. Rajesh Kumar, Selected at Allahabad SSB</p>
+                      <p className="text-blue-700 font-bold text-sm">- Capt. Rajesh Kumar, Selected at Allahabad SSB</p>
                     </div>
                   </div>
                 </div>
@@ -467,7 +467,7 @@ const SSBInterview = () => {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-bold bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white/30 hover:border-white hover:scale-105 transition-all shadow-lg"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-bold bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105 transition-all shadow-lg"
                       onClick={() => {
                         document.getElementById("demo-section")?.scrollIntoView({ behavior: "smooth" });
                       }}
@@ -489,55 +489,52 @@ const SSBInterview = () => {
               </div>
 
               {/* Trust indicators - Compact for Mobile */}
-              <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-8 sm:mb-10 md:mb-16 max-w-xl mx-auto shadow-xl">
-                <p className="text-white font-semibold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap drop-shadow-lg">
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
+              <div className="bg-white border-2 border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-8 sm:mb-10 md:mb-16 max-w-xl mx-auto shadow-xl">
+                <p className="text-slate-700 font-semibold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
                   <span>Free Forever</span>
-                  <span className="text-white/70 hidden xs:inline">•</span>
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
+                  <span className="text-slate-400 hidden xs:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
                   <span className="hidden xs:inline">No Payment</span>
                   <span className="xs:hidden">Free</span>
-                  <span className="text-white/70 hidden sm:inline">•</span>
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 drop-shadow-md" />
+                  <span className="text-slate-400 hidden sm:inline">•</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
                   <span>Instant Access</span>
                 </p>
               </div>
 
               {/* Stats - Mobile Grid */}
               <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 max-w-3xl mx-auto px-2">
-                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
+                <div className="bg-white border-2 border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
-                    style={{ background: "var(--gradient-success)" }}
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg bg-green-500"
                   >
                     <Calendar className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">Day 2</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-slate-900">Day 2</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-slate-600 font-semibold">
                     SSB Test
                   </div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
+                <div className="bg-white border-2 border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
-                    style={{ background: "var(--gradient-action)" }}
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg bg-blue-500"
                   >
                     <Clock className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">30 Sec</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-slate-900">30 Sec</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-slate-600 font-semibold">
                     Per Image
                   </div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md border-2 border-white/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
+                <div className="bg-white border-2 border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:scale-105 transition-all shadow-xl">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg"
-                    style={{ background: "var(--gradient-champion)" }}
+                    className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2 md:mb-3 shadow-lg bg-purple-500"
                   >
                     <Image className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-black text-white drop-shadow-lg">11-12</div>
-                  <div className="text-[10px] sm:text-xs md:text-sm text-white/90 font-semibold drop-shadow-md">
+                  <div className="text-lg sm:text-xl md:text-3xl font-black text-slate-900">11-12</div>
+                  <div className="text-[10px] sm:text-xs md:text-sm text-slate-600 font-semibold">
                     Images
                   </div>
                 </div>
