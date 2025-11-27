@@ -58,6 +58,9 @@ verify_jwt = false
 [functions.process-subscription-payment]
 verify_jwt = false
 
+[functions.expire-pro-memberships]
+verify_jwt = false
+
 [db.webhooks.analyze-story]
 enabled = true
 events = ["UPDATE"]
