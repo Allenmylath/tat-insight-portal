@@ -39,7 +39,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const isMobile = useIsMobile();
 
   // User data and credit management
-  const { hasEnoughCredits, deductCreditsAfterCompletion, userData } = useUserData();
+  const { hasEnoughCredits, deductCreditsAfterCompletion, userData, loading } = useUserData();
   const { toast } = useToast();
 
   // Create a ref to store the session ID that can be accessed by handlers
@@ -503,6 +503,22 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
               <X className="h-4 w-4" />
               Close & Return to Tests
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show loading state while user data is being fetched
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading...</span>
+            </div>
           </CardContent>
         </Card>
       </div>
