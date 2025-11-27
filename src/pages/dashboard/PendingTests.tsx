@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const PendingTests = () => {
-  const { isPro, userData, hasEnoughCredits } = useUserData();
+  const { isPro, userData, hasEnoughCredits, loading: userDataLoading } = useUserData();
   const { isSignedIn } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
