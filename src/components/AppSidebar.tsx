@@ -272,11 +272,12 @@ export function AppSidebar() {
                 <span className="text-sm font-medium text-foreground">Upgrade to Pro</span>
               </div>
               <p className="text-xs text-muted-foreground mb-3">
-                Unlock all tests and detailed analysis
+                Unlock unlimited tests for ₹899/month
               </p>
               <NavLink 
                 to="/dashboard/pricing"
-                className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-primary text-primary-foreground h-8 px-3 w-full"
+                onClick={handleNavClick}
+                className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 w-full transition-colors"
               >
                 View Plans
               </NavLink>
