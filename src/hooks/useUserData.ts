@@ -281,6 +281,18 @@ export const useUserData = () => {
     }
   };
 
+  const isPro = userData?.membership_type === 'pro' &&
+    (!userData?.membership_expires_at || new Date(userData.membership_expires_at) > new Date());
+
+  // Check if user can take a test (Pro users get unlimited tests, free users need credits)
+  const canTakeTest = () => {
+    if (!userData) return false;
+    // Pro users get unlimited tests
+    if (isPro) return true;
+    // Non-pro users need credits
+    return userData.credit_balance >= 100;
+  };
+
   return {
     userData,
     loading,
@@ -289,9 +301,10 @@ export const useUserData = () => {
     deductCredits,
     deductCreditsAfterCompletion,
     hasEnoughCredits,
+    canTakeTest,
     updateOnboardingStatus,
     updateAnalysisTourStatus,
     updateReportTourStatus,
-    isPro: userData?.membership_type === 'pro'
+    isPro,
   };
 };

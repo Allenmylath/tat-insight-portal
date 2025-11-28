@@ -30,10 +30,10 @@ export const ProPricingCard = ({ onUpgrade }: ProPricingCardProps) => {
         </CardDescription>
         <div className="mt-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold">₹500</span>
+            <span className="text-4xl font-bold">₹899</span>
             <span className="text-muted-foreground">/month</span>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">Only ₹16.67 per day</p>
+          <p className="text-sm text-muted-foreground mt-1">Only ₹29.97 per day</p>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">

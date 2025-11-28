@@ -217,8 +217,8 @@ const PendingTests = () => {
       return;
     }
 
-    // Check credits
-    if (!hasEnoughCredits(100)) {
+    // Check credits (Pro users bypass this check)
+    if (!isPro && !hasEnoughCredits(100)) {
       toast({
         title: "Insufficient Credits",
         description: `You need 100 credits to start this test. You currently have ${userData?.credit_balance || 0} credits.`,
@@ -469,10 +469,10 @@ const PendingTests = () => {
 
                   {/* Button - Touch Optimized */}
                   <Button
-                    variant={!isSignedIn || !hasEnoughCredits(100) ? "outline" : "hero"}
+                    variant={!isSignedIn || (!isPro && !hasEnoughCredits(100)) ? "outline" : "hero"}
                     className="w-full gap-2 min-h-[44px] text-sm sm:text-base active:scale-95 transition-transform"
                     onClick={() => startTest(test)}
-                    disabled={startingTestId === test.id || (isSignedIn && !hasEnoughCredits(100))}
+                    disabled={startingTestId === test.id || (isSignedIn && !isPro && !hasEnoughCredits(100))}
                   >
                     {startingTestId === test.id ? (
                       <>

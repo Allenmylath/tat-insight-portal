@@ -39,7 +39,7 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const isMobile = useIsMobile();
 
   // User data and credit management
-  const { hasEnoughCredits, deductCreditsAfterCompletion, userData, loading } = useUserData();
+  const { hasEnoughCredits, deductCreditsAfterCompletion, userData, loading, isPro, canTakeTest } = useUserData();
   const { toast } = useToast();
 
   // Create a ref to store the session ID that can be accessed by handlers
@@ -138,7 +138,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
   const handleStartTest = async () => {
     if (!userData) return;
 
-    if (!hasEnoughCredits()) {
+    // Pro users get unlimited tests, free users need credits
+    if (!canTakeTest()) {
       setShowCreditModal(true);
       return;
     }
@@ -285,9 +286,9 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         console.error("⚠️ Timer completion failed (non-critical):", timerError);
       }
 
-      // Deduct credits ONLY if story is valid (500-2500 characters)
+      // Deduct credits ONLY if story is valid (500-2500 characters) AND user is not Pro
       const storyLength = story.trim().length;
-      if (storyLength >= 500 && storyLength <= 2500) {
+      if (storyLength >= 500 && storyLength <= 2500 && !isPro) {
         try {
           const result = await deductCreditsAfterCompletion(currentSessionId);
           if (result.success) {
@@ -300,6 +301,8 @@ export const TatTestInterface = ({ test, onComplete, onAbandon }: TatTestInterfa
         } catch (creditError) {
           console.error("⚠️ Credit deduction error (non-critical):", creditError);
         }
+      } else if (isPro) {
+        console.log("⚠️ Skipping credit deduction - user is Pro member");
       } else {
         console.log("⚠️ Skipping credit deduction - story length outside valid range (500-2500)");
       }
