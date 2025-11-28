@@ -123,7 +123,25 @@ export function AppSidebar() {
                   {isPro ? "Pro Member" : "Free Plan"}
                 </Badge>
               )}
-              <CreditHeader />
+              
+              {/* Credits Display */}
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Coins className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Tests Available</span>
+                  </div>
+                  {loading ? (
+                    <div className="h-5 w-8 bg-muted animate-pulse rounded" />
+                  ) : userData ? (
+                    <span className="text-sm font-bold">
+                      {isPro ? '∞' : Math.floor(userData.credit_balance / 100)}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-bold">0</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
