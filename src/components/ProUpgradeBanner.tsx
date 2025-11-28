@@ -50,7 +50,7 @@ export const ProUpgradeBanner = ({ onUpgrade }: ProUpgradeBannerProps) => {
           <div className="flex items-center gap-3 flex-1">
             <Sparkles className="h-5 w-5 flex-shrink-0 animate-pulse" />
             <p className="text-sm md:text-base font-medium">
-              Unlock SSB Interview Questions for All Your Tests - Go Pro for ₹500/month
+              Unlimited Tests + SSB Interview Questions - Go Pro for ₹899/month
             </p>
           </div>
           
