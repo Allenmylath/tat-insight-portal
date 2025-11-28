@@ -82,8 +82,8 @@ export const ProUpgradeModal = ({ open, onOpenChange }: ProUpgradeModalProps) =>
               <div className="text-center space-y-2">
                 <Badge className="mb-2">MOST POPULAR</Badge>
                 <div className="space-y-1">
-                  <h3 className="text-3xl font-bold">₹500<span className="text-lg font-normal text-muted-foreground">/month</span></h3>
-                  <p className="text-sm text-muted-foreground">Only ₹16.67 per day</p>
+                  <h3 className="text-3xl font-bold">₹899<span className="text-lg font-normal text-muted-foreground">/month</span></h3>
+                  <p className="text-sm text-muted-foreground">Only ₹29.97 per day</p>
                 </div>
                 <Button 
                   size="lg" 

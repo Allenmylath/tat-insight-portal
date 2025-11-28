@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Zap, Star, Users, BarChart3, Coins } from "lucide-react";
+import { Check, Crown, Zap, Star, Users, BarChart3, Coins, Plus, Minus } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { useState } from "react";
 import { CreditPurchaseModal } from "@/components/CreditPurchaseModal";
@@ -13,6 +13,7 @@ const Pricing = () => {
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [viewMode, setViewMode] = useState<'subscription' | 'credits'>('subscription');
+  const [testQuantity, setTestQuantity] = useState(1);
 
   const creditPackages = [
     {
@@ -100,6 +101,7 @@ const Pricing = () => {
 
   const currentBalance = userData?.credit_balance || 0;
   const testsAvailable = Math.floor(currentBalance / 100);
+  const PRICE_PER_TEST = 100;
 
   return (
     <div className="space-y-8">
@@ -120,7 +122,7 @@ const Pricing = () => {
             variant={viewMode === 'credits' ? 'default' : 'outline'}
             onClick={() => setViewMode('credits')}
           >
-            One-Time Credits
+            Pay Per Test
           </Button>
         </div>
       </div>
@@ -134,12 +136,12 @@ const Pricing = () => {
                 <Coins className="h-8 w-8 text-primary" />
                 <div>
                   <h3 className="font-semibold text-foreground">
-                    Current Balance: {currentBalance} Credits
+                    Tests Available: {testsAvailable}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {testsAvailable > 0 
-                      ? `You can take ${testsAvailable} test${testsAvailable > 1 ? 's' : ''}`
-                      : "You need credits to take tests"
+                      ? `${currentBalance} credits = ${testsAvailable} test${testsAvailable > 1 ? 's' : ''}`
+                      : "Purchase tests to get started"
                     }
                   </p>
                 </div>
@@ -159,64 +161,80 @@ const Pricing = () => {
         </div>
       )}
 
-      {/* Credit Packages */}
+      {/* Pay Per Test */}
       {viewMode === 'credits' && (
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {creditPackages.map((pack, index) => (
-          <Card 
-            key={index} 
-            className={`shadow-elegant ${pack.popular ? 'border-primary ring-2 ring-primary/20' : ''} ${pack.bestValue ? 'border-accent ring-2 ring-accent/20' : ''}`}
-          >
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Coins className="h-5 w-5 text-primary" />
-                  {pack.name}
-                </CardTitle>
-                {pack.popular && (
-                  <Badge className="bg-primary text-primary-foreground">
-                    Most Popular
-                  </Badge>
-                )}
-                {pack.bestValue && (
-                  <Badge className="bg-accent text-accent-foreground">
-                    Best Value
-                  </Badge>
-                )}
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-foreground">{pack.price}</span>
-                  <span className="text-sm text-muted-foreground">({pack.pricePerTest})</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{pack.credits} credits</span>
-                  <span>•</span>
-                  <span>{pack.testsIncluded} test{pack.testsIncluded > 1 ? 's' : ''}</span>
-                </div>
-                <CardDescription>{pack.description}</CardDescription>
-              </div>
+        <div className="max-w-md mx-auto">
+          <Card className="shadow-elegant border-primary/20">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
+                <Coins className="h-5 w-5 text-primary" />
+                Pay Per Test
+              </CardTitle>
+              <CardDescription>₹100 per test • No subscription required</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <ul className="space-y-3">
-                {pack.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span className="text-sm text-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Quantity Selector */}
+              <div className="flex items-center justify-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setTestQuantity(Math.max(1, testQuantity - 1))}
+                  disabled={testQuantity <= 1}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
 
-              <Button 
-                className="w-full" 
-                variant={pack.popular ? "hero" : pack.bestValue ? "government" : "outline"}
+                <div className="text-center min-w-[100px]">
+                  <div className="text-4xl font-bold text-primary">{testQuantity}</div>
+                  <div className="text-sm text-muted-foreground">
+                    test{testQuantity > 1 ? 's' : ''}
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setTestQuantity(testQuantity + 1)}
+                  disabled={testQuantity >= 50}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Quick Select Buttons */}
+              <div className="flex justify-center gap-2 flex-wrap">
+                {[1, 3, 5, 10].map((num) => (
+                  <Button
+                    key={num}
+                    variant={testQuantity === num ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setTestQuantity(num)}
+                  >
+                    {num}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Total Price */}
+              <div className="text-center p-4 bg-primary/5 rounded-lg">
+                <div className="text-3xl font-bold text-primary">
+                  ₹{testQuantity * PRICE_PER_TEST}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  for {testQuantity} test{testQuantity > 1 ? 's' : ''} ({testQuantity * 100} credits)
+                </div>
+              </div>
+
+              {/* Buy Button */}
+              <Button
+                className="w-full"
+                variant="hero"
                 onClick={() => setShowCreditModal(true)}
               >
-                {pack.buttonText}
+                Buy Now 🔥
               </Button>
             </CardContent>
           </Card>
-        ))}
         </div>
       )}
 

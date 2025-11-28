@@ -20,6 +20,7 @@ export const CreditBalance = ({ onPurchaseClick, showPurchaseButton = true }: Cr
   }
 
   const isLowBalance = userData.credit_balance < 100;
+  const testsAvailable = Math.floor(userData.credit_balance / 100);
 
   return (
     <div className="flex items-center gap-2">
@@ -28,7 +29,7 @@ export const CreditBalance = ({ onPurchaseClick, showPurchaseButton = true }: Cr
         className="flex items-center gap-1"
       >
         <Coins className="h-3 w-3" />
-        {userData.credit_balance} credits
+        {testsAvailable} test{testsAvailable !== 1 ? 's' : ''}
       </Badge>
       
       {showPurchaseButton && (
@@ -37,7 +38,7 @@ export const CreditBalance = ({ onPurchaseClick, showPurchaseButton = true }: Cr
           variant={isLowBalance ? "default" : "outline"}
           onClick={onPurchaseClick}
         >
-          {isLowBalance ? "Buy Credits" : "Top Up"}
+          {isLowBalance ? "Buy Tests" : "Buy More"}
         </Button>
       )}
     </div>
