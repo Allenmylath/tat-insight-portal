@@ -111,6 +111,25 @@ Deno.serve(async (req) => {
 
       console.log('✅ User created successfully:', data);
       
+      // Track CompleteRegistration event with Meta Conversion API
+      try {
+        console.log('Triggering Meta CompleteRegistration event for:', primaryEmail.email_address);
+        await supabase.functions.invoke('track-meta-conversion', {
+          body: {
+            event_name: 'CompleteRegistration',
+            user_data: {
+              email: primaryEmail.email_address,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+            },
+            event_source_url: 'https://tattests.me/auth/sign-up',
+          }
+        });
+        console.log('✅ Meta CompleteRegistration event sent');
+      } catch (metaError) {
+        console.error('⚠️ Failed to send Meta conversion event (non-critical):', metaError);
+      }
+      
       return new Response(
         JSON.stringify({ success: true, user: data }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

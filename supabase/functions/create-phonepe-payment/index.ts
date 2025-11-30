@@ -144,6 +144,41 @@ serve(async (req) => {
       console.error('Purchase record error:', purchaseError);
     }
 
+    // Track InitiateCheckout event with Meta Conversion API
+    try {
+      console.log('Triggering Meta InitiateCheckout event for user:', user_id);
+      
+      // Fetch user email from database
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('email, first_name, last_name')
+        .eq('id', user_id)
+        .single();
+
+      if (!userError && userData) {
+        await supabase.functions.invoke('track-meta-conversion', {
+          body: {
+            event_name: 'InitiateCheckout',
+            user_data: {
+              email: userData.email,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+            },
+            custom_data: {
+              value: amount,
+              currency: 'INR',
+            },
+            event_source_url: 'https://tattests.me/dashboard/pricing',
+          }
+        });
+        console.log('✅ Meta InitiateCheckout event sent');
+      } else {
+        console.warn('Could not fetch user data for Meta tracking:', userError);
+      }
+    } catch (metaError) {
+      console.error('⚠️ Failed to send Meta conversion event (non-critical):', metaError);
+    }
+
     return new Response(JSON.stringify({
       success: true,
       data: {
