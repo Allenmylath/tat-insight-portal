@@ -3,7 +3,7 @@
   <!-- Main Pages -->
   <url>
     <loc>https://www.tattests.me/</loc>
-    <lastmod>2025-11-19</lastmod>
+    <lastmod>2025-12-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Blog & Content -->
   <url>
     <loc>https://www.tattests.me/blog</loc>
-    <lastmod>2025-11-19</lastmod>
+    <lastmod>2025-12-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -50,6 +50,14 @@
   <url>
     <loc>https://www.tattests.me/blog/llm-tat-scoring</loc>
     <lastmod>2025-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
+  <!-- TAT Violin Picture Analysis Article -->
+  <url>
+    <loc>https://www.tattests.me/blog/tat-violin-picture-analysis</loc>
+    <lastmod>2025-12-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
